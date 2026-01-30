@@ -17,10 +17,13 @@ return new class extends Migration
             $table->decimal('prize', 10, 2);
             $table->string('color');
             $table->string('category');
+            $table->string('type')->nullable();
             $table->integer('stock_items');
             $table->string('material');
             $table->string('SKU')->unique();
+            $table->string('image')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
