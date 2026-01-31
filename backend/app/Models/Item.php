@@ -16,7 +16,7 @@ class Item extends Model
         'prize',
         'color',
         'category',
-        'type',
+        'type_id',
         'stock_items',
         'material',
         'SKU',
@@ -26,14 +26,22 @@ class Item extends Model
     protected $dates = ['deleted_at'];
 
     /**
+     * Get the type that the item belongs to
+     */
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
+
+    /**
      * Get all items with optional filtering
      */
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with('type')->orderBy('created_at', 'desc')->get();
         }
-        return self::orderBy('created_at', 'desc')->get();
+        return self::with('type')->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -41,7 +49,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::findOrFail($id);
+        return self::with('type')->findOrFail($id);
     }
 
     /**

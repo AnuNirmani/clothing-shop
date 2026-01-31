@@ -21,7 +21,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('items.create');
+        $types = \App\Models\Type::getAllTypes();
+        return view('items.create', compact('types'));
     }
 
     /**
@@ -34,7 +35,7 @@ class ItemController extends Controller
             'prize' => 'required|numeric|min:0',
             'color' => 'required|string|max:255',
             'category' => 'required|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'type_id' => 'nullable|exists:types,id',
             'stock_items' => 'required|integer|min:0',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|unique:items,SKU|max:255',
@@ -61,7 +62,8 @@ class ItemController extends Controller
     public function edit($id)
     {
         $item = Item::getItemById($id);
-        return view('items.edit', compact('item'));
+        $types = \App\Models\Type::getAllTypes();
+        return view('items.edit', compact('item', 'types'));
     }
 
     /**
@@ -74,7 +76,7 @@ class ItemController extends Controller
             'prize' => 'required|numeric|min:0',
             'color' => 'required|string|max:255',
             'category' => 'required|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'type_id' => 'nullable|exists:types,id',
             'stock_items' => 'required|integer|min:0',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
