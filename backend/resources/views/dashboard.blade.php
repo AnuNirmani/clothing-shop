@@ -16,7 +16,7 @@
                         <p class="text-pink-100 mt-4">Manage your clothing inventory efficiently</p>
                     </div>
                     <div class="hidden md:block">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-32 h-32 opacity-50">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-32 h-32 opacity-50">
                     </div>
                 </div>
             </div>

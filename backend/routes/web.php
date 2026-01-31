@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\TypeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
     
     // Items CRUD routes
     Route::resource('items', ItemController::class);
+    
+    // Types CRUD routes
+    Route::resource('types', TypeController::class);
 });
 
 

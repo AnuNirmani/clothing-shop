@@ -5,7 +5,7 @@
             <!-- Logo - Left Aligned -->
             <div class="flex items-center">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Clothing Shop" class="h-12 w-12">
+                    <img src="{{ asset('images/logo.png') }}" alt="Clothing Shop" class="h-12 w-12">
                     <span class="text-xl font-bold bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">Clothing Shop</span>
                 </a>
             </div>
