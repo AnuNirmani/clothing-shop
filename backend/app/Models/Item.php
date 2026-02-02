@@ -15,8 +15,8 @@ class Item extends Model
         'name',
         'prize',
         'color',
-        'category',
         'type_id',
+        'category_id',
         'stock_items',
         'material',
         'SKU',
@@ -34,14 +34,22 @@ class Item extends Model
     }
 
     /**
+     * Get the category that the item belongs to
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
      * Get all items with optional filtering
      */
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with('type')->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with('type')->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -49,7 +57,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with('type')->findOrFail($id);
+        return self::with(['type', 'category'])->findOrFail($id);
     }
 
     /**

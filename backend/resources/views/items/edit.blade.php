@@ -38,11 +38,17 @@
 
                             <!-- Category -->
                             <div>
-                                <label class="block font-semibold mb-2">Category *</label>
-                                <input type="text" name="category"
-                                    value="{{ old('category', $item->category) }}"
-                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                    required>
+                                <label class="block font-semibold mb-2">Category</label>
+                                <select name="category_id"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                                    <option value="">Select category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}"
+                                            {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <!-- Type -->

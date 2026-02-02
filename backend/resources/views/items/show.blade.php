@@ -90,7 +90,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Category</p>
                                         </div>
-                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->category }}</p>
+                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->category?->name ?? 'N/A' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">

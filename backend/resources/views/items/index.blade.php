@@ -51,7 +51,9 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-gray-600">{{ $item->category }}</span>
+                                            <span class="text-sm text-blue-600 font-medium">
+                                                {{ $item->category?->name ?? 'N/A' }}
+                                            </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm text-gray-600">{{ $item->color }}</span>
