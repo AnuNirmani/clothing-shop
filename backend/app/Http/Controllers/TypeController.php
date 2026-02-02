@@ -12,7 +12,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        $types = Type::getAllTypes();
+        $types = Type::latest()->paginate(10);
         return view('types.index', compact('types'));
     }
 
@@ -59,16 +59,26 @@ class TypeController extends Controller
     /**
      * Update the specified type in database
      */
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:types,name,' . $id
+    public function update(Request $request, Type $type)
+{
+    $request->validate([
+        'name' => 'required|string|max:255|unique:types,name,' . $type->id,
+    ]);
+
+    try {
+        $type->update([
+            'name' => $request->name,
         ]);
 
-        Type::updateType($id, $validated);
-
-        return redirect()->route('types.index')->with('success', 'Type updated successfully!');
+        return redirect()->route('types.index')
+            ->with('success', 'Type updated successfully!');
+    } catch (\Exception $e) {
+        return redirect()->route('types.index')
+            ->withErrors(['name' => 'Failed to update type.'])
+            ->with('edit_error_id', $type->id)
+            ->withInput();
     }
+}
 
     /**
      * Remove the specified type from database
