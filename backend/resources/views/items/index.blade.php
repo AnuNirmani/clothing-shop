@@ -57,7 +57,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-gray-600">{{ $item->color }}</span>
+                                            <span class="text-sm text-gray-600">{{ $item->color?->name ?? 'N/A' }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm font-bold text-gray-900">Rs {{ number_format($item->prize, 2) }}</span>

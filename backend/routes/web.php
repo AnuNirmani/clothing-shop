@@ -5,6 +5,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClassificationController;
+use App\Http\Controllers\ColorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
     
     // Classifications CRUD routes
     Route::resource('classifications', ClassificationController::class);
+    
+    // Colors CRUD routes
+    Route::resource('colors', ColorController::class);
 });
 
 

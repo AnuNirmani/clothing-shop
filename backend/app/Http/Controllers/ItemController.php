@@ -26,7 +26,8 @@ class ItemController extends Controller
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
         $classifications = \App\Models\Classification::getAllClassifications();
-        return view('items.create', compact('types', 'categories', 'classifications'));
+        $colors = \App\Models\Color::getAllColors();
+        return view('items.create', compact('types', 'categories', 'classifications', 'colors'));
     }
 
     /**
@@ -40,10 +41,10 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
-            'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
             'classification_id' => 'nullable|exists:classifications,id',
+            'color_id' => 'nullable|exists:colors,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
@@ -88,7 +89,8 @@ class ItemController extends Controller
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
         $classifications = \App\Models\Classification::getAllClassifications();
-        return view('items.edit', compact('item', 'types', 'categories', 'classifications'));
+        $colors = \App\Models\Color::getAllColors();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors'));
     }
 
     /**
@@ -102,10 +104,10 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
-            'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
             'classification_id' => 'nullable|exists:classifications,id',
+            'color_id' => 'nullable|exists:colors,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',

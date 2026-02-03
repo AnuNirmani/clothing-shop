@@ -17,10 +17,10 @@ class Item extends Model
         'description',
         'note',
         'prize',
-        'color',
         'type_id',
         'category_id',
         'classification_id',
+        'color_id',
         'stock_items',
         'availability',
         'material',
@@ -55,6 +55,14 @@ class Item extends Model
     }
 
     /**
+     * Get the color that the item belongs to
+     */
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    /**
      * Get all photos for the item
      */
     public function photos()
@@ -68,9 +76,9 @@ class Item extends Model
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category', 'classification', 'photos'])->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category', 'classification', 'color', 'photos'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with(['type', 'category', 'classification', 'photos'])->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category', 'classification', 'color', 'photos'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -78,7 +86,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'classification', 'photos'])->findOrFail($id);
+        return self::with(['type', 'category', 'classification', 'color', 'photos'])->findOrFail($id);
     }
 
     /**

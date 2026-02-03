@@ -111,10 +111,14 @@
 
                             <!-- Color -->
                             <div>
-                                <label class="block font-semibold mb-2">Color *</label>
-                                <input type="text" name="color" value="{{ old('color') }}"
-                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                    required>
+                                <label class="block font-semibold mb-2">Color</label>
+                                <select name="color_id"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                                    <option value="">Select color</option>
+                                    @foreach($colors as $color)
+                                        <option value="{{ $color->id }}">{{ $color->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <!-- Material -->
