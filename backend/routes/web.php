@@ -6,6 +6,7 @@ use App\Http\Controllers\TypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClassificationController;
 use App\Http\Controllers\ColorController;
+use App\Http\Controllers\MaterialController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +48,9 @@ Route::middleware('auth')->group(function () {
     
     // Colors CRUD routes
     Route::resource('colors', ColorController::class);
+    
+    // Materials CRUD routes
+    Route::resource('materials', MaterialController::class);
 });
 
 

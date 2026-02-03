@@ -126,7 +126,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Color</p>
                                         </div>
-                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->color }}</p>
+                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->color?->name ?? 'N/A' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -136,7 +136,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Material</p>
                                         </div>
-                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->material }}</p>
+                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->material?->name ?? 'N/A' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">

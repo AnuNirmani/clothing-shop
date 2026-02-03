@@ -120,11 +120,17 @@
 
                             <!-- Material -->
                             <div>
-                                <label class="block font-semibold mb-2">Material *</label>
-                                <input type="text" name="material"
-                                    value="{{ old('material', $item->material) }}"
-                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                    required>
+                                <label class="block font-semibold mb-2">Material</label>
+                                <select name="material_id"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                                    <option value="">Select material</option>
+                                    @foreach($materials as $material)
+                                        <option value="{{ $material->id }}"
+                                            {{ old('material_id', $item->material_id) == $material->id ? 'selected' : '' }}>
+                                            {{ $material->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <!-- Price -->

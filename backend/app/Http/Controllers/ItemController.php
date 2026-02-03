@@ -27,7 +27,8 @@ class ItemController extends Controller
         $categories = \App\Models\Category::getAllCategories();
         $classifications = \App\Models\Classification::getAllClassifications();
         $colors = \App\Models\Color::getAllColors();
-        return view('items.create', compact('types', 'categories', 'classifications', 'colors'));
+        $materials = \App\Models\Material::getAllMaterials();
+        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials'));
     }
 
     /**
@@ -45,9 +46,9 @@ class ItemController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'classification_id' => 'nullable|exists:classifications,id',
             'color_id' => 'nullable|exists:colors,id',
+            'material_id' => 'nullable|exists:materials,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
-            'material' => 'required|string|max:255',
             'SKU' => 'required|string|unique:items,SKU|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'photos' => 'nullable|array|max:20',
@@ -90,7 +91,8 @@ class ItemController extends Controller
         $categories = \App\Models\Category::getAllCategories();
         $classifications = \App\Models\Classification::getAllClassifications();
         $colors = \App\Models\Color::getAllColors();
-        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors'));
+        $materials = \App\Models\Material::getAllMaterials();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials'));
     }
 
     /**
@@ -108,9 +110,9 @@ class ItemController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'classification_id' => 'nullable|exists:classifications,id',
             'color_id' => 'nullable|exists:colors,id',
+            'material_id' => 'nullable|exists:materials,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
-            'material' => 'required|string|max:255',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'photos' => 'nullable|array|max:20',
