@@ -34,6 +34,7 @@
                                     <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-pink-100 group-hover:border-pink-200 transition-all duration-300">
                                         <img src="{{ asset('storage/' . $item->image) }}" 
                                              alt="{{ $item->name }}" 
+                                             id="main-image"
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     </div>
                                 @else
@@ -47,6 +48,28 @@
                                     </div>
                                 @endif
                             </div>
+
+                            <!-- Additional Photos Gallery -->
+                            @if($item->photos && $item->photos->count() > 0)
+                                <div>
+                                    <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Gallery ({{ $item->photos->count() }} {{ $item->photos->count() == 1 ? 'photo' : 'photos' }})
+                                    </h3>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        @foreach($item->photos as $photo)
+                                            <div class="relative group cursor-pointer" onclick="changeMainImage('{{ asset('storage/' . $photo->photo_path) }}')">
+                                                <img src="{{ asset('storage/' . $photo->photo_path) }}" 
+                                                     alt="Product photo"
+                                                     class="w-full h-20 object-cover rounded-lg border-2 border-pink-100 hover:border-pink-400 transition-all duration-200 hover:shadow-lg">
+                                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all duration-200"></div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Right Column - Details Section -->
@@ -210,4 +233,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function changeMainImage(imageUrl) {
+            const mainImage = document.getElementById('main-image');
+            if (mainImage) {
+                mainImage.src = imageUrl;
+            }
+        }
+    </script>
 </x-app-layout>

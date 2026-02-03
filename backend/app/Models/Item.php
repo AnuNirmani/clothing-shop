@@ -46,14 +46,22 @@ class Item extends Model
     }
 
     /**
+     * Get all photos for the item
+     */
+    public function photos()
+    {
+        return $this->hasMany(ItemPhoto::class)->orderBy('order');
+    }
+
+    /**
      * Get all items with optional filtering
      */
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category'])->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category', 'photos'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with(['type', 'category'])->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category', 'photos'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -61,7 +69,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category'])->findOrFail($id);
+        return self::with(['type', 'category', 'photos'])->findOrFail($id);
     }
 
     /**

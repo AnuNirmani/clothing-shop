@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\ItemPhoto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -44,10 +46,24 @@ class ItemController extends Controller
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|unique:items,SKU|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photos' => 'nullable|array|max:20',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        Item::createItem($validated);
+        $item = Item::createItem($validated);
+
+        // Handle multiple photo uploads
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $photo->store('items/photos', 'public');
+                ItemPhoto::create([
+                    'item_id' => $item->id,
+                    'photo_path' => $path,
+                    'order' => $index
+                ]);
+            }
+        }
 
         return redirect()->route('items.index')->with('success', 'Item created successfully!');
     }
@@ -90,10 +106,43 @@ class ItemController extends Controller
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photos' => 'nullable|array|max:20',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'delete_photos' => 'nullable|array',
+            'delete_photos.*' => 'exists:item_photos,id'
         ]);
 
-        Item::updateItem($id, $validated);
+        $item = Item::updateItem($id, $validated);
+
+        // Handle photo deletions
+        if ($request->has('delete_photos')) {
+            foreach ($request->delete_photos as $photoId) {
+                $photo = ItemPhoto::find($photoId);
+                if ($photo && $photo->item_id == $id) {
+                    Storage::disk('public')->delete($photo->photo_path);
+                    $photo->delete();
+                }
+            }
+        }
+
+        // Handle new photo uploads
+        if ($request->hasFile('photos')) {
+            $currentCount = ItemPhoto::where('item_id', $id)->count();
+            $maxOrder = ItemPhoto::where('item_id', $id)->max('order') ?? -1;
+            
+            foreach ($request->file('photos') as $index => $photo) {
+                if ($currentCount >= 20) break;
+                
+                $path = $photo->store('items/photos', 'public');
+                ItemPhoto::create([
+                    'item_id' => $id,
+                    'photo_path' => $path,
+                    'order' => $maxOrder + $index + 1
+                ]);
+                $currentCount++;
+            }
+        }
 
         return redirect()->route('items.index')->with('success', 'Item updated successfully!');
     }
