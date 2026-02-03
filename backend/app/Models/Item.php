@@ -20,6 +20,7 @@ class Item extends Model
         'color',
         'type_id',
         'category_id',
+        'classification_id',
         'stock_items',
         'availability',
         'material',
@@ -46,6 +47,14 @@ class Item extends Model
     }
 
     /**
+     * Get the classification that the item belongs to
+     */
+    public function classification()
+    {
+        return $this->belongsTo(Classification::class);
+    }
+
+    /**
      * Get all photos for the item
      */
     public function photos()
@@ -59,9 +68,9 @@ class Item extends Model
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category', 'photos'])->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category', 'classification', 'photos'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with(['type', 'category', 'photos'])->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category', 'classification', 'photos'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -69,7 +78,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'photos'])->findOrFail($id);
+        return self::with(['type', 'category', 'classification', 'photos'])->findOrFail($id);
     }
 
     /**

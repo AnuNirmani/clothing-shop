@@ -88,6 +88,21 @@
                                 </select>
                             </div>
 
+                            <!-- Classification -->
+                            <div>
+                                <label class="block font-semibold mb-2">Classification</label>
+                                <select name="classification_id"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                                    <option value="">Select classification</option>
+                                    @foreach($classifications as $classification)
+                                        <option value="{{ $classification->id }}"
+                                            {{ old('classification_id', $item->classification_id) == $classification->id ? 'selected' : '' }}>
+                                            {{ $classification->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <!-- Color -->
                             <div>
                                 <label class="block font-semibold mb-2">Color *</label>

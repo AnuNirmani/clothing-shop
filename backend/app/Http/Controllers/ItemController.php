@@ -25,7 +25,8 @@ class ItemController extends Controller
     {
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
-        return view('items.create', compact('types', 'categories'));
+        $classifications = \App\Models\Classification::getAllClassifications();
+        return view('items.create', compact('types', 'categories', 'classifications'));
     }
 
     /**
@@ -42,6 +43,7 @@ class ItemController extends Controller
             'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
+            'classification_id' => 'nullable|exists:classifications,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
@@ -85,7 +87,8 @@ class ItemController extends Controller
         $item = Item::getItemById($id);
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
-        return view('items.edit', compact('item', 'types', 'categories'));
+        $classifications = \App\Models\Classification::getAllClassifications();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications'));
     }
 
     /**
@@ -102,6 +105,7 @@ class ItemController extends Controller
             'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
+            'classification_id' => 'nullable|exists:classifications,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',

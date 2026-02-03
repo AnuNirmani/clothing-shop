@@ -9,6 +9,25 @@
 
     <div class="py-10">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            @if ($errors->any())
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg shadow-md mb-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold mb-2">Please fix the following errors:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white shadow-2xl rounded-2xl border border-pink-100">
                 <div class="p-10">
 
@@ -74,6 +93,18 @@
                                     <option value="">Select type</option>
                                     @foreach($types as $type)
                                         <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Classification -->
+                            <div>
+                                <label class="block font-semibold mb-2">Classification</label>
+                                <select name="classification_id"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                                    <option value="">Select classification</option>
+                                    @foreach($classifications as $classification)
+                                        <option value="{{ $classification->id }}">{{ $classification->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
