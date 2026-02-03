@@ -111,10 +111,43 @@
                                 <label class="block font-semibold mb-2">Price (LKR) *</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-2.5 text-gray-500">Rs</span>
-                                    <input type="number" step="0.01" name="prize"
+                                    <input type="number" step="0.01" name="prize" id="prize"
                                         value="{{ old('prize', $item->prize) }}"
                                         class="w-full pl-12 rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
+                                        oninput="calculateInstallments()"
                                         required>
+                                </div>
+                            </div>
+
+                            <!-- Installment Options -->
+                            <div class="bg-gradient-to-r from-blue-50 to-pink-50 p-4 rounded-lg border border-blue-200">
+                                <h3 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    Installment Options
+                                </h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white p-3 rounded-lg border border-pink-200">
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">3 Installments</label>
+                                        <div class="relative">
+                                            <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
+                                            <input type="text" id="installment_3" readonly
+                                                class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-lg font-bold text-pink-600"
+                                                value="{{ number_format($item->prize / 3, 2) }}">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">per month</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg border border-blue-200">
+                                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">4 Installments</label>
+                                        <div class="relative">
+                                            <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
+                                            <input type="text" id="installment_4" readonly
+                                                class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-lg font-bold text-blue-600"
+                                                value="{{ number_format($item->prize / 4, 2) }}">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">per month</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -253,6 +286,16 @@
 
         // Update button state on page load
         updateAddButtonState();
+
+        // Installment calculation function
+        function calculateInstallments() {
+            const price = parseFloat(document.getElementById('prize').value) || 0;
+            const installment3 = price / 3;
+            const installment4 = price / 4;
+            
+            document.getElementById('installment_3').value = installment3.toFixed(2);
+            document.getElementById('installment_4').value = installment4.toFixed(2);
+        }
 
         // Main image preview functions
         function previewMainImage(event) {
