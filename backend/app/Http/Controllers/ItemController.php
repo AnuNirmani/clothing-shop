@@ -33,11 +33,15 @@ class ItemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'co_name' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
             'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
             'stock_items' => 'required|integer|min:0',
+            'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|unique:items,SKU|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -75,11 +79,15 @@ class ItemController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'co_name' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
             'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
             'stock_items' => 'required|integer|min:0',
+            'availability' => 'required|in:in stock,out of stock',
             'material' => 'required|string|max:255',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'

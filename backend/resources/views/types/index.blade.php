@@ -12,7 +12,7 @@
 
             <div class="mb-8">
                 <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">
-                    Manage your product types and categories
+                    Manage your product types
                 </span>
             </div>
 

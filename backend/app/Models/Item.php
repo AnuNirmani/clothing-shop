@@ -13,11 +13,15 @@ class Item extends Model
 
     protected $fillable = [
         'name',
+        'co_name',
+        'description',
+        'note',
         'prize',
         'color',
         'type_id',
         'category_id',
         'stock_items',
+        'availability',
         'material',
         'SKU',
         'image'

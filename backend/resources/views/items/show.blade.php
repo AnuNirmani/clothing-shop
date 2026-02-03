@@ -56,6 +56,9 @@
                                 <h1 class="text-4xl font-bold bg-gradient-to-r from-pink-500 via-blue-500 to-pink-500 bg-clip-text text-transparent mb-3">
                                     {{ $item->name }}
                                 </h1>
+                                @if($item->co_name)
+                                    <p class="text-lg text-gray-600 font-semibold mb-3">{{ $item->co_name }}</p>
+                                @endif
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border border-gray-300">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,8 +66,8 @@
                                         </svg>
                                         SKU: {{ $item->SKU }}
                                     </span>
-                                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold {{ $item->stock_items > 10 ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300' }}">
-                                        {{ $item->stock_items > 10 ? 'In Stock' : 'Low Stock' }}
+                                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold {{ $item->availability == 'in stock' ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300' }}">
+                                        {{ ucwords($item->availability ?? 'in stock') }}
                                     </span>
                                 </div>
                             </div>
@@ -143,6 +146,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Description and Notes Section -->
+            @if($item->description || $item->note)
+            <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border-2 border-pink-100">
+                @if($item->description)
+                <div class="mb-6 pb-6 {{ $item->note ? 'border-b border-pink-100' : '' }}">
+                    <h3 class="text-lg font-bold text-pink-600 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                        Description
+                    </h3>
+                    <p class="text-gray-700 whitespace-pre-wrap">{{ $item->description }}</p>
+                </div>
+                @endif
+
+                @if($item->note)
+                <div>
+                    <h3 class="text-lg font-bold text-blue-600 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Note
+                    </h3>
+                    <p class="text-gray-700 whitespace-pre-wrap">{{ $item->note }}</p>
+                </div>
+                @endif
+            </div>
+            @endif
 
             <!-- Additional Info Section -->
             <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">

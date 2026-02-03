@@ -36,7 +36,8 @@
                                     <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Color</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Price</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Stock</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Availability</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-pink-50">
@@ -64,6 +65,11 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->stock_items > 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                 {{ $item->stock_items }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ ($item->availability ?? 'in stock') == 'in stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ ucwords($item->availability ?? 'in stock') }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -121,7 +127,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-12 text-center">
+                                        <td colspan="8" class="px-6 py-12 text-center">
                                             <div class="flex flex-col items-center justify-center space-y-3">
                                                 <svg class="w-16 h-16 text-pink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>

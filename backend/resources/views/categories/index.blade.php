@@ -4,91 +4,173 @@
             <h2 class="font-semibold text-2xl text-gray-800">
                 <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">Categories Management</span>
             </h2>
-            <a href="{{ route('categories.create') }}" class="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                <span>Add New Category</span>
-            </a>
         </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg shadow-md relative mb-6 flex items-center" role="alert">
-                    <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="font-medium">{{ session('success') }}</span>
-                </div>
-            @endif
 
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border-2 border-pink-100">
-                <div class="p-6 text-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-pink-100">
-                            <thead class="bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">ID</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Created</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-pink-50">
-                                @forelse($categories as $category)
-                                    <tr class="hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50 transition-colors duration-150">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-gray-900">{{ $category->id }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-semibold text-pink-600">{{ $category->name }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-gray-500">{{ $category->created_at->format('M d, Y') }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <a href="{{ route('categories.edit', $category->id) }}" class="bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-150 flex items-center space-x-1">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                    </svg>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-150 flex items-center space-x-1">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                        </svg>
-                                                        <span>Delete</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-12 text-center">
-                                            <div class="flex flex-col items-center justify-center space-y-3">
-                                                <svg class="w-16 h-16 text-pink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                                </svg>
-                                                <p class="text-gray-500 text-lg font-medium">No categories found</p>
-                                                <a href="{{ route('categories.create') }}" class="bg-gradient-to-r from-pink-400 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-                                                    Create your first category
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+        <div class="mb-8">
+                <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">
+                    Manage your product categories
+                </span>
+            </div>
+
+            <!-- Add New Category -->
+            <div class="bg-gradient-to-r from-pink-50 to-blue-50 rounded-xl shadow-md p-6 mb-6 border border-pink-100">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Category</h3>
+                <form method="POST" action="{{ route('categories.store') }}">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter category name *"
+                            value="{{ old('name') }}"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-pink-500"
+                            required
+                        >
+                        <button
+                            type="submit"
+                            class="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white rounded-lg font-semibold px-6 py-3 hover:scale-105 transition-transform duration-200"
+                        >
+                            Add Category
+                        </button>
                     </div>
+                </form>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="px-6 py-4 border-b bg-gradient-to-r from-pink-50 to-blue-50">
+                    <h3 class="text-lg font-semibold text-gray-900">All Categories</h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-pink-50 to-blue-50 border-b">
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-700 uppercase">Name</th>
+                                <th class="px-6 py-4 text-xs font-semibold text-gray-700 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y">
+                            @forelse($categories as $category)
+                                @php $editError = session('edit_error_id') == $category->id; @endphp
+                                <tr class="hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50">
+
+                                    <!-- Name -->
+                                    <td class="px-6 py-4">
+                                        <div class="flex justify-center">
+                                            <span
+                                                id="name-display-{{ $category->id }}"
+                                                @if($editError) style="display:none" @endif
+                                                class="font-semibold text-pink-600"
+                                            >
+                                                {{ $category->name }}
+                                            </span>
+
+                                            <form
+                                                id="edit-form-{{ $category->id }}"
+                                                method="POST"
+                                                action="{{ route('categories.update', $category->id) }}"
+                                                @if(!$editError) style="display:none" @endif
+                                            >
+                                                @csrf
+                                                @method('PUT')
+                                                <input
+                                                    id="name-input-{{ $category->id }}"
+                                                    type="text"
+                                                    name="name"
+                                                    value="{{ old('name', $category->name) }}"
+                                                    class="border rounded-lg px-3 py-2 focus:ring-pink-500"
+                                                >
+                                            </form>
+                                        </div>
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="px-6 py-4">
+                                        <div
+                                            id="action-buttons-{{ $category->id }}"
+                                            @if($editError) style="display:none" @endif
+                                            class="flex justify-center gap-3"
+                                        >
+                                            <button
+                                                type="button"
+                                                onclick="enableEdit({{ $category->id }})"
+                                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 hover:bg-amber-200 hover:text-amber-700 hover:border-amber-500 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5"
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button
+                                                    type="submit"
+                                                    onclick="return confirm('Delete this category?')"
+                                                    class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 hover:text-red-700 hover:border-red-500 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div
+                                            id="edit-buttons-{{ $category->id }}"
+                                            @if($editError) style="display:flex" @else class="hidden" @endif
+                                            class="flex justify-center gap-3"
+                                        >
+                                            <button
+                                                type="button"
+                                                onclick="submitEdit({{ $category->id }})"
+                                                class="px-4 py-2 bg-pink-500 text-white rounded-lg"
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onclick="cancelEdit({{ $category->id }})"
+                                                class="px-4 py-2 bg-gray-100 rounded-lg"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-12 text-center text-gray-500">
+                                        No categories found
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function enableEdit(id) {
+            document.getElementById('name-display-' + id).style.display = 'none';
+            document.getElementById('edit-form-' + id).style.display = 'block';
+            document.getElementById('action-buttons-' + id).style.display = 'none';
+            document.getElementById('edit-buttons-' + id).style.display = 'flex';
+        }
+
+        function cancelEdit(id) {
+            document.getElementById('name-display-' + id).style.display = 'inline';
+            document.getElementById('edit-form-' + id).style.display = 'none';
+            document.getElementById('action-buttons-' + id).style.display = 'flex';
+            document.getElementById('edit-buttons-' + id).style.display = 'none';
+        }
+
+        function submitEdit(id) {
+            document.getElementById('edit-form-' + id).submit();
+        }
+    </script>
 </x-app-layout>

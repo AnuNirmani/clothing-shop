@@ -25,6 +25,27 @@
                                     required>
                             </div>
 
+                            <!-- Co Name -->
+                            <div>
+                                <label class="block font-semibold mb-2">Co Name</label>
+                                <input type="text" name="co_name" value="{{ old('co_name') }}"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label class="block font-semibold mb-2">Description</label>
+                                <textarea name="description" rows="3"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">{{ old('description') }}</textarea>
+                            </div>
+
+                            <!-- Note -->
+                            <div>
+                                <label class="block font-semibold mb-2">Note</label>
+                                <textarea name="note" rows="3"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">{{ old('note') }}</textarea>
+                            </div>
+
                             <!-- SKU -->
                             <div>
                                 <label class="block font-semibold mb-2">SKU *</label>
@@ -90,6 +111,17 @@
                                 <input type="number" name="stock_items"
                                     class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
                                     required>
+                            </div>
+
+                            <!-- Availability -->
+                            <div>
+                                <label class="block font-semibold mb-2">Availability *</label>
+                                <select name="availability"
+                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
+                                    required>
+                                    <option value="in stock" {{ old('availability') == 'in stock' ? 'selected' : '' }}>In Stock</option>
+                                    <option value="out of stock" {{ old('availability') == 'out of stock' ? 'selected' : '' }}>Out of Stock</option>
+                                </select>
                             </div>
 
                             <!-- Image -->
