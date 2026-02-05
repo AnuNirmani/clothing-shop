@@ -28,7 +28,8 @@ class ItemController extends Controller
         $classifications = \App\Models\Classification::getAllClassifications();
         $colors = \App\Models\Color::getAllColors();
         $materials = \App\Models\Material::getAllMaterials();
-        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials'));
+        $sizes = \App\Models\Size::getAllSizes();
+        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
     }
 
     /**
@@ -47,6 +48,8 @@ class ItemController extends Controller
             'classification_id' => 'nullable|exists:classifications,id',
             'color_id' => 'nullable|exists:colors,id',
             'material_id' => 'nullable|exists:materials,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'size_id_dropdown' => 'nullable|exists:sizes,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'SKU' => 'required|string|unique:items,SKU|max:255',
@@ -54,6 +57,12 @@ class ItemController extends Controller
             'photos' => 'nullable|array|max:20',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
+        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
+        if (!$validated['size_id'] && isset($validated['size_id_dropdown'])) {
+            $validated['size_id'] = $validated['size_id_dropdown'];
+        }
+        unset($validated['size_id_dropdown']);
 
         $item = Item::createItem($validated);
 
@@ -92,7 +101,8 @@ class ItemController extends Controller
         $classifications = \App\Models\Classification::getAllClassifications();
         $colors = \App\Models\Color::getAllColors();
         $materials = \App\Models\Material::getAllMaterials();
-        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials'));
+        $sizes = \App\Models\Size::getAllSizes();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
     }
 
     /**
@@ -111,6 +121,8 @@ class ItemController extends Controller
             'classification_id' => 'nullable|exists:classifications,id',
             'color_id' => 'nullable|exists:colors,id',
             'material_id' => 'nullable|exists:materials,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'size_id_dropdown' => 'nullable|exists:sizes,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
@@ -120,6 +132,12 @@ class ItemController extends Controller
             'delete_photos' => 'nullable|array',
             'delete_photos.*' => 'exists:item_photos,id'
         ]);
+
+        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
+        if (!$validated['size_id'] && isset($validated['size_id_dropdown'])) {
+            $validated['size_id'] = $validated['size_id_dropdown'];
+        }
+        unset($validated['size_id_dropdown']);
 
         $item = Item::updateItem($id, $validated);
 

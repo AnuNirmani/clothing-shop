@@ -91,7 +91,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Category</label>
                                     <select name="category_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <option value="">Select category</option>
+                                        <!-- <option value="">Select category</option> -->
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}"
                                                 {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>
@@ -106,7 +106,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Type</label>
                                     <select name="type_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <option value="">Select type</option>
+                                        <!-- <option value="">Select type</option> -->
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}"
                                                 {{ old('type_id', $item->type_id) == $type->id ? 'selected' : '' }}>
@@ -121,7 +121,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Classification</label>
                                     <select name="classification_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <option value="">Select classification</option>
+                                        <!-- <option value="">Select classification</option> -->
                                         @foreach($classifications as $classification)
                                             <option value="{{ $classification->id }}"
                                                 {{ old('classification_id', $item->classification_id) == $classification->id ? 'selected' : '' }}>
@@ -160,11 +160,11 @@
                                 </div>
 
                                 <!-- Material -->
-                                <div class="md:col-span-2">
+                                <div>
                                     <label class="block font-semibold mb-2 text-gray-700">Material</label>
                                     <select name="material_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <option value="">Select material</option>
+                                        <!-- <option value="">Select material</option> -->
                                         @foreach($materials as $material)
                                             <option value="{{ $material->id }}"
                                                 {{ old('material_id', $item->material_id) == $material->id ? 'selected' : '' }}>
@@ -172,6 +172,39 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <!-- Size -->
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold mb-3 text-gray-700">Size</label>
+                                    
+                                    <!-- Radio Buttons for Common Sizes -->
+                                    <div class="flex flex-wrap gap-3 mb-4">
+                                        @foreach($sizes as $size)
+                                            @if(in_array(strtoupper($size->name), ['S', 'M', 'L', 'XL', 'XXL']))
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="radio" name="size_id" value="{{ $size->id }}" 
+                                                        class="sr-only peer" 
+                                                        {{ old('size_id', $item->size_id) == $size->id ? 'checked' : '' }}>
+                                                    <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
+                                                        {{ $size->name }}
+                                                    </div>
+                                                </label>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                    
+                                    <!-- Dropdown for All Sizes -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
+                                        <select name="size_id_dropdown" id="sizeDropdown"
+                                            class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
+                                            <!-- <option value="">Select size</option> -->
+                                            @foreach($sizes as $size)
+                                                <option value="{{ $size->id }}" {{ old('size_id', $item->size_id) == $size->id ? 'selected' : '' }}>{{ $size->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -575,6 +608,31 @@
                     }
                 }
             }
+        });
+
+        // Size radio buttons and dropdown sync
+        const sizeRadios = document.querySelectorAll('input[name="size_id"]');
+        const sizeDropdown = document.getElementById('sizeDropdown');
+        
+        // When radio button is clicked, update dropdown
+        sizeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    sizeDropdown.value = this.value;
+                }
+            });
+        });
+        
+        // When dropdown is changed, update radio button
+        sizeDropdown.addEventListener('change', function() {
+            const selectedValue = this.value;
+            sizeRadios.forEach(radio => {
+                if (radio.value === selectedValue) {
+                    radio.checked = true;
+                } else {
+                    radio.checked = false;
+                }
+            });
         });
     </script>
 </x-app-layout>

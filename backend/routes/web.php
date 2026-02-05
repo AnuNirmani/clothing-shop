@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClassificationController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\SizeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,6 +52,9 @@ Route::middleware('auth')->group(function () {
     
     // Materials CRUD routes
     Route::resource('materials', MaterialController::class);
+    
+    // Sizes CRUD routes
+    Route::resource('sizes', SizeController::class);
 });
 
 
