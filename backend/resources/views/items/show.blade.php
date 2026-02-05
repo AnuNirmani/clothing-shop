@@ -34,6 +34,7 @@
                                     <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-pink-100 group-hover:border-pink-200 transition-all duration-300">
                                         <img src="{{ asset('storage/' . $item->image) }}" 
                                              alt="{{ $item->name }}" 
+                                             id="main-image"
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     </div>
                                 @else
@@ -47,6 +48,28 @@
                                     </div>
                                 @endif
                             </div>
+
+                            <!-- Additional Photos Gallery -->
+                            @if($item->photos && $item->photos->count() > 0)
+                                <div>
+                                    <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Gallery ({{ $item->photos->count() }} {{ $item->photos->count() == 1 ? 'photo' : 'photos' }})
+                                    </h3>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        @foreach($item->photos as $photo)
+                                            <div class="relative group cursor-pointer" onclick="changeMainImage('{{ asset('storage/' . $photo->photo_path) }}')">
+                                                <img src="{{ asset('storage/' . $photo->photo_path) }}" 
+                                                     alt="Product photo"
+                                                     class="w-full h-20 object-cover rounded-lg border-2 border-pink-100 hover:border-pink-400 transition-all duration-200 hover:shadow-lg">
+                                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all duration-200"></div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Right Column - Details Section -->
@@ -83,7 +106,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Type</p>
                                         </div>
-                                        <p class="text-lg font-bold text-pink-600 break-words">{{ $item->type?->name ?? 'N/A' }}</p>
+                                        <p class="text-lg font-bold text-pink-600 break-words">{{ $item->type?->name ?? 'NULL' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -93,7 +116,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Category</p>
                                         </div>
-                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->category?->name ?? 'N/A' }}</p>
+                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->category?->name ?? 'NULL' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -103,7 +126,7 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Color</p>
                                         </div>
-                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->color }}</p>
+                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->color?->name ?? 'NULL' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -113,7 +136,27 @@
                                             </svg>
                                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Material</p>
                                         </div>
-                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->material }}</p>
+                                        <p class="text-lg font-bold text-gray-800 break-words">{{ $item->material?->name ?? 'NULL' }}</p>
+                                    </div>
+
+                                    <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-5 h-5 text-pink-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                            </svg>
+                                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Classification</p>
+                                        </div>
+                                        <p class="text-lg font-bold text-pink-600 break-words">{{ $item->classification?->name ?? 'NULL' }}</p>
+                                    </div>
+
+                                    <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                            </svg>
+                                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Size</p>
+                                        </div>
+                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->size?->name ?? 'NULL' }}</p>
                                     </div>
 
                                     <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -138,6 +181,28 @@
                                                 {{ $item->stock_items }}
                                             </span>
                                             <span class="ml-2 text-sm font-medium text-gray-600">units</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Installment Options -->
+                                    <div class="col-span-1 sm:col-span-2 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-xl p-5 border-2 border-purple-200 shadow-md">
+                                        <div class="flex items-center mb-3">
+                                            <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                            <p class="text-sm font-bold text-purple-700 uppercase tracking-wider">Installment Plans</p>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="bg-white rounded-lg p-3 border border-pink-300 shadow-sm">
+                                                <p class="text-xs text-gray-500 mb-1">3 Months</p>
+                                                <p class="text-xl font-bold text-pink-600">Rs {{ number_format($item->prize / 3, 2) }}</p>
+                                                <p class="text-xs text-gray-400">per month</p>
+                                            </div>
+                                            <div class="bg-white rounded-lg p-3 border border-blue-300 shadow-sm">
+                                                <p class="text-xs text-gray-500 mb-1">4 Months</p>
+                                                <p class="text-xl font-bold text-blue-600">Rs {{ number_format($item->prize / 4, 2) }}</p>
+                                                <p class="text-xs text-gray-400">per month</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,4 +275,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function changeMainImage(imageUrl) {
+            const mainImage = document.getElementById('main-image');
+            if (mainImage) {
+                mainImage.src = imageUrl;
+            }
+        }
+    </script>
 </x-app-layout>

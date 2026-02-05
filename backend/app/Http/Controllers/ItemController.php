@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\ItemPhoto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -12,7 +14,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::getAllItems();
+        $items = Item::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('items.index', compact('items'));
     }
 
@@ -23,7 +27,11 @@ class ItemController extends Controller
     {
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
-        return view('items.create', compact('types', 'categories'));
+        $classifications = \App\Models\Classification::getAllClassifications();
+        $colors = \App\Models\Color::getAllColors();
+        $materials = \App\Models\Material::getAllMaterials();
+        $sizes = \App\Models\Size::getAllSizes();
+        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
     }
 
     /**
@@ -37,17 +45,50 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
-            'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
+            'classification_id' => 'nullable|exists:classifications,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'material_id' => 'nullable|exists:materials,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'size_id_dropdown' => 'nullable|exists:sizes,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
-            'material' => 'required|string|max:255',
             'SKU' => 'required|string|unique:items,SKU|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photos' => 'nullable|array|max:20',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_gift_card' => 'nullable|boolean',
+            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1'
         ]);
 
-        Item::createItem($validated);
+        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
+        if (empty($validated['size_id']) && isset($validated['size_id_dropdown'])) {
+            $validated['size_id'] = $validated['size_id_dropdown'];
+        }
+        unset($validated['size_id_dropdown']);
+
+        // Convert checkbox to boolean
+        $validated['is_gift_card'] = $request->has('is_gift_card') ? true : false;
+        
+        // Clear gift card validity if not a gift card
+        if (!$validated['is_gift_card']) {
+            $validated['gift_card_validity_months'] = null;
+        }
+
+        $item = Item::createItem($validated);
+
+        // Handle multiple photo uploads
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $photo->store('items/photos', 'public');
+                ItemPhoto::create([
+                    'item_id' => $item->id,
+                    'photo_path' => $path,
+                    'order' => $index
+                ]);
+            }
+        }
 
         return redirect()->route('items.index')->with('success', 'Item created successfully!');
     }
@@ -69,7 +110,11 @@ class ItemController extends Controller
         $item = Item::getItemById($id);
         $types = \App\Models\Type::getAllTypes();
         $categories = \App\Models\Category::getAllCategories();
-        return view('items.edit', compact('item', 'types', 'categories'));
+        $classifications = \App\Models\Classification::getAllClassifications();
+        $colors = \App\Models\Color::getAllColors();
+        $materials = \App\Models\Material::getAllMaterials();
+        $sizes = \App\Models\Size::getAllSizes();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
     }
 
     /**
@@ -83,17 +128,59 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'note' => 'nullable|string',
             'prize' => 'required|numeric|min:0',
-            'color' => 'required|string|max:255',
             'type_id' => 'nullable|exists:types,id',
             'category_id' => 'nullable|exists:categories,id',
+            'classification_id' => 'nullable|exists:classifications,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'material_id' => 'nullable|exists:materials,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'size_id_dropdown' => 'nullable|exists:sizes,id',
             'stock_items' => 'required|integer|min:0',
             'availability' => 'required|in:in stock,out of stock',
-            'material' => 'required|string|max:255',
             'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photos' => 'nullable|array|max:20',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'delete_photos' => 'nullable|array',
+            'delete_photos.*' => 'exists:item_photos,id'
         ]);
 
-        Item::updateItem($id, $validated);
+        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
+        if (!$validated['size_id'] && isset($validated['size_id_dropdown'])) {
+            $validated['size_id'] = $validated['size_id_dropdown'];
+        }
+        unset($validated['size_id_dropdown']);
+
+        $item = Item::updateItem($id, $validated);
+
+        // Handle photo deletions
+        if ($request->has('delete_photos')) {
+            foreach ($request->delete_photos as $photoId) {
+                $photo = ItemPhoto::find($photoId);
+                if ($photo && $photo->item_id == $id) {
+                    Storage::disk('public')->delete($photo->photo_path);
+                    $photo->delete();
+                }
+            }
+        }
+
+        // Handle new photo uploads
+        if ($request->hasFile('photos')) {
+            $currentCount = ItemPhoto::where('item_id', $id)->count();
+            $maxOrder = ItemPhoto::where('item_id', $id)->max('order') ?? -1;
+            
+            foreach ($request->file('photos') as $index => $photo) {
+                if ($currentCount >= 20) break;
+                
+                $path = $photo->store('items/photos', 'public');
+                ItemPhoto::create([
+                    'item_id' => $id,
+                    'photo_path' => $path,
+                    'order' => $maxOrder + $index + 1
+                ]);
+                $currentCount++;
+            }
+        }
 
         return redirect()->route('items.index')->with('success', 'Item updated successfully!');
     }

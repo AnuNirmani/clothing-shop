@@ -34,18 +34,61 @@
                             </svg>
                             Items
                         </a>
-                        <a href="{{ route('types.index') }}" class="flex items-center px-6 py-3 text-gray-700 {{ request()->routeIs('types.*') ? 'bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-l-4 border-pink-400 text-pink-700 font-semibold' : 'hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50 transition-all duration-200' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('types.*') ? 'text-pink-500' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                            </svg>
-                            Types
-                        </a>
-                        <a href="{{ route('categories.index') }}" class="flex items-center px-6 py-3 text-gray-700 {{ request()->routeIs('categories.*') ? 'bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-l-4 border-pink-400 text-pink-700 font-semibold' : 'hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50 transition-all duration-200' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('categories.*') ? 'text-pink-500' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                            </svg>
-                            Categories
-                        </a>
+                        
+                        <!-- Components Dropdown -->
+                        <div x-data="{ open: {{ request()->routeIs('types.*') || request()->routeIs('categories.*') || request()->routeIs('colors.*') || request()->routeIs('materials.*') || request()->routeIs('classifications.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open" class="w-full flex items-center justify-between px-6 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50 transition-all duration-200" :class="{ 'bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 text-pink-700 font-semibold': open }">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-3" :class="{ 'text-pink-500': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Components
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="bg-gradient-to-r from-gray-50 to-pink-50">
+                                <a href="{{ route('types.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('types.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('types.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                    Types
+                                </a>
+                                <a href="{{ route('categories.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('categories.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('categories.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                    </svg>
+                                    Categories
+                                </a>
+                                <a href="{{ route('colors.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('colors.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('colors.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                                    </svg>
+                                    Colors
+                                </a>
+                                <a href="{{ route('materials.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('materials.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('materials.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Materials
+                                </a>
+                                <a href="{{ route('sizes.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('sizes.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('sizes.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                    </svg>
+                                    Sizes
+                                </a>
+                                <a href="{{ route('classifications.index') }}" class="flex items-center px-6 py-2.5 pl-14 text-sm text-gray-700 {{ request()->routeIs('classifications.*') ? 'bg-pink-100 border-l-4 border-pink-500 text-pink-700 font-semibold' : 'hover:bg-pink-50 transition-all duration-200' }}">
+                                    <svg class="w-4 h-4 mr-2 {{ request()->routeIs('classifications.*') ? 'text-pink-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                    Classifications
+                                </a>
+                            </div>
+                        </div>
+                        
                     </nav>
                 </aside>
 

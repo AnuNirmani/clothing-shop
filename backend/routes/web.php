@@ -4,6 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ClassificationController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\SizeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +43,18 @@ Route::middleware('auth')->group(function () {
     
     // Categories CRUD routes
     Route::resource('categories', CategoryController::class);
+    
+    // Classifications CRUD routes
+    Route::resource('classifications', ClassificationController::class);
+    
+    // Colors CRUD routes
+    Route::resource('colors', ColorController::class);
+    
+    // Materials CRUD routes
+    Route::resource('materials', MaterialController::class);
+    
+    // Sizes CRUD routes
+    Route::resource('sizes', SizeController::class);
 });
 
 

@@ -17,14 +17,18 @@ class Item extends Model
         'description',
         'note',
         'prize',
-        'color',
         'type_id',
         'category_id',
+        'classification_id',
+        'color_id',
+        'material_id',
+        'size_id',
         'stock_items',
         'availability',
-        'material',
         'SKU',
-        'image'
+        'image',
+        'is_gift_card',
+        'gift_card_validity_months'
     ];
 
     protected $dates = ['deleted_at'];
@@ -46,14 +50,54 @@ class Item extends Model
     }
 
     /**
+     * Get the classification that the item belongs to
+     */
+    public function classification()
+    {
+        return $this->belongsTo(Classification::class);
+    }
+
+    /**
+     * Get the color that the item belongs to
+     */
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    /**
+     * Get the material that the item belongs to
+     */
+    public function material()
+    {
+        return $this->belongsTo(Material::class);
+    }
+
+    /**
+     * Get the size that the item belongs to
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
+    }
+
+    /**
+     * Get all photos for the item
+     */
+    public function photos()
+    {
+        return $this->hasMany(ItemPhoto::class)->orderBy('order');
+    }
+
+    /**
      * Get all items with optional filtering
      */
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category'])->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with(['type', 'category'])->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -61,7 +105,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category'])->findOrFail($id);
+        return self::with(['type', 'category', 'classification', 'color', 'photos'])->findOrFail($id);
     }
 
     /**
