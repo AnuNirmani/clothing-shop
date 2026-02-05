@@ -142,13 +142,29 @@
                                 <!-- Color -->
                                 <div>
                                     <label class="block font-semibold mb-2 text-gray-700">Color</label>
-                                    <select name="color_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <option value="">Select color</option>
-                                        @foreach($colors as $color)
-                                            <option value="{{ $color->id }}">{{ $color->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="relative">
+                                        <input type="hidden" name="color_id" id="colorIdInput">
+                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400">
+                                            <span id="selectedColorText" class="text-gray-500">Select color</span>
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                        <div id="colorDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                            <div class="px-4 py-2 text-gray-500 bg-gray-50 hover:bg-gray-100 cursor-pointer" data-color-id="" data-color-name="Select color">
+                                                Select color
+                                            </div>
+                                            @foreach($colors as $color)
+                                                <div class="px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3" 
+                                                     data-color-id="{{ $color->id }}" 
+                                                     data-color-name="{{ $color->name }}"
+                                                     data-color-hex="{{ $color->hex_code }}">
+                                                    <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
+                                                    <span>{{ $color->name }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Material -->
@@ -444,5 +460,45 @@
                 addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
+
+        // Color dropdown functionality
+        const colorSelectDisplay = document.getElementById('colorSelectDisplay');
+        const colorDropdown = document.getElementById('colorDropdown');
+        const colorIdInput = document.getElementById('colorIdInput');
+        const selectedColorText = document.getElementById('selectedColorText');
+
+        colorSelectDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            colorDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+            colorDropdown.classList.add('hidden');
+        });
+
+        colorDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const option = e.target.closest('[data-color-id]');
+            if (option) {
+                const colorId = option.getAttribute('data-color-id');
+                const colorName = option.getAttribute('data-color-name');
+                const colorHex = option.getAttribute('data-color-hex');
+                
+                colorIdInput.value = colorId;
+                
+                if (colorId && colorHex) {
+                    selectedColorText.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: ${colorHex}"></div>
+                            <span class="text-gray-900">${colorName}</span>
+                        </div>
+                    `;
+                } else {
+                    selectedColorText.innerHTML = '<span class="text-gray-500">Select color</span>';
+                }
+                
+                colorDropdown.classList.add('hidden');
+            }
+        });
     </script>
 </x-app-layout>
