@@ -74,6 +74,21 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
+
+                                            <a href="{{ route('items.edit', $item->id) }}"
+                                                   class="inline-flex items-center gap-1.5
+                                                          px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg
+                                                          border border-amber-200
+                                                          hover:bg-amber-200 hover:border-amber-500
+                                                          transition-all duration-200
+                                                          hover:shadow-md hover:-translate-y-0.5">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                    <span>Edit</span>
+                                                </a>
+                                                
                                                 <a href="{{ route('items.show', $item->id) }}"
                                                    class="inline-flex items-center gap-1.5
                                                           px-3 py-1.5 bg-green-50 text-green-700 rounded-lg
@@ -88,20 +103,6 @@
                                                               d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                     </svg>
                                                     <span>View</span>
-                                                </a>
-
-                                                <a href="{{ route('items.edit', $item->id) }}"
-                                                   class="inline-flex items-center gap-1.5
-                                                          px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg
-                                                          border border-amber-200
-                                                          hover:bg-amber-200 hover:border-amber-500
-                                                          transition-all duration-200
-                                                          hover:shadow-md hover:-translate-y-0.5">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                    </svg>
-                                                    <span>Edit</span>
                                                 </a>
 
                                                 <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?');">

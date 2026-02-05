@@ -139,6 +139,26 @@
                                         <p class="text-lg font-bold text-gray-800 break-words">{{ $item->material?->name ?? 'N/A' }}</p>
                                     </div>
 
+                                    <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-5 h-5 text-pink-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                            </svg>
+                                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Classification</p>
+                                        </div>
+                                        <p class="text-lg font-bold text-pink-600 break-words">{{ $item->classification?->name ?? 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                            </svg>
+                                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Size</p>
+                                        </div>
+                                        <p class="text-lg font-bold text-blue-600 break-words">{{ $item->size?->name ?? 'N/A' }}</p>
+                                    </div>
+
                                     <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-5 border-l-4 border-pink-400 shadow-sm hover:shadow-md transition-shadow duration-200">
                                         <div class="flex items-center mb-2">
                                             <svg class="w-5 h-5 text-pink-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
