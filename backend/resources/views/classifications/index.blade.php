@@ -108,8 +108,12 @@
                                         >
                                             <button
                                                 onclick="enableEdit({{ $classification->id }})"
-                                                class="bg-amber-50 text-amber-700 px-4 py-2 rounded-lg border border-amber-200 hover:bg-amber-100 transition"
-                                            >
+                                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg
+                                                        border border-amber-200
+                                                        hover:bg-amber-200 hover:text-amber-700 hover:border-amber-500
+                                                        transition-all duration-200 ease-in-out
+                                                        hover:shadow-md hover:-translate-y-0.5"
+                                                        >
                                                 Edit
                                             </button>
 
@@ -122,8 +126,12 @@
                                                 @method('DELETE')
                                                 <button
                                                     type="submit"
-                                                    class="bg-red-50 text-red-700 px-4 py-2 rounded-lg border border-red-200 hover:bg-red-100 transition"
-                                                >
+                                                    class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg
+                                                        border border-red-200
+                                                        hover:bg-red-200 hover:text-red-700 hover:border-red-500
+                                                        transition-all duration-200 ease-in-out
+                                                        hover:shadow-md hover:-translate-y-0.5"
+                                                         >
                                                     Delete
                                                 </button>
                                             </form>

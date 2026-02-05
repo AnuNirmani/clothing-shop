@@ -12,7 +12,7 @@ class ClassificationController extends Controller
      */
     public function index()
     {
-        $classifications = Classification::getAllClassifications();
+        $classifications = Classification::latest()->paginate(10);
         return view('classifications.index', compact('classifications'));
     }
 

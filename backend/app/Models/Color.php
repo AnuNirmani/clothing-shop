@@ -9,7 +9,7 @@ class Color extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'hex_code'];
 
     /**
      * Get all colors

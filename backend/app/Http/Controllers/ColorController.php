@@ -12,7 +12,7 @@ class ColorController extends Controller
      */
     public function index()
     {
-        $colors = Color::getAllColors();
+        $colors = Color::latest()->paginate(10);
         return view('colors.index', compact('colors'));
     }
 
@@ -31,6 +31,7 @@ class ColorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:colors,name',
+            'hex_code' => 'nullable|string|max:7',
         ]);
 
         Color::createColor($validated);
@@ -63,6 +64,7 @@ class ColorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:colors,name,' . $id,
+            'hex_code' => 'nullable|string|max:7',
         ]);
 
         Color::updateColor($id, $validated);
