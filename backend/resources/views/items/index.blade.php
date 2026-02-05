@@ -48,16 +48,16 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm text-pink-600 font-medium">
-                                                {{ $item->type?->name ?? 'N/A' }}
+                                                {{ $item->type?->name ?? 'NULL' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm text-blue-600 font-medium">
-                                                {{ $item->category?->name ?? 'N/A' }}
+                                                {{ $item->category?->name ?? 'NULL' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-gray-600">{{ $item->color?->name ?? 'N/A' }}</span>
+                                            <span class="text-sm text-gray-600">{{ $item->color?->name ?? 'NULL' }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm font-bold text-gray-900">Rs {{ number_format($item->prize, 2) }}</span>
@@ -143,6 +143,10 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="px-6 py-4 bg-gray-50 border-t">
+                        {{ $items->links() }}
                     </div>
                 </div>
             </div>

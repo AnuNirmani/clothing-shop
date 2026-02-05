@@ -14,7 +14,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::getAllItems();
+        $items = Item::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('items.index', compact('items'));
     }
 
@@ -55,14 +57,24 @@ class ItemController extends Controller
             'SKU' => 'required|string|unique:items,SKU|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'photos' => 'nullable|array|max:20',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_gift_card' => 'nullable|boolean',
+            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1'
         ]);
 
         // Use size_id from radio buttons, or fall back to dropdown if radio not selected
-        if (!$validated['size_id'] && isset($validated['size_id_dropdown'])) {
+        if (empty($validated['size_id']) && isset($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
         }
         unset($validated['size_id_dropdown']);
+
+        // Convert checkbox to boolean
+        $validated['is_gift_card'] = $request->has('is_gift_card') ? true : false;
+        
+        // Clear gift card validity if not a gift card
+        if (!$validated['is_gift_card']) {
+            $validated['gift_card_validity_months'] = null;
+        }
 
         $item = Item::createItem($validated);
 

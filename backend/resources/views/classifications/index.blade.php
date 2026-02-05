@@ -167,6 +167,10 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="px-6 py-4 bg-gray-50 border-t">
+                    {{ $classifications->links() }}
+                </div>
             </div>
         </div>
     </div>

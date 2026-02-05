@@ -276,6 +276,34 @@
                             </div>
                         </div>
 
+                        <!-- Action Buttons -->
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                            <div class="space-y-3">
+                                <button type="submit"
+                                    class="w-full px-6 py-4 bg-gradient-to-r from-pink-500 to-blue-500 
+                                           hover:from-pink-600 hover:to-blue-600 
+                                           text-white rounded-xl font-bold shadow-lg 
+                                           hover:scale-105 transition-all duration-200
+                                           flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Create Item
+                                </button>
+                                
+                                <a href="{{ route('items.index') }}"
+                                    class="w-full px-6 py-4 border-2 border-gray-300 rounded-xl text-gray-700 
+                                           hover:bg-white hover:border-gray-400 hover:scale-105 
+                                           transition-all duration-200 font-semibold
+                                           flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Cancel
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Right Column - Pricing & Stock -->
@@ -358,6 +386,32 @@
                                         ✗ Out of Stock
                                     </option>
                                 </select>
+                            </div>
+
+                            <!-- Gift Card Option -->
+                            <div class="mt-6 pt-6 border-t border-orange-100">
+                                <div class="flex items-center mb-4">
+                                    <input type="checkbox" id="is_gift_card" name="is_gift_card" value="1"
+                                        {{ old('is_gift_card') ? 'checked' : '' }}
+                                        onchange="toggleGiftCardValidity()"
+                                        class="w-5 h-5 text-pink-600 rounded border-orange-300 focus:ring-pink-500">
+                                    <label for="is_gift_card" class="ml-3 font-semibold text-gray-700 cursor-pointer flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                                        </svg>
+                                        This is a Gift Card
+                                    </label>
+                                </div>
+
+                                <div id="gift_card_validity_section" class="hidden">
+                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) *</label>
+                                    <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
+                                        value="{{ old('gift_card_validity_months') }}"
+                                        min="1"
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400 py-3"
+                                        placeholder="Enter number of months">
+                                    <p class="text-xs text-gray-500 mt-2">How many months will this gift card be valid?</p>
+                                </div>
                             </div>
                         </div>
 
@@ -557,6 +611,30 @@
                     radio.checked = false;
                 }
             });
+        });
+
+        // Gift card functionality
+        function toggleGiftCardValidity() {
+            const isGiftCard = document.getElementById('is_gift_card').checked;
+            const validitySection = document.getElementById('gift_card_validity_section');
+            const validityInput = document.getElementById('gift_card_validity_months');
+            
+            if (isGiftCard) {
+                validitySection.classList.remove('hidden');
+                validityInput.required = true;
+            } else {
+                validitySection.classList.add('hidden');
+                validityInput.required = false;
+                validityInput.value = '';
+            }
+        }
+
+        // Initialize gift card toggle on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const isGiftCardChecked = document.getElementById('is_gift_card').checked;
+            if (isGiftCardChecked) {
+                toggleGiftCardValidity();
+            }
         });
     </script>
 </x-app-layout>

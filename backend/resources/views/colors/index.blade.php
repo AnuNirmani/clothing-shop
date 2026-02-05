@@ -252,10 +252,10 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
 
+            <div class="px-6 py-4 bg-gray-50 border-t">
+                {{ $colors->links() }}
+            </div>
     <script>
         function selectColor(name, hex, element) {
             // Remove selected class from all color options

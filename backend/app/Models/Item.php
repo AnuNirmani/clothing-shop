@@ -26,7 +26,9 @@ class Item extends Model
         'stock_items',
         'availability',
         'SKU',
-        'image'
+        'image',
+        'is_gift_card',
+        'gift_card_validity_months'
     ];
 
     protected $dates = ['deleted_at'];
