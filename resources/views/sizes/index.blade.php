@@ -191,8 +191,33 @@
                     </table>
                 </div>
 
-                <div class="px-6 py-4 bg-gray-50 border-t">
-                    {{ $sizes->links() }}
+                <div class="px-6 py-4 bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-t border-pink-100">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-600">
+                            Showing <span class="font-semibold text-pink-600">{{ $sizes->firstItem() ?? 0 }}</span> to <span class="font-semibold text-pink-600">{{ $sizes->lastItem() ?? 0 }}</span> of <span class="font-semibold text-blue-600">{{ $sizes->total() }}</span> results
+                        </div>
+                        <div class="flex space-x-1">
+                            @if ($sizes->onFirstPage())
+                                <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Previous</span>
+                            @else
+                                <a href="{{ $sizes->previousPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">Previous</a>
+                            @endif
+
+                            @foreach ($sizes->getUrlRange(1, $sizes->lastPage()) as $page => $url)
+                                @if ($page == $sizes->currentPage())
+                                    <span class="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 border border-pink-500 rounded-lg shadow-md">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $url }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">{{ $page }}</a>
+                                @endif
+                            @endforeach
+
+                            @if ($sizes->hasMorePages())
+                                <a href="{{ $sizes->nextPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-blue-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-blue-300 transition-all duration-200">Next</a>
+                            @else
+                                <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Next</span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

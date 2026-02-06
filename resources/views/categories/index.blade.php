@@ -151,8 +151,33 @@
                     </table>
                 </div>
 
-            <div class="px-6 py-4 bg-gray-50 border-t">
-                {{ $categories->links() }}
+            <div class="px-6 py-4 bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-t border-pink-100">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-600">
+                        Showing <span class="font-semibold text-pink-600">{{ $categories->firstItem() ?? 0 }}</span> to <span class="font-semibold text-pink-600">{{ $categories->lastItem() ?? 0 }}</span> of <span class="font-semibold text-blue-600">{{ $categories->total() }}</span> results
+                    </div>
+                    <div class="flex space-x-1">
+                        @if ($categories->onFirstPage())
+                            <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Previous</span>
+                        @else
+                            <a href="{{ $categories->previousPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">Previous</a>
+                        @endif
+
+                        @foreach ($categories->getUrlRange(1, $categories->lastPage()) as $page => $url)
+                            @if ($page == $categories->currentPage())
+                                <span class="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 border border-pink-500 rounded-lg shadow-md">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">{{ $page }}</a>
+                            @endif
+                        @endforeach
+
+                        @if ($categories->hasMorePages())
+                            <a href="{{ $categories->nextPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-blue-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-blue-300 transition-all duration-200">Next</a>
+                        @else
+                            <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Next</span>
+                        @endif
+                    </div>
+                </div>
             </div>
     <script>
         function enableEdit(id) {
