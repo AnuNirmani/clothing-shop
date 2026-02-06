@@ -321,6 +321,34 @@
                             </div>
                         </div>
 
+                        <!-- Action Buttons -->
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                            <div class="space-y-3">
+                                <button type="submit"
+                                    class="w-full px-6 py-4 bg-gradient-to-r from-pink-500 to-blue-500 
+                                           hover:from-pink-600 hover:to-blue-600 
+                                           text-white rounded-xl font-bold shadow-lg 
+                                           hover:scale-105 transition-all duration-200
+                                           flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                    </svg>
+                                    Update Item
+                                </button>
+                                
+                                <a href="{{ route('items.index') }}"
+                                    class="w-full px-6 py-4 border-2 border-gray-300 rounded-xl text-gray-700 
+                                           hover:bg-white hover:border-gray-400 hover:scale-105 
+                                           transition-all duration-200 font-semibold
+                                           flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Cancel
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Right Column - Pricing & Stock -->
@@ -404,6 +432,90 @@
                                         ✗ Out of Stock
                                     </option>
                                 </select>
+                            </div>
+
+                            <!-- Gift Card Option -->
+                            <div class="mt-6 pt-6 border-t border-orange-100">
+                                <div class="flex items-center mb-4">
+                                    <input type="checkbox" id="is_gift_card" name="is_gift_card" value="1"
+                                        {{ old('is_gift_card', $item->is_gift_card) ? 'checked' : '' }}
+                                        onchange="toggleGiftCardValidity()"
+                                        class="w-5 h-5 text-pink-600 rounded border-orange-300 focus:ring-pink-500">
+                                    <label for="is_gift_card" class="ml-3 font-semibold text-gray-700 cursor-pointer flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                                        </svg>
+                                        This is a Gift Card
+                                    </label>
+                                </div>
+
+                                <div id="gift_card_validity_section" class="{{ old('is_gift_card', $item->is_gift_card) ? '' : 'hidden' }}">
+                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) *</label>
+                                    <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
+                                        value="{{ old('gift_card_validity_months', $item->gift_card_validity_months) }}"
+                                        min="1"
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400 py-3"
+                                        placeholder="Enter number of months">
+                                    <p class="text-xs text-gray-500 mt-2">How many months will this gift card be valid?</p>
+                                </div>
+                            </div>
+
+                            <!-- Offer Section -->
+                            <div class="mt-6 pt-6 border-t border-orange-100">
+                                <div class="flex items-center mb-4">
+                                    <input type="checkbox" id="is_on_offer" name="is_on_offer" value="1"
+                                        {{ old('is_on_offer', $item->is_on_offer) ? 'checked' : '' }}
+                                        onchange="toggleOfferFields()"
+                                        class="w-5 h-5 text-green-600 rounded border-orange-300 focus:ring-green-500">
+                                    <label for="is_on_offer" class="ml-3 font-semibold text-gray-700 cursor-pointer flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                        </svg>
+                                        Item is on Offer
+                                    </label>
+                                </div>
+
+                                <div id="offer_fields_section" class="{{ old('is_on_offer', $item->is_on_offer) ? '' : 'hidden' }} space-y-4">
+                                    <div>
+                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage *</label>
+                                        <div class="relative">
+                                            <input type="number" name="offer_percentage" id="offer_percentage"
+                                                value="{{ old('offer_percentage', $item->offer_percentage) }}"
+                                                min="0"
+                                                max="100"
+                                                step="0.01"
+                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3 pr-12"
+                                                placeholder="Enter discount percentage">
+                                            <span class="absolute right-3 top-3 text-gray-500 font-semibold">%</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Enter discount from 0 to 100</p>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block font-semibold mb-2 text-gray-700">Start Date *</label>
+                                            <input type="date" name="offer_start_date" id="offer_start_date"
+                                                value="{{ old('offer_start_date', $item->offer_start_date instanceof \Carbon\Carbon ? $item->offer_start_date->format('Y-m-d') : $item->offer_start_date) }}"
+                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
+                                        </div>
+                                        <div>
+                                            <label class="block font-semibold mb-2 text-gray-700">End Date *</label>
+                                            <input type="date" name="offer_end_date" id="offer_end_date"
+                                                value="{{ old('offer_end_date', $item->offer_end_date instanceof \Carbon\Carbon ? $item->offer_end_date->format('Y-m-d') : $item->offer_end_date) }}"
+                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
+                                        </div>
+                                    </div>
+
+                                    <div id="discounted_price_display" class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border-2 border-green-200">
+                                        <p class="text-sm font-semibold text-gray-600 mb-2">Price After Discount</p>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl font-bold text-green-600" id="discounted_price">Rs 0.00</span>
+                                            <span class="text-sm text-gray-500">
+                                                <span class="line-through" id="original_price_display">Rs 0.00</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -634,5 +746,79 @@
                 }
             });
         });
+
+        // Gift card functionality
+        function toggleGiftCardValidity() {
+            const isGiftCard = document.getElementById('is_gift_card').checked;
+            const validitySection = document.getElementById('gift_card_validity_section');
+            const validityInput = document.getElementById('gift_card_validity_months');
+            
+            if (isGiftCard) {
+                validitySection.classList.remove('hidden');
+                validityInput.required = true;
+            } else {
+                validitySection.classList.add('hidden');
+                validityInput.required = false;
+                validityInput.value = '';
+            }
+        }
+
+        // Offer functionality
+        function toggleOfferFields() {
+            const isOnOffer = document.getElementById('is_on_offer').checked;
+            const offerSection = document.getElementById('offer_fields_section');
+            const offerPercentage = document.getElementById('offer_percentage');
+            const offerStartDate = document.getElementById('offer_start_date');
+            const offerEndDate = document.getElementById('offer_end_date');
+            
+            if (isOnOffer) {
+                offerSection.classList.remove('hidden');
+                offerPercentage.required = true;
+                offerStartDate.required = true;
+                offerEndDate.required = true;
+                calculateDiscountedPrice();
+            } else {
+                offerSection.classList.add('hidden');
+                offerPercentage.required = false;
+                offerStartDate.required = false;
+                offerEndDate.required = false;
+                offerPercentage.value = '';
+                offerStartDate.value = '';
+                offerEndDate.value = '';
+            }
+        }
+
+        // Calculate discounted price
+        function calculateDiscountedPrice() {
+            const priceInput = document.getElementById('prize');
+            const offerPercentageInput = document.getElementById('offer_percentage');
+            const discountedPriceDisplay = document.getElementById('discounted_price');
+            const originalPriceDisplay = document.getElementById('original_price_display');
+            
+            const price = parseFloat(priceInput.value) || 0;
+            const offerPercentage = parseFloat(offerPercentageInput.value) || 0;
+            
+            const discount = (price * offerPercentage) / 100;
+            const discountedPrice = price - discount;
+            
+            discountedPriceDisplay.textContent = 'Rs ' + discountedPrice.toFixed(2);
+            originalPriceDisplay.textContent = 'Rs ' + price.toFixed(2);
+        }
+
+        // Initialize on page load
+        const priceInput = document.getElementById('prize');
+        const offerPercentageInput = document.getElementById('offer_percentage');
+        
+        if (priceInput) {
+            priceInput.addEventListener('input', calculateDiscountedPrice);
+        }
+        if (offerPercentageInput) {
+            offerPercentageInput.addEventListener('input', calculateDiscountedPrice);
+        }
+
+        // Initialize values on page load
+        if (document.getElementById('is_on_offer').checked) {
+            calculateDiscountedPrice();
+        }
     </script>
 </x-app-layout>
