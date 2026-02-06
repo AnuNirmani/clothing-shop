@@ -59,7 +59,11 @@ class ItemController extends Controller
             'photos' => 'nullable|array|max:20',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_gift_card' => 'nullable|boolean',
-            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1'
+            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
+            'is_on_offer' => 'nullable|boolean',
+            'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
+            'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
+            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date'
         ]);
 
         // Use size_id from radio buttons, or fall back to dropdown if radio not selected
@@ -74,6 +78,16 @@ class ItemController extends Controller
         // Clear gift card validity if not a gift card
         if (!$validated['is_gift_card']) {
             $validated['gift_card_validity_months'] = null;
+        }
+
+        // Handle offer fields
+        $validated['is_on_offer'] = $request->has('is_on_offer') ? true : false;
+        
+        // Clear offer fields if not on offer
+        if (!$validated['is_on_offer']) {
+            $validated['offer_percentage'] = null;
+            $validated['offer_start_date'] = null;
+            $validated['offer_end_date'] = null;
         }
 
         $item = Item::createItem($validated);
@@ -142,14 +156,38 @@ class ItemController extends Controller
             'photos' => 'nullable|array|max:20',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'delete_photos' => 'nullable|array',
-            'delete_photos.*' => 'exists:item_photos,id'
+            'delete_photos.*' => 'exists:item_photos,id',
+            'is_gift_card' => 'nullable|boolean',
+            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
+            'is_on_offer' => 'nullable|boolean',
+            'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
+            'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
+            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date'
         ]);
 
         // Use size_id from radio buttons, or fall back to dropdown if radio not selected
-        if (!$validated['size_id'] && isset($validated['size_id_dropdown'])) {
+        if (empty($validated['size_id']) && isset($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
         }
         unset($validated['size_id_dropdown']);
+
+        // Convert checkbox to boolean
+        $validated['is_gift_card'] = $request->has('is_gift_card') ? true : false;
+        
+        // Clear gift card validity if not a gift card
+        if (!$validated['is_gift_card']) {
+            $validated['gift_card_validity_months'] = null;
+        }
+
+        // Handle offer fields
+        $validated['is_on_offer'] = $request->has('is_on_offer') ? true : false;
+        
+        // Clear offer fields if not on offer
+        if (!$validated['is_on_offer']) {
+            $validated['offer_percentage'] = null;
+            $validated['offer_start_date'] = null;
+            $validated['offer_end_date'] = null;
+        }
 
         $item = Item::updateItem($id, $validated);
 

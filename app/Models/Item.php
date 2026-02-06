@@ -28,10 +28,14 @@ class Item extends Model
         'SKU',
         'image',
         'is_gift_card',
-        'gift_card_validity_months'
+        'gift_card_validity_months',
+        'is_on_offer',
+        'offer_percentage',
+        'offer_start_date',
+        'offer_end_date'
     ];
 
-    protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at', 'offer_start_date', 'offer_end_date'];
 
     /**
      * Get the type that the item belongs to

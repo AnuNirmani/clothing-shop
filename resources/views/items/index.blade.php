@@ -30,14 +30,14 @@
                         <table class="min-w-full divide-y divide-pink-100">
                             <thead class="bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Type</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Category</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Color</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-pink-700 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-pink-700 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">Color</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Price</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Stock</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-pink-700 uppercase tracking-wider">Availability</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-pink-50">
@@ -145,8 +145,33 @@
                         </table>
                     </div>
 
-                    <div class="px-6 py-4 bg-gray-50 border-t">
-                        {{ $items->links() }}
+                    <div class="px-6 py-4 bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-t border-pink-100">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                Showing <span class="font-semibold text-pink-600">{{ $items->firstItem() ?? 0 }}</span> to <span class="font-semibold text-pink-600">{{ $items->lastItem() ?? 0 }}</span> of <span class="font-semibold text-blue-600">{{ $items->total() }}</span> results
+                            </div>
+                            <div class="flex space-x-1">
+                                @if ($items->onFirstPage())
+                                    <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Previous</span>
+                                @else
+                                    <a href="{{ $items->previousPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">Previous</a>
+                                @endif
+
+                                @foreach ($items->getUrlRange(1, $items->lastPage()) as $page => $url)
+                                    @if ($page == $items->currentPage())
+                                        <span class="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 border border-pink-500 rounded-lg shadow-md">{{ $page }}</span>
+                                    @else
+                                        <a href="{{ $url }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+
+                                @if ($items->hasMorePages())
+                                    <a href="{{ $items->nextPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-blue-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-blue-300 transition-all duration-200">Next</a>
+                                @else
+                                    <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Next</span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
