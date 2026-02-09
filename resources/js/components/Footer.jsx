@@ -1,66 +1,141 @@
 import React from 'react';
 
 const Footer = () => {
-    return (
-        <footer className="bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-t-2 border-pink-100 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                    <div>
-                        <div className="flex items-center space-x-3 mb-4">
-                            <img src="/images/Logo.png" alt="Logo" className="h-10 w-10" />
-                            <span className="text-xl font-bold bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
-                                Clothing Shop
-                            </span>
-                        </div>
-                        <p className="text-gray-600">Your one-stop fashion destination</p>
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-4">Quick Links</h4>
-                        <ul className="space-y-2">
-                            <li><a href="#home" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Home</a></li>
-                            <li><a href="#shop" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Shop</a></li>
-                            <li><a href="#categories" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Categories</a></li>
-                            <li><a href="#about" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">About</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-4">Customer Service</h4>
-                        <ul className="space-y-2">
-                            <li><a href="#" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Contact Us</a></li>
-                            <li><a href="#" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Shipping Info</a></li>
-                            <li><a href="#" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">Returns</a></li>
-                            <li><a href="#" className="text-gray-600 hover:text-pink-500 transition-colors duration-200">FAQ</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-4">Follow Us</h4>
-                        <div className="flex space-x-4">
-                            <a href="#" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white p-3 rounded-full hover:from-pink-500 hover:to-blue-500 transition-all duration-200 hover:scale-110 shadow-md">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white p-3 rounded-full hover:from-pink-500 hover:to-blue-500 transition-all duration-200 hover:scale-110 shadow-md">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white p-3 rounded-full hover:from-pink-500 hover:to-blue-500 transition-all duration-200 hover:scale-110 shadow-md">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div className="border-t border-pink-200 pt-8 text-center">
-                    <p className="text-gray-600">
-                        &copy; 2024 Clothing Shop. All rights reserved.
-                    </p>
-                </div>
-            </div>
-        </footer>
-    );
+  return (
+    <footer className="w-full bg-gradient-to-br from-pink-50 via-white to-blue-50 text-gray-800 border-t border-pink-100">
+
+      {/* Newsletter Section */}
+      <div className="w-full bg-gradient-to-r from-pink-100 via-white to-blue-100 px-4 sm:px-6 lg:px-12 py-16">
+        <div className="max-w-5xl mx-auto text-center">
+          <h3 className="text-lg font-semibold tracking-widest mb-3">
+            SUBSCRIBE TO OUR NEWSLETTER
+          </h3>
+          <p className="text-gray-600 mb-8">
+            Stay up to date on the latest product launches and exclusive offers.
+          </p>
+
+          {/* Input + Button */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <input
+              type="email"
+              placeholder="Enter your Email Address"
+              className="w-full sm:w-[420px] bg-transparent border-b border-gray-300 py-3 text-gray-700 focus:outline-none focus:border-pink-400"
+            />
+            <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-10 py-3 font-semibold tracking-widest hover:from-pink-500 hover:to-blue-500 transition">
+              SUBSCRIBE
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div className="w-full px-4 sm:px-6 lg:px-12 py-12">
+      </div>
+
+      {/* Main Footer */}
+<div className="w-full px-4 sm:px-6 lg:px-12 pb-12">
+  {/* ✅ Center container so columns don't spread to screen edges */}
+  <div className="max-w-6xl mx-auto">
+    {/* ✅ Tighter + consistent grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 lg:gap-10">
+      <div className="md:col-span-2">
+        <h3 className="text-3xl font-bold mb-4">KANDY</h3>
+        <p className="text-gray-600 mb-4">
+          Welcome to www.kandyselection.lk. Reserve your dress now before it's too late.
+        </p>
+        <p className="text-gray-600">
+          Phone: +94 70 778 8688<br />
+          Email: online@kandyselection.lk
+        </p>
+
+        {/* Social Icons */}
+        <div className="flex items-center gap-3 mt-5">
+          <a
+            href="#"
+            aria-label="Facebook"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-pink-200 bg-white text-pink-500 transition hover:bg-gradient-to-r hover:from-pink-400 hover:to-blue-400 hover:text-white"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M13 9h3V6h-3c-2.76 0-5 2.24-5 5v2H6v3h2v6h3v-6h3l1-3h-4v-2c0-.55.45-1 1-1z" />
+            </svg>
+          </a>
+          <a
+            href="#"
+            aria-label="Instagram"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-pink-200 bg-white text-pink-500 transition hover:bg-gradient-to-r hover:from-pink-400 hover:to-blue-400 hover:text-white"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.5A4.5 4.5 0 1 1 7.5 13 4.5 4.5 0 0 1 12 8.5zm0 2A2.5 2.5 0 1 0 14.5 13 2.5 2.5 0 0 0 12 10.5zm5-2.75a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" />
+            </svg>
+          </a>
+          <a
+            href="#"
+            aria-label="WhatsApp"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-pink-200 bg-white text-pink-500 transition hover:bg-gradient-to-r hover:from-pink-400 hover:to-blue-400 hover:text-white"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+              <path d="M16 3c7.2 0 13 5.8 13 13s-5.8 13-13 13c-2.2 0-4.2-.5-6-1.5L3 29l1.5-6A12.9 12.9 0 0 1 3 16C3 8.8 8.8 3 16 3zm0 2.6A10.4 10.4 0 0 0 6.1 20.3l.4.7-.9 3.7 3.7-1 .7.4A10.4 10.4 0 1 0 16 5.6zm5.7 14.1c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.6.2-.2.2-.7.7-.8.9-.2.2-.3.2-.6.1-1.5-.6-2.7-1.5-3.7-2.8-.3-.3-.1-.5.1-.7l.4-.4c.1-.1.1-.3.2-.4.1-.2 0-.3 0-.5-.1-.2-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.2.2 2 3.1 5 4.3.7.3 1.2.4 1.7.5.7.1 1.3.1 1.8-.1.6-.2 1.3-.8 1.5-1.5.2-.7.2-1.3.1-1.4 0-.1-.2-.2-.4-.3z" />
+            </svg>
+          </a>
+          <a
+            href="#"
+            aria-label="TikTok"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-pink-200 bg-white text-pink-500 transition hover:bg-gradient-to-r hover:from-pink-400 hover:to-blue-400 hover:text-white"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M16.5 3c.4 2.2 1.9 3.7 4.1 4.1V10c-1.6 0-3-.5-4.1-1.4v5.6a5.2 5.2 0 1 1-4.6-5.2v3a2.2 2.2 0 1 0 1.6 2.1V3h3z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="font-bold mb-4">IMPORTANT LINKS</h4>
+        <ul className="space-y-3 text-gray-600">
+          <li><a href="#" className="hover:text-pink-400">Returns & Exchange</a></li>
+          <li><a href="#" className="hover:text-pink-400">Privacy Policy</a></li>
+          <li><a href="#" className="hover:text-pink-400">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 className="font-bold mb-4">QUICK CATEGORIES</h4>
+        <ul className="space-y-3 text-gray-600">
+          <li><a href="#" className="hover:text-pink-400">New Arrivals</a></li>
+          <li><a href="#" className="hover:text-pink-400">Office Wear</a></li>
+          <li><a href="#" className="hover:text-pink-400">Party Wear</a></li>
+          <li><a href="#" className="hover:text-pink-400">Jewellery</a></li>
+        </ul>
+      </div>
+
+      {/* ✅ Keep ACCOUNT and HELP as their own columns (no nested grid) */}
+      <div>
+        <h4 className="font-bold mb-4">ACCOUNT</h4>
+        <ul className="space-y-3 text-gray-600">
+          <li><a href="#" className="hover:text-pink-400">My Account</a></li>
+          <li><a href="#" className="hover:text-pink-400">Order History</a></li>
+        </ul>
+      </div>
+    </div>
+
+    {/* Bottom */}
+    <div className="mt-12 pt-8 border-t border-pink-200 text-center text-gray-500 text-sm">
+      <p>© kandyselection.lk | Website by Aurora 365 Pvt Ltd</p>
+      <div className="flex justify-center flex-wrap gap-4 mt-4">
+        <span className="text-green-400">CASH ON DELIVERY</span>
+        <span className="text-blue-400">BANK DEPOSIT</span>
+        <span>VISA</span>
+        <span>Mastercard</span>
+        <span>KOKO</span>
+        <span>Payzy</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </footer>
+  );
 };
 
 export default Footer;
