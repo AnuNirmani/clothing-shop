@@ -185,8 +185,9 @@
                             
                             @if($item->image)
                                 <div class="relative group">
-                                    <img id="main-image" src="{{ asset('storage/' . $item->image) }}" 
+                                    <img id="main-image" src="{{ Storage::url($item->image) }}?v={{ $item->updated_at?->timestamp ?? time() }}" 
                                          alt="{{ $item->name }}"
+                                         onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
                                          class="w-full h-96 object-cover rounded-xl border-4 border-purple-200 shadow-lg group-hover:shadow-2xl transition-all duration-300">
                                 </div>
                             @else
@@ -211,9 +212,10 @@
                                 
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                     @foreach($item->photos as $photo)
-                                        <div class="relative group cursor-pointer" onclick="changeMainImage('{{ asset('storage/' . $photo->photo_path) }}')">
-                                            <img src="{{ asset('storage/' . $photo->photo_path) }}" 
+                                        <div class="relative group cursor-pointer" onclick="changeMainImage('{{ Storage::url($photo->photo_path) }}?v={{ $item->updated_at?->timestamp ?? time() }}')">
+                                            <img src="{{ Storage::url($photo->photo_path) }}?v={{ $item->updated_at?->timestamp ?? time() }}" 
                                                  alt="Product photo"
+                                                 onerror="this.classList.add('opacity-50')"
                                                  class="w-full h-32 object-cover rounded-lg border-2 border-purple-200 hover:border-purple-400 transition-all duration-200 hover:shadow-lg hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-200 flex items-center justify-center">
                                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

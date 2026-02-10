@@ -257,11 +257,11 @@
                                             <div class="flex text-sm text-gray-600">
                                                 <label for="image" class="relative cursor-pointer rounded-md font-medium text-purple-600 hover:text-purple-500">
                                                     <span>Upload a file</span>
-                                                    <input id="image" name="image" type="file" accept="image/*" class="sr-only" onchange="previewMainImage(event)">
+                                                    <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" class="sr-only" onchange="previewMainImage(event)">
                                                 </label>
                                                 <p class="pl-1">or drag and drop</p>
                                             </div>
-                                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                            <p class="text-xs text-gray-500">PNG, JPG, JPEG, WEBP up to 2MB</p>
                                         </div>
                                     </label>
                                 </div>
@@ -609,7 +609,7 @@
             photoDiv.className = 'flex items-start gap-3 p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-lg border border-purple-200';
             photoDiv.innerHTML = `
                 <div class="flex-1">
-                    <input type="file" name="photos[]" accept="image/*" 
+                    <input type="file" name="photos[]" accept="image/png,image/jpeg,image/jpg,image/webp" 
                         onchange="previewAdditionalPhoto(event, '${photoId}')"
                         class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
                     <div id="${photoId}" class="hidden mt-2">
