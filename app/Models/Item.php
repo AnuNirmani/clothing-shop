@@ -19,10 +19,9 @@ class Item extends Model
         'prize',
         'type_id',
         'category_id',
-        'classification_id',
-        'color_id',
         'material_id',
         'size_id',
+        'size_label',
         'stock_items',
         'availability',
         'SKU',
@@ -54,19 +53,19 @@ class Item extends Model
     }
 
     /**
-     * Get the classification that the item belongs to
+     * Get the classifications that the item belongs to
      */
-    public function classification()
+    public function classifications()
     {
-        return $this->belongsTo(Classification::class);
+        return $this->belongsToMany(Classification::class, 'classification_item');
     }
 
     /**
-     * Get the color that the item belongs to
+     * Get the colors that the item belongs to
      */
-    public function color()
+    public function colors()
     {
-        return $this->belongsTo(Color::class);
+        return $this->belongsToMany(Color::class, 'color_item');
     }
 
     /**
@@ -94,14 +93,30 @@ class Item extends Model
     }
 
     /**
+     * Get the classification that the item belongs to
+     */
+    public function classification()
+    {
+        return $this->belongsTo(\App\Models\Classification::class);
+    }
+
+    /**
+     * Get the color that the item belongs to
+     */
+    public function color()
+    {
+        return $this->belongsTo(\App\Models\Color::class);
+    }
+
+    /**
      * Get all items with optional filtering
      */
     public static function getAllItems($includeTrashed = false)
     {
         if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
+            return self::withTrashed()->with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
         }
-        return self::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
+        return self::with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -109,7 +124,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'classification', 'color', 'photos'])->findOrFail($id);
+        return self::with(['type', 'category', 'classifications', 'colors', 'photos'])->findOrFail($id);
     }
 
     /**
@@ -122,7 +137,16 @@ class Item extends Model
             $data['image'] = $data['image']->store('items', 'public');
         }
 
-        return self::create($data);
+        $item = self::create($data);
+
+        if (isset($data['classifications'])) {
+            $item->classifications()->sync($data['classifications']);
+        }
+        if (isset($data['colors'])) {
+            $item->colors()->sync($data['colors']);
+        }
+
+        return $item;
     }
 
     /**
@@ -142,6 +166,14 @@ class Item extends Model
         }
 
         $item->update($data);
+
+        if (isset($data['classifications'])) {
+            $item->classifications()->sync($data['classifications']);
+        }
+        if (isset($data['colors'])) {
+            $item->colors()->sync($data['colors']);
+        }
+
         return $item;
     }
 
