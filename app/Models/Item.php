@@ -21,6 +21,7 @@ class Item extends Model
         'category_id',
         'material_id',
         'size_id',
+        'size_label',
         'stock_items',
         'availability',
         'SKU',

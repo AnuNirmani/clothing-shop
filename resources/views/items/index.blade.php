@@ -27,7 +27,7 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border-2 border-pink-100">
                 <div class="p-6 text-gray-900">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-pink-100">
+                        <table class="min-w-full divide-y divide-pink-100" aria-label="Items list">
                             <thead class="bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50">
                                 <tr>
                                     <th class="px-6 py-4 text-center text-xs font-bold text-pink-700 uppercase tracking-wider">Name</th>
@@ -58,7 +58,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center gap-2">
-                                                <div class="grid grid-cols-4 gap-1">
+                                                <div class="grid grid-cols-4 gap-1" aria-label="Color swatches">
                                                     @forelse($item->colors as $color)
                                                         <span class="w-5 h-5 rounded-full border border-gray-300 shadow-sm" title="{{ $color->name }}" style="background-color: {{ $color->hex_code }}"></span>
                                                     @empty
@@ -66,7 +66,7 @@
                                                     @endforelse
                                                 </div>
                                                 @if($item->colors->count() > 0)
-                                                    <span class="text-xs text-gray-500">({{ $item->colors->count() }})</span>
+                                                    <span class="text-xs text-gray-500" title="Total colors: {{ $item->colors->count() }}">({{ $item->colors->count() }})</span>
                                                 @endif
                                             </div>
                                         </td>

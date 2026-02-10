@@ -129,7 +129,7 @@
                                 <label class="block font-semibold mb-2 text-gray-700">Classification</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
                                     @if($classificationList->count() > 0)
-                                        <div class="flex flex-wrap gap-2">
+                                        <div class="flex flex-wrap gap-2" aria-label="Selected classifications">
                                             @foreach($classificationList as $classification)
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-blue-700">
                                                     {{ $classification->name }}
@@ -149,7 +149,7 @@
                                 <label class="block font-semibold mb-2 text-gray-700">Color</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
                                     @if($colorList->count() > 0)
-                                        <div class="flex flex-wrap gap-2">
+                                        <div class="flex flex-wrap gap-2" aria-label="Selected colors">
                                             @foreach($colorList as $color)
                                                 <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-gray-700" title="{{ $color->name }}">
                                                     <span class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></span>
@@ -179,18 +179,32 @@
                             <!-- Size -->
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Size</label>
-                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
-                                    @if($item->size)
-                                        @if(in_array(strtoupper($item->size->name), ['S', 'M', 'L', 'XL', 'XXL']))
-                                            <div class="inline-flex items-center px-6 py-2 rounded-lg border-2 border-pink-500 bg-gradient-to-r from-pink-50 to-blue-50 text-pink-700 font-bold">
-                                                {{ $item->size->name }}
-                                            </div>
+                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 space-y-3" aria-label="Size details">
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Radio Size</p>
+                                        @if(!empty($item->size_label))
+                                            <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-pink-500 bg-gradient-to-r from-pink-50 to-blue-50 text-pink-700 font-bold">
+                                                {{ strtoupper($item->size_label) }}
+                                            </span>
+@else
+                                            <span class="text-gray-500">N/A</span>
+@endif
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Dropdown Size</p>
+                                        @if($item->size)
+                                            @if(in_array(strtoupper($item->size->name), ['S', 'M', 'L', 'XL', 'XXL']))
+                                                <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-blue-400 bg-blue-50 text-blue-700 font-semibold">
+                                                    {{ $item->size->name }}
+                                                </span>
+                                            @else
+                                                <span class="text-gray-800 font-semibold">{{ $item->size->name }}</span>
+                                            @endif
                                         @else
-                                            <span class="text-gray-800 font-semibold">{{ $item->size->name }}</span>
+                                            <span class="text-gray-500">N/A</span>
                                         @endif
-                                    @else
-                                        <span class="text-gray-500">N/A</span>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

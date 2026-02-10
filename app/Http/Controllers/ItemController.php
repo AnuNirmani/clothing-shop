@@ -65,7 +65,8 @@ class ItemController extends Controller
             'is_on_offer' => 'nullable|boolean',
             'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
             'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
-            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date'
+            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+            'size_label' => 'nullable|in:S,M,L,XL,XXL',
         ]);
 
         // Use size_id from radio buttons, or fall back to dropdown if radio not selected
@@ -166,7 +167,8 @@ class ItemController extends Controller
             'is_on_offer' => 'nullable|boolean',
             'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
             'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
-            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date'
+            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+            'size_label' => 'nullable|in:S,M,L,XL,XXL',
         ]);
 
         // Use size_id from radio buttons, or fall back to dropdown if radio not selected

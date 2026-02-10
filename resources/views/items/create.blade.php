@@ -190,23 +190,27 @@
                                 <!-- Size -->
                                 <div class="md:col-span-2">
                                     <label class="block font-semibold mb-3 text-gray-700">Size</label>
-                                    
+
+                                    @php
+                                        $fixedSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+                                        $selectedSizeLabel = old('size_label', '');
+                                    @endphp
+
                                     <!-- Radio Buttons for Common Sizes -->
-                                    <div class="flex flex-wrap gap-3 mb-4">
-                                        @foreach($sizes as $size)
-                                            @if(in_array(strtoupper($size->name), ['S', 'M', 'L', 'XL', 'XXL']))
-                                                <label class="inline-flex items-center cursor-pointer">
-                                                    <input type="radio" name="size_id" value="{{ $size->id }}" 
-                                                        class="sr-only peer" 
-                                                        {{ old('size_id') == $size->id ? 'checked' : '' }}>
-                                                    <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
-                                                        {{ $size->name }}
-                                                    </div>
-                                                </label>
-                                            @endif
+                                    <div class="flex flex-wrap gap-3 mb-2" aria-label="Radio size selection">
+                                        @foreach($fixedSizes as $sizeLabel)
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="radio" name="size_label" value="{{ $sizeLabel }}"
+                                                    class="sr-only peer"
+                                                    {{ $selectedSizeLabel === $sizeLabel ? 'checked' : '' }}>
+                                                <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
+                                                    {{ $sizeLabel }}
+                                                </div>
+                                            </label>
                                         @endforeach
                                     </div>
-                                    
+                                    <p class="text-xs text-gray-500">Radio selection is saved as size label.</p>
+
                                     <!-- Dropdown for All Sizes -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
@@ -711,29 +715,7 @@
         }
 
         // Size radio buttons and dropdown sync
-        const sizeRadios = document.querySelectorAll('input[name="size_id"]');
-        const sizeDropdown = document.getElementById('sizeDropdown');
-        
-        // When radio button is clicked, update dropdown
-        sizeRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    sizeDropdown.value = this.value;
-                }
-            });
-        });
-        
-        // When dropdown is changed, update radio button
-        sizeDropdown.addEventListener('change', function() {
-            const selectedValue = this.value;
-            sizeRadios.forEach(radio => {
-                if (radio.value === selectedValue) {
-                    radio.checked = true;
-                } else {
-                    radio.checked = false;
-                }
-            });
-        });
+        // (removed to keep radio + dropdown independent)
 
         // Gift card functionality
         function toggleGiftCardValidity() {
