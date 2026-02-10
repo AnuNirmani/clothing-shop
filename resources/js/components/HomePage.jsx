@@ -1,23 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 
 const HomePage = () => {
-    const categories = [
-        { name: 'Men', icon: '👔' },
-        { name: 'Women', icon: '👗' },
-        { name: 'Kids', icon: '👶' },
-        { name: 'Accessories', icon: '👜' }
-    ];
 
-    const featuredProducts = [
-        { id: 1, name: 'Classic T-Shirt', category: 'Men' },
-        { id: 2, name: 'Summer Dress', category: 'Women' },
-        { id: 3, name: 'Denim Jeans', category: 'Men' },
-        { id: 4, name: 'Floral Blouse', category: 'Women' },
-        { id: 5, name: 'Kids T-Shirt', category: 'Kids' },
-        { id: 6, name: 'Leather Bag', category: 'Accessories' }
-    ];
+
+    const [latestItem, setLatestItem] = useState(null);
+    const [latestWomensItem, setLatestWomensItem] = useState(null);
+    const [latestMensItem, setLatestMensItem] = useState(null);
+    const [latestFourItems, setLatestFourItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchLatestItems();
+    }, []);
+
+    const fetchLatestItems = async () => {
+        try {
+            const [latestRes, womensRes, mensRes, fourRes] = await Promise.all([
+                fetch('/api/items/latest'),
+                fetch('/api/items/latest-womens'),
+                fetch('/api/items/latest-mens'),
+                fetch('/api/items/latest-four')
+            ]);
+
+            const latestData = await latestRes.json();
+            const womensData = await womensRes.json();
+            const mensData = await mensRes.json();
+            const fourData = await fourRes.json();
+
+            if (latestData.success) setLatestItem(latestData.data);
+            if (womensData.success) setLatestWomensItem(womensData.data);
+            if (mensData.success) setLatestMensItem(mensData.data);
+            if (fourData.success) setLatestFourItems(fourData.data);
+        } catch (error) {
+            console.error('Error fetching latest items:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
@@ -159,16 +182,16 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Collection Gallery Section */}
+           {/* Collection Gallery Section */}
             <section id="collection" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50 via-white to-blue-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="max-w-8xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Large Left Image - Shop the Latest */}
                         <div className="relative overflow-hidden cursor-pointer group">
                             <img
-                                src="/images/shop-latest.jpg"
-                                alt="Shop the Latest"
-                                className="w-full h-[700px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                src={latestItem?.image || "/images/shop-latest.jpg"}
+                                alt={latestItem?.name || "Shop the Latest"}
+                                className="w-full h-[850px] object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
                             
@@ -189,13 +212,13 @@ const HomePage = () => {
                         </div>
 
                         {/* Right Column - Two Images Stacked */}
-                        <div className="grid grid-rows-2 gap-6">
+                        <div className="grid grid-rows-2 gap-8">
                             {/* Women's Collection */}
                             <div className="relative overflow-hidden cursor-pointer group">
                                 <img
-                                    src="/images/collection-women.jpg"
-                                    alt="Women's Collection"
-                                    className="w-full h-[340px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                    src={latestWomensItem?.image || "/images/collection-women.jpg"}
+                                    alt={latestWomensItem?.name || "Women's Collection"}
+                                    className="w-full h-[410px] object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
                                 
@@ -218,9 +241,9 @@ const HomePage = () => {
                             {/* Men's Collection */}
                             <div className="relative overflow-hidden cursor-pointer group">
                                 <img
-                                    src="/images/collection-men.jpg"
-                                    alt="Men's Collections"
-                                    className="w-full h-[340px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                    src={latestMensItem?.image || "/images/collection-men.jpg"}
+                                    alt={latestMensItem?.name || "Men's Collections"}
+                                    className="w-full h-[410px] object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
                                 
@@ -255,81 +278,25 @@ const HomePage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {/* Product 1 */}
-                        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                            <div className="relative group cursor-pointer">
-                                <img
-                                    src="/images/product-1.jpg"
-                                    alt="Emerald Casual Slim FS- ASTRAL AURA"
-                                    className="w-full h-[500px] object-cover"
-                                />
-                                {/* Quick Add Button - Appears on Hover */}
-                                <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
-                                    + Quick add
-                                </button>
+                        {latestFourItems.map((product) => (
+                            <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+                                <div className="relative group cursor-pointer">
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        className="w-full h-[500px] object-cover"
+                                    />
+                                    {/* Quick Add Button - Appears on Hover */}
+                                    <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
+                                        + Quick add
+                                    </button>
+                                </div>
+                                <div className="p-5">
+                                    <h3 className="text-gray-800 font-medium mb-2">{product.name}</h3>
+                                    <p className="text-gray-700 font-semibold">Rs {product.prize?.toLocaleString()}.00</p>
+                                </div>
                             </div>
-                            <div className="p-5">
-                                <h3 className="text-gray-800 font-medium mb-2">Emerald Casual Slim FS- ASTRAL AURA</h3>
-                                <p className="text-gray-700 font-semibold">Rs 4,995.00</p>
-                            </div>
-                        </div>
-
-                        {/* Product 2 */}
-                        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                            <div className="relative group cursor-pointer">
-                                <img
-                                    src="/images/product-2.jpg"
-                                    alt="Emerald Casual Slim Fs - BLUE FAIENCE"
-                                    className="w-full h-[500px] object-cover"
-                                />
-                                {/* Quick Add Button - Appears on Hover */}
-                                <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
-                                    + Quick add
-                                </button>
-                            </div>
-                            <div className="p-5">
-                                <h3 className="text-gray-800 font-medium mb-2">Emerald Casual Slim Fs - BLUE FAIENCE</h3>
-                                <p className="text-gray-700 font-semibold">Rs 4,795.00</p>
-                            </div>
-                        </div>
-
-                        {/* Product 3 */}
-                        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                            <div className="relative group cursor-pointer">
-                                <img
-                                    src="/images/product-3.jpg"
-                                    alt="Emerald Casual Slim Fs -DARK DENIM"
-                                    className="w-full h-[500px] object-cover"
-                                />
-                                {/* Quick Add Button - Appears on Hover */}
-                                <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
-                                    + Quick add
-                                </button>
-                            </div>
-                            <div className="p-5">
-                                <h3 className="text-gray-800 font-medium mb-2">Emerald Casual Slim Fs -DARK DENIM</h3>
-                                <p className="text-gray-700 font-semibold">Rs 4,795.00</p>
-                            </div>
-                        </div>
-
-                        {/* Product 4 */}
-                        <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                            <div className="relative group cursor-pointer">
-                                <img
-                                    src="/images/product-4.jpg"
-                                    alt="Emerald Casual Slim Fs- ASTRAL AURA"
-                                    className="w-full h-[500px] object-cover"
-                                />
-                                {/* Quick Add Button - Appears on Hover */}
-                                <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
-                                    + Quick add
-                                </button>
-                            </div>
-                            <div className="p-5">
-                                <h3 className="text-gray-800 font-medium mb-2">Emerald Casual Slim Fs- ASTRAL AURA</h3>
-                                <p className="text-gray-700 font-semibold">Rs 4,795.00</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
                     {/* View All Button */}
@@ -341,54 +308,173 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Featured Products */}
-            <section id="shop" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50">
-                <div className="max-w-7xl mx-auto">
+                       {/* Featured Categories */}
+            <section id="shop" className="py-16 px-6 sm:px-10 lg:px-16 bg-gray-50">
+                <div className="max-w-[1600px] mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-blue-500 to-pink-600 bg-clip-text text-transparent mb-4">
-                            Featured Products
+                        <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                            Shop by Category
                         </h2>
-                        <p className="text-gray-600 text-lg">Check out our most popular items</p>
+                        <p className="text-gray-600 text-lg">Explore our collection</p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {featuredProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-pink-100 hover:border-pink-300 group"
-                            >
-                                <div className="bg-gradient-to-br from-pink-100 to-blue-100 h-64 flex items-center justify-center group-hover:from-pink-200 group-hover:to-blue-200 transition-all duration-300">
-                                    <img
-                                        src="/images/Logo.png"
-                                        alt={product.name}
-                                        className="w-40 h-40 object-contain group-hover:scale-110 transition-transform duration-300"
-                                    />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {/* Women T-Shirts */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/women-tshirts">
+                                <img
+                                    src="/images/category-women-tshirts.jpg"
+                                    alt="Women T-Shirts"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Women T-Shirts →
+                                    </span>
                                 </div>
-                                <div className="p-6">
-                                    <div className="mb-2">
-                                        <span className="px-3 py-1 bg-gradient-to-r from-pink-100 to-blue-100 text-pink-600 text-xs font-semibold rounded-full">
-                                            {product.category}
-                                        </span>
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-pink-500 transition-colors duration-300">
-                                        {product.name}
-                                    </h3>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
-                                            {product.price}
-                                        </span>
-                                        <button className="bg-gradient-to-r from-pink-400 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 hover:scale-105">
-                                            View
-                                        </button>
-                                    </div>
+                            </a>
+                        </div>
+
+                        {/* Crop Tops */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/crop-tops">
+                                <img
+                                    src="/images/category-crop-tops.jpg"
+                                    alt="Crop Tops"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Crop Tops →
+                                    </span>
                                 </div>
-                            </div>
-                        ))}
+                            </a>
+                        </div>
+
+                        {/* Dresses */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/dresses">
+                                <img
+                                    src="/images/category-dresses.jpg"
+                                    alt="Dresses"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Dresses →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Blouses */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/blouses">
+                                <img
+                                    src="/images/category-blouses.jpg"
+                                    alt="Blouses"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Blouses →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Men's Casual Shirts */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/mens-casual-shirts">
+                                <img
+                                    src="/images/category-mens-casual-shirts.jpg"
+                                    alt="Men's Casual Shirts"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Men's Casual Shirts →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Men's T-Shirts */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/mens-tshirts">
+                                <img
+                                    src="/images/category-mens-tshirts.jpg"
+                                    alt="Men's T-Shirts"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Men's T-Shirts →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Men's Shorts */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/mens-shorts">
+                                <img
+                                    src="/images/category-mens-shorts.jpg"
+                                    alt="Men's Shorts"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Men's Shorts →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        {/* Men's Pants */}
+                        <div className="relative group cursor-pointer overflow-hidden">
+                            <a href="/category/mens-pants">
+                                <img
+                                    src="/images/category-mens-pants.jpg"
+                                    alt="Men's Pants"
+                                    className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+                                
+                                {/* Category Label */}
+                                <div className="absolute bottom-4 left-4">
+                                    <span className="bg-black/80 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                                        Men's Pants →
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
 
                     <div className="text-center mt-12">
-                        <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-200 hover:scale-105">
-                            View All Products
+                        <button className="bg-black text-white font-semibold py-3 px-10 rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                            View All Categories
                         </button>
                     </div>
                 </div>
