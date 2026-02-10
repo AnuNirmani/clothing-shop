@@ -102,6 +102,11 @@
                             Selections
                         </h3>
                         
+                        @php
+                            $classificationList = $item->classifications ?? collect();
+                            $colorList = $item->colors ?? collect();
+                        @endphp
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Category -->
                             <div>
@@ -122,8 +127,20 @@
                             <!-- Classification -->
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Classification</label>
-                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 text-gray-800 font-semibold">
-                                    {{ $item->classification?->name ?? 'N/A' }}
+                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
+                                    @if($classificationList->count() > 0)
+                                        <div class="flex flex-wrap gap-2" aria-label="Selected classifications">
+                                            @foreach($classificationList as $classification)
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-blue-700">
+                                                    {{ $classification->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @elseif($item->classification)
+                                        <span class="text-gray-800 font-semibold">{{ $item->classification->name }}</span>
+                                    @else
+                                        <span class="text-gray-500">N/A</span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -131,7 +148,16 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Color</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
-                                    @if($item->color)
+                                    @if($colorList->count() > 0)
+                                        <div class="flex flex-wrap gap-2" aria-label="Selected colors">
+                                            @foreach($colorList as $color)
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-gray-700" title="{{ $color->name }}">
+                                                    <span class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></span>
+                                                    {{ $color->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @elseif($item->color)
                                         <div class="flex items-center gap-3">
                                             <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: {{ $item->color->hex_code ?? '#CCCCCC' }}"></div>
                                             <span class="text-gray-800 font-semibold">{{ $item->color->name }}</span>
@@ -153,18 +179,32 @@
                             <!-- Size -->
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Size</label>
-                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
-                                    @if($item->size)
-                                        @if(in_array(strtoupper($item->size->name), ['S', 'M', 'L', 'XL', 'XXL']))
-                                            <div class="inline-flex items-center px-6 py-2 rounded-lg border-2 border-pink-500 bg-gradient-to-r from-pink-50 to-blue-50 text-pink-700 font-bold">
-                                                {{ $item->size->name }}
-                                            </div>
+                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 space-y-3" aria-label="Size details">
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Radio Size</p>
+                                        @if(!empty($item->size_label))
+                                            <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-pink-500 bg-gradient-to-r from-pink-50 to-blue-50 text-pink-700 font-bold">
+                                                {{ strtoupper($item->size_label) }}
+                                            </span>
+@else
+                                            <span class="text-gray-500">N/A</span>
+@endif
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Dropdown Size</p>
+                                        @if($item->size)
+                                            @if(in_array(strtoupper($item->size->name), ['S', 'M', 'L', 'XL', 'XXL']))
+                                                <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-blue-400 bg-blue-50 text-blue-700 font-semibold">
+                                                    {{ $item->size->name }}
+                                                </span>
+                                            @else
+                                                <span class="text-gray-800 font-semibold">{{ $item->size->name }}</span>
+                                            @endif
                                         @else
-                                            <span class="text-gray-800 font-semibold">{{ $item->size->name }}</span>
+                                            <span class="text-gray-500">N/A</span>
                                         @endif
-                                    @else
-                                        <span class="text-gray-500">N/A</span>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -185,8 +225,9 @@
                             
                             @if($item->image)
                                 <div class="relative group">
-                                    <img id="main-image" src="{{ asset('storage/' . $item->image) }}" 
+                                    <img id="main-image" src="{{ Storage::url($item->image) }}?v={{ $item->updated_at?->timestamp ?? time() }}" 
                                          alt="{{ $item->name }}"
+                                         onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
                                          class="w-full h-96 object-cover rounded-xl border-4 border-purple-200 shadow-lg group-hover:shadow-2xl transition-all duration-300">
                                 </div>
                             @else
@@ -211,9 +252,10 @@
                                 
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                     @foreach($item->photos as $photo)
-                                        <div class="relative group cursor-pointer" onclick="changeMainImage('{{ asset('storage/' . $photo->photo_path) }}')">
-                                            <img src="{{ asset('storage/' . $photo->photo_path) }}" 
+                                        <div class="relative group cursor-pointer" onclick="changeMainImage('{{ Storage::url($photo->photo_path) }}?v={{ $item->updated_at?->timestamp ?? time() }}')">
+                                            <img src="{{ Storage::url($photo->photo_path) }}?v={{ $item->updated_at?->timestamp ?? time() }}" 
                                                  alt="Product photo"
+                                                 onerror="this.classList.add('opacity-50')"
                                                  class="w-full h-32 object-cover rounded-lg border-2 border-purple-200 hover:border-purple-400 transition-all duration-200 hover:shadow-lg hover:scale-105">
                                             <div class="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-200 flex items-center justify-center">
                                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

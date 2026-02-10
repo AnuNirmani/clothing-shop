@@ -59,6 +59,6 @@ class Classification extends Model
      */
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class, 'classification_item');
     }
 }

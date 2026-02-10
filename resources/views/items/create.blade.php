@@ -128,39 +128,47 @@
                                 </div>
 
                                 <!-- Classification -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Classification</label>
-                                    <select name="classification_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select classification</option> -->
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold mb-2 text-gray-700">Classifications</label>
+                                    <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-blue-200 rounded-lg bg-blue-50/40">
                                         @foreach($classifications as $classification)
-                                            <option value="{{ $classification->id }}">{{ $classification->name }}</option>
+                                            <label class="inline-flex items-center space-x-2 cursor-pointer hover:bg-blue-50 p-1 rounded">
+                                                <input type="checkbox" name="classifications[]" value="{{ $classification->id }}" 
+                                                    class="form-checkbox h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                                                    {{ in_array($classification->id, old('classifications', [])) ? 'checked' : '' }}>
+                                                <span class="text-sm text-gray-700">{{ $classification->name }}</span>
+                                            </label>
                                         @endforeach
-                                    </select>
+                                    </div>
                                 </div>
 
-                                <!-- Color -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Color</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Colors</label>
                                     <div class="relative">
-                                        <input type="hidden" name="color_id" id="colorIdInput">
-                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400">
-                                            <span id="selectedColorText" class="text-gray-500">Select color</span>
+                                        <div id="selectedColorsContainer"></div> <!-- Container for hidden inputs -->
+                                        
+                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400 min-h-[42px]">
+                                            <div id="selectedColorText" class="flex flex-wrap gap-1">
+                                                <span class="text-gray-500">Select colors</span>
+                                            </div>
                                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                             </svg>
                                         </div>
+                                        
                                         <div id="colorDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                            <div class="px-4 py-2 text-gray-500 bg-gray-50 hover:bg-gray-100 cursor-pointer" data-color-id="" data-color-name="Select color">
-                                                Select color
-                                            </div>
                                             @foreach($colors as $color)
-                                                <div class="px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3" 
+                                                <div class="color-option px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3 justify-between" 
                                                      data-color-id="{{ $color->id }}" 
                                                      data-color-name="{{ $color->name }}"
                                                      data-color-hex="{{ $color->hex_code }}">
-                                                    <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
-                                                    <span>{{ $color->name }}</span>
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-6 h-6 rounded border-2 border-gray-300 shadow-sm" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
+                                                        <span>{{ $color->name }}</span>
+                                                    </div>
+                                                    <div class="check-icon hidden text-green-500">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -182,23 +190,27 @@
                                 <!-- Size -->
                                 <div class="md:col-span-2">
                                     <label class="block font-semibold mb-3 text-gray-700">Size</label>
-                                    
+
+                                    @php
+                                        $fixedSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+                                        $selectedSizeLabel = old('size_label', '');
+                                    @endphp
+
                                     <!-- Radio Buttons for Common Sizes -->
-                                    <div class="flex flex-wrap gap-3 mb-4">
-                                        @foreach($sizes as $size)
-                                            @if(in_array(strtoupper($size->name), ['S', 'M', 'L', 'XL', 'XXL']))
-                                                <label class="inline-flex items-center cursor-pointer">
-                                                    <input type="radio" name="size_id" value="{{ $size->id }}" 
-                                                        class="sr-only peer" 
-                                                        {{ old('size_id') == $size->id ? 'checked' : '' }}>
-                                                    <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
-                                                        {{ $size->name }}
-                                                    </div>
-                                                </label>
-                                            @endif
+                                    <div class="flex flex-wrap gap-3 mb-2" aria-label="Radio size selection">
+                                        @foreach($fixedSizes as $sizeLabel)
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="radio" name="size_label" value="{{ $sizeLabel }}"
+                                                    class="sr-only peer"
+                                                    {{ $selectedSizeLabel === $sizeLabel ? 'checked' : '' }}>
+                                                <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
+                                                    {{ $sizeLabel }}
+                                                </div>
+                                            </label>
                                         @endforeach
                                     </div>
-                                    
+                                    <p class="text-xs text-gray-500">Radio selection is saved as size label.</p>
+
                                     <!-- Dropdown for All Sizes -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
@@ -245,11 +257,11 @@
                                             <div class="flex text-sm text-gray-600">
                                                 <label for="image" class="relative cursor-pointer rounded-md font-medium text-purple-600 hover:text-purple-500">
                                                     <span>Upload a file</span>
-                                                    <input id="image" name="image" type="file" accept="image/*" class="sr-only" onchange="previewMainImage(event)">
+                                                    <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" class="sr-only" onchange="previewMainImage(event)">
                                                 </label>
                                                 <p class="pl-1">or drag and drop</p>
                                             </div>
-                                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                            <p class="text-xs text-gray-500">PNG, JPG, JPEG, WEBP up to 2MB</p>
                                         </div>
                                     </label>
                                 </div>
@@ -557,7 +569,7 @@
             photoDiv.className = 'flex items-start gap-3 p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-lg border border-purple-200';
             photoDiv.innerHTML = `
                 <div class="flex-1">
-                    <input type="file" name="photos[]" accept="image/*" 
+                    <input type="file" name="photos[]" accept="image/png,image/jpeg,image/jpg,image/webp" 
                         onchange="previewAdditionalPhoto(event, '${photoId}')"
                         class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
                     <div id="${photoId}" class="hidden mt-2">
@@ -606,70 +618,104 @@
             }
         }
 
-        // Color dropdown functionality
+        // Color dropdown functionality (Multi-select)
         const colorSelectDisplay = document.getElementById('colorSelectDisplay');
         const colorDropdown = document.getElementById('colorDropdown');
-        const colorIdInput = document.getElementById('colorIdInput');
+        const selectedColorsContainer = document.getElementById('selectedColorsContainer');
         const selectedColorText = document.getElementById('selectedColorText');
+        
+        let selectedColors = []; // Array of objects {id, name, hex}
 
+        // Initialize from old input if successful validation failed
+        const oldColors = @json(old('colors', []));
+        if (oldColors.length > 0) {
+            // We need to find the color details. We can grab them from the DOM elements
+            document.addEventListener('DOMContentLoaded', () => {
+                oldColors.forEach(id => {
+                    const option = document.querySelector(`.color-option[data-color-id="${id}"]`);
+                    if (option) {
+                        const colorName = option.getAttribute('data-color-name');
+                        const colorHex = option.getAttribute('data-color-hex');
+                        selectedColors.push({ id: id, name: colorName, hex: colorHex });
+                        
+                        // Mark as selected in UI
+                        option.classList.add('bg-blue-50');
+                        option.querySelector('.check-icon').classList.remove('hidden');
+                    }
+                });
+                updateSelectedColorsUI();
+            });
+        }
+
+        // Toggle dropdown
         colorSelectDisplay.addEventListener('click', function(e) {
             e.stopPropagation();
             colorDropdown.classList.toggle('hidden');
         });
 
+        // Close dropdown when clicking outside
         document.addEventListener('click', function() {
             colorDropdown.classList.add('hidden');
         });
 
-        colorDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const option = e.target.closest('[data-color-id]');
-            if (option) {
-                const colorId = option.getAttribute('data-color-id');
-                const colorName = option.getAttribute('data-color-name');
-                const colorHex = option.getAttribute('data-color-hex');
-                
-                colorIdInput.value = colorId;
-                
-                if (colorId && colorHex) {
-                    selectedColorText.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: ${colorHex}"></div>
-                            <span class="text-gray-900">${colorName}</span>
-                        </div>
-                    `;
+        colorDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        // Handle color selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const colorId = this.getAttribute('data-color-id');
+                const colorName = this.getAttribute('data-color-name');
+                const colorHex = this.getAttribute('data-color-hex');
+                const checkIcon = this.querySelector('.check-icon');
+
+                const index = selectedColors.findIndex(c => c.id === colorId);
+
+                if (index === -1) {
+                    // Add color
+                    selectedColors.push({ id: colorId, name: colorName, hex: colorHex });
+                    checkIcon.classList.remove('hidden');
+                    this.classList.add('bg-blue-50');
                 } else {
-                    selectedColorText.innerHTML = '<span class="text-gray-500">Select color</span>';
+                    // Remove color
+                    selectedColors.splice(index, 1);
+                    checkIcon.classList.add('hidden');
+                    this.classList.remove('bg-blue-50');
                 }
-                
-                colorDropdown.classList.add('hidden');
-            }
+
+                updateSelectedColorsUI();
+            });
         });
 
+        function updateSelectedColorsUI() {
+            // Update hidden inputs
+            selectedColorsContainer.innerHTML = '';
+            selectedColors.forEach(color => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'colors[]';
+                input.value = color.id;
+                selectedColorsContainer.appendChild(input);
+            });
+
+            // Update display text
+            if (selectedColors.length === 0) {
+                selectedColorText.innerHTML = '<span class="text-gray-500">Select colors</span>';
+            } else {
+                selectedColorText.innerHTML = '';
+                selectedColors.forEach(color => {
+                    const badge = document.createElement('div');
+                    badge.className = 'flex items-center gap-1 bg-gray-100 rounded-full pl-1 pr-2 py-0.5 border border-gray-200';
+                    badge.innerHTML = `
+                        <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${color.hex}"></div>
+                        <span class="text-xs font-semibold text-gray-700">${color.name}</span>
+                    `;
+                    selectedColorText.appendChild(badge);
+                });
+            }
+        }
+
         // Size radio buttons and dropdown sync
-        const sizeRadios = document.querySelectorAll('input[name="size_id"]');
-        const sizeDropdown = document.getElementById('sizeDropdown');
-        
-        // When radio button is clicked, update dropdown
-        sizeRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    sizeDropdown.value = this.value;
-                }
-            });
-        });
-        
-        // When dropdown is changed, update radio button
-        sizeDropdown.addEventListener('change', function() {
-            const selectedValue = this.value;
-            sizeRadios.forEach(radio => {
-                if (radio.value === selectedValue) {
-                    radio.checked = true;
-                } else {
-                    radio.checked = false;
-                }
-            });
-        });
+        // (removed to keep radio + dropdown independent)
 
         // Gift card functionality
         function toggleGiftCardValidity() {
