@@ -57,7 +57,18 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-gray-600">{{ $item->color?->name ?? 'NULL' }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <div class="grid grid-cols-4 gap-1">
+                                                    @forelse($item->colors as $color)
+                                                        <span class="w-5 h-5 rounded-full border border-gray-300 shadow-sm" title="{{ $color->name }}" style="background-color: {{ $color->hex_code }}"></span>
+                                                    @empty
+                                                        <span class="text-sm text-gray-400">None</span>
+                                                    @endforelse
+                                                </div>
+                                                @if($item->colors->count() > 0)
+                                                    <span class="text-xs text-gray-500">({{ $item->colors->count() }})</span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm font-bold text-gray-900">Rs {{ number_format($item->prize, 2) }}</span>

@@ -59,6 +59,6 @@ class Color extends Model
      */
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class, 'color_item');
     }
 }

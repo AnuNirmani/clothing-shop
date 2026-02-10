@@ -102,6 +102,11 @@
                             Selections
                         </h3>
                         
+                        @php
+                            $classificationList = $item->classifications ?? collect();
+                            $colorList = $item->colors ?? collect();
+                        @endphp
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Category -->
                             <div>
@@ -122,8 +127,20 @@
                             <!-- Classification -->
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Classification</label>
-                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 text-gray-800 font-semibold">
-                                    {{ $item->classification?->name ?? 'N/A' }}
+                                <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
+                                    @if($classificationList->count() > 0)
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($classificationList as $classification)
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-blue-700">
+                                                    {{ $classification->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @elseif($item->classification)
+                                        <span class="text-gray-800 font-semibold">{{ $item->classification->name }}</span>
+                                    @else
+                                        <span class="text-gray-500">N/A</span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -131,7 +148,16 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Color</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3">
-                                    @if($item->color)
+                                    @if($colorList->count() > 0)
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($colorList as $color)
+                                                <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-semibold bg-white border border-blue-200 text-gray-700" title="{{ $color->name }}">
+                                                    <span class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></span>
+                                                    {{ $color->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @elseif($item->color)
                                         <div class="flex items-center gap-3">
                                             <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: {{ $item->color->hex_code ?? '#CCCCCC' }}"></div>
                                             <span class="text-gray-800 font-semibold">{{ $item->color->name }}</span>

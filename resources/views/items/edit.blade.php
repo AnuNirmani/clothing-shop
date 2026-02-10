@@ -117,42 +117,48 @@
                                 </div>
 
                                 <!-- Classification -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Classification</label>
-                                    <select name="classification_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select classification</option> -->
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold mb-2 text-gray-700">Classifications</label>
+                                    <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-blue-200 rounded-lg bg-blue-50/40">
                                         @foreach($classifications as $classification)
-                                            <option value="{{ $classification->id }}"
-                                                {{ old('classification_id', $item->classification_id) == $classification->id ? 'selected' : '' }}>
-                                                {{ $classification->name }}
-                                            </option>
+                                            <label class="inline-flex items-center space-x-2 cursor-pointer hover:bg-blue-50 p-1 rounded">
+                                                <input type="checkbox" name="classifications[]" value="{{ $classification->id }}" 
+                                                    class="form-checkbox h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                                                    {{ in_array($classification->id, old('classifications', $item->classifications->pluck('id')->toArray())) ? 'checked' : '' }}>
+                                                <span class="text-sm text-gray-700">{{ $classification->name }}</span>
+                                            </label>
                                         @endforeach
-                                    </select>
+                                    </div>
                                 </div>
 
-                                <!-- Color -->
+                                <!-- Colors -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Color</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Colors</label>
                                     <div class="relative">
-                                        <input type="hidden" name="color_id" id="colorIdInput" value="{{ old('color_id', $item->color_id) }}">
-                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400">
-                                            <span id="selectedColorText" class="text-gray-500">Select color</span>
+                                        <div id="selectedColorsContainer"></div> <!-- Container for hidden inputs -->
+                                        
+                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400 min-h-[42px]">
+                                            <div id="selectedColorText" class="flex flex-wrap gap-1">
+                                                <span class="text-gray-500">Select colors</span>
+                                            </div>
                                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                             </svg>
                                         </div>
+                                        
                                         <div id="colorDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                            <div class="px-4 py-2 text-gray-500 bg-gray-50 hover:bg-gray-100 cursor-pointer" data-color-id="" data-color-name="Select color">
-                                                Select color
-                                            </div>
                                             @foreach($colors as $color)
-                                                <div class="px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3" 
+                                                <div class="color-option px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3 justify-between" 
                                                      data-color-id="{{ $color->id }}" 
                                                      data-color-name="{{ $color->name }}"
                                                      data-color-hex="{{ $color->hex_code }}">
-                                                    <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
-                                                    <span>{{ $color->name }}</span>
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-6 h-6 rounded border-2 border-gray-300 shadow-sm" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
+                                                        <span>{{ $color->name }}</span>
+                                                    </div>
+                                                    <div class="check-icon hidden text-green-500">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -662,65 +668,101 @@
             }
         }
 
-        // Color dropdown functionality
+        // Color dropdown functionality (Multi-select)
         const colorSelectDisplay = document.getElementById('colorSelectDisplay');
         const colorDropdown = document.getElementById('colorDropdown');
-        const colorIdInput = document.getElementById('colorIdInput');
+        const selectedColorsContainer = document.getElementById('selectedColorsContainer');
         const selectedColorText = document.getElementById('selectedColorText');
+        
+        let selectedColors = []; // Array of objects {id, name, hex}
 
+        // Initialize from old input OR existing item colors
+        const oldColors = @json(old('colors', $item->colors->pluck('id')->toArray()));
+        
+        if (oldColors.length > 0) {
+            document.addEventListener('DOMContentLoaded', () => {
+                oldColors.forEach(id => {
+                    const option = document.querySelector(`.color-option[data-color-id="${id}"]`);
+                    if (option) {
+                        const colorName = option.getAttribute('data-color-name');
+                        const colorHex = option.getAttribute('data-color-hex');
+                        selectedColors.push({ id: id, name: colorName, hex: colorHex });
+                        
+                        // Mark as selected in UI
+                        option.classList.add('bg-blue-50');
+                        option.querySelector('.check-icon').classList.remove('hidden');
+                    }
+                });
+                updateSelectedColorsUI();
+            });
+        }
+
+        // Toggle dropdown
         colorSelectDisplay.addEventListener('click', function(e) {
             e.stopPropagation();
             colorDropdown.classList.toggle('hidden');
         });
 
+        // Close dropdown when clicking outside
         document.addEventListener('click', function() {
             colorDropdown.classList.add('hidden');
         });
 
-        colorDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const option = e.target.closest('[data-color-id]');
-            if (option) {
-                const colorId = option.getAttribute('data-color-id');
-                const colorName = option.getAttribute('data-color-name');
-                const colorHex = option.getAttribute('data-color-hex');
-                
-                colorIdInput.value = colorId;
-                
-                if (colorId && colorHex) {
-                    selectedColorText.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: ${colorHex}"></div>
-                            <span class="text-gray-900">${colorName}</span>
-                        </div>
-                    `;
+        colorDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        // Handle color selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const colorId = this.getAttribute('data-color-id');
+                const colorName = this.getAttribute('data-color-name');
+                const colorHex = this.getAttribute('data-color-hex');
+                const checkIcon = this.querySelector('.check-icon');
+
+                const index = selectedColors.findIndex(c => c.id === colorId);
+
+                if (index === -1) {
+                    // Add color
+                    selectedColors.push({ id: colorId, name: colorName, hex: colorHex });
+                    checkIcon.classList.remove('hidden');
+                    this.classList.add('bg-blue-50');
                 } else {
-                    selectedColorText.innerHTML = '<span class="text-gray-500">Select color</span>';
+                    // Remove color
+                    selectedColors.splice(index, 1);
+                    checkIcon.classList.add('hidden');
+                    this.classList.remove('bg-blue-50');
                 }
-                
-                colorDropdown.classList.add('hidden');
-            }
+
+                updateSelectedColorsUI();
+            });
         });
 
-        // Set initial selected color on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            const initialColorId = colorIdInput.value;
-            if (initialColorId) {
-                const selectedOption = document.querySelector(`[data-color-id="${initialColorId}"]`);
-                if (selectedOption) {
-                    const colorName = selectedOption.getAttribute('data-color-name');
-                    const colorHex = selectedOption.getAttribute('data-color-hex');
-                    if (colorHex) {
-                        selectedColorText.innerHTML = `
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: ${colorHex}"></div>
-                                <span class="text-gray-900">${colorName}</span>
-                            </div>
-                        `;
-                    }
-                }
+        function updateSelectedColorsUI() {
+            // Update hidden inputs
+            selectedColorsContainer.innerHTML = '';
+            selectedColors.forEach(color => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'colors[]';
+                input.value = color.id;
+                selectedColorsContainer.appendChild(input);
+            });
+
+            // Update display text
+            if (selectedColors.length === 0) {
+                selectedColorText.innerHTML = '<span class="text-gray-500">Select colors</span>';
+            } else {
+                selectedColorText.innerHTML = '';
+                selectedColors.forEach(color => {
+                    const badge = document.createElement('div');
+                    badge.className = 'flex items-center gap-1 bg-gray-100 rounded-full pl-1 pr-2 py-0.5 border border-gray-200';
+                    badge.innerHTML = `
+                        <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${color.hex}"></div>
+                        <span class="text-xs font-semibold text-gray-700">${color.name}</span>
+                    `;
+                    selectedColorText.appendChild(badge);
+                });
             }
-        });
+        }
 
         // Size radio buttons and dropdown sync
         const sizeRadios = document.querySelectorAll('input[name="size_id"]');
