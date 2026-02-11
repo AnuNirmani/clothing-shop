@@ -25,6 +25,10 @@ Route::get('/', function () {
     return view('frontend');
 });
 
+Route::get('/{any}', function () {
+    return view('frontend');
+})->where('any', 'shop|womens|mens');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');

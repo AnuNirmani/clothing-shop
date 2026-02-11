@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -17,12 +18,12 @@ const Header = () => {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
-                        <a href="#home" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                        <Link to="/" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Home
-                        </a>
-                        <a href="#shop" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                        </Link>
+                        <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Shop
-                        </a>
+                        </Link>
                         <a href="#categories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Categories
                         </a>
@@ -58,12 +59,12 @@ const Header = () => {
                 {menuOpen && (
                     <div className="md:hidden pb-4">
                         <div className="flex flex-col space-y-3">
-                            <a href="#home" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                            <Link to="/" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
                                 Home
-                            </a>
-                            <a href="#shop" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                            </Link>
+                            <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
                                 Shop
-                            </a>
+                            </Link>
                             <a href="#categories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
                                 Categories
                             </a>
