@@ -24,15 +24,24 @@ const Header = () => {
                         <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Shop
                         </Link>
-                        <a href="#categories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
-                            Categories
-                        </a>
-                        <a href="#about" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
-                            About
-                        </a>
-                        <a href="#contact" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
-                            Contact
-                        </a>
+                        <Link to="/shop?category_id=1&title=Men's Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Men
+                        </Link>
+                        <Link to="/shop?category_id=2&title=Women's Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Women
+                        </Link>
+                        <Link to="/shop?category_id=3&title=Kids Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Kids
+                        </Link>
+                        <Link to="/shop?category_id=4&title=Accessories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Accessories
+                        </Link>
+                        <Link to="/shop?category_id=5&title=Footwear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Shoes
+                        </Link>
+                        <Link to="/shop?category_id=9&title=Gift Cards" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Gift Cards
+                        </Link>
                         <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200">
                             Shop Now
                         </button>
@@ -65,15 +74,24 @@ const Header = () => {
                             <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
                                 Shop
                             </Link>
-                            <a href="#categories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
-                                Categories
-                            </a>
-                            <a href="#about" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
-                                About
-                            </a>
-                            <a href="#contact" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
-                                Contact
-                            </a>
+                            <Link to="/shop?category_id=1&title=Men's Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Men
+                            </Link>
+                            <Link to="/shop?category_id=2&title=Women's Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Women
+                            </Link>
+                            <Link to="/shop?category_id=3&title=Kids Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Kids
+                            </Link>
+                            <Link to="/shop?category_id=4&title=Accessories" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Accessories
+                            </Link>
+                            <Link to="/shop?category_id=5&title=Footwear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Shoes
+                            </Link>
+                            <Link to="/shop?title=Gift Cards" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200 py-2">
+                                Gift Cards
+                            </Link>
                             <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 text-white font-bold py-2 px-6 rounded-lg shadow-md w-full">
                                 Shop Now
                             </button>
