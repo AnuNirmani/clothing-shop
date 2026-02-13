@@ -134,6 +134,29 @@ class ItemController extends Controller
     }
 
     /**
+     * Get a single item by id
+     */
+    public function getItemById(int $id): JsonResponse
+    {
+        $item = Item::where('id', $id)
+            ->where('availability', 'in stock')
+            ->with(['category', 'type', 'colors'])
+            ->first();
+
+        if (!$item) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatItem($item)
+        ]);
+    }
+
+    /**
      * Format item data for API response
      */
     private function formatItem($item): array

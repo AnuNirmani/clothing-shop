@@ -26,4 +26,5 @@ Route::middleware('api')->group(function () {
     Route::get('/items/latest-four', [App\Http\Controllers\Api\ItemController::class, 'getLatestFourItems']);
     Route::get('/types/latest-items', [App\Http\Controllers\Api\ItemController::class, 'getTypesWithLatestItem']);
     Route::get('/items', [App\Http\Controllers\Api\ItemController::class, 'getItems']);
+    Route::get('/items/{id}', [App\Http\Controllers\Api\ItemController::class, 'getItemById']);
 });

@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 Route::get('/{any}', function () {
     return view('frontend');
-})->where('any', 'shop|womens|mens');
+})->where('any', 'shop|womens|mens|item/.*');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

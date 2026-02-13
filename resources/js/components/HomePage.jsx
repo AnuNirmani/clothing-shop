@@ -292,9 +292,12 @@ const HomePage = () => {
                                         className="w-full h-[500px] object-cover"
                                     />
                                     {/* Quick Add Button - Appears on Hover */}
-                                    <button className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500">
-                                        + Quick add
-                                    </button>
+                                    <Link
+                                        to={`/item/${product.id}`}
+                                        className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500"
+                                    >
+                                        Quick View
+                                    </Link>
                                 </div>
                                 <div className="p-5">
                                     <h3 className="text-gray-800 font-medium mb-1">{product.name}</h3>
@@ -341,7 +344,7 @@ const HomePage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {typesWithItems.map((type) => (
                             <div key={type.type_id} className="relative group cursor-pointer overflow-hidden">
-                                <a href={`/type/${type.type_id}`}>
+                                <Link to={`/shop?type_id=${type.type_id}&title=${type.type_name}`}>
                                     <img
                                         src={type.item_image || "/images/placeholder-category.jpg"}
                                         alt={type.type_name}
@@ -356,16 +359,16 @@ const HomePage = () => {
                                             <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
                                         </div>
                                     </div>
-                                </a>
+                                </Link>
                             </div>
                         ))}
                     </div>
 
-                    <div className="text-center mt-12">
+                    {/* <div className="text-center mt-12">
                         <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 px-10 rounded-lg hover:from-pink-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-pink-200/50">
                             View All Categories
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 

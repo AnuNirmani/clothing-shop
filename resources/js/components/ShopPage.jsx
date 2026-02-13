@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -70,9 +70,12 @@ const ShopPage = () => {
                                                 className="w-full h-[500px] object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
-                                            <button className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 px-8 py-3 rounded-full font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-pink-500 hover:text-white">
+                                            <Link
+                                                to={`/item/${product.id}`}
+                                                className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 px-8 py-3 rounded-full font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-pink-500 hover:text-white"
+                                            >
                                                 Quick View
-                                            </button>
+                                            </Link>
                                         </div>
                                         <div className="p-6">
                                             <div className="flex justify-between items-start mb-2">
