@@ -38,13 +38,11 @@ const ItemDetailPage = () => {
         <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
             <Header />
 
-            <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <main className="w-full py-12 px-4 sm:px-10 lg:px-16">
                 {loading ? (
-                    <div className="flex justify-center items-center h-96">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-pink-500 border-t-transparent"></div>
-                    </div>
+                    <div className="flex justify-center items-center h-96"></div>
                 ) : item ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-2">
                         {/* Photo Gallery Column */}
                         <div className="p-4 sm:p-8">
                             <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 mb-4 transition-all duration-300">
