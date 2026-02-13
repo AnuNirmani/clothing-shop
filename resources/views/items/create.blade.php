@@ -50,8 +50,7 @@
                                 <div>
                                     <label class="block font-semibold mb-2 text-gray-700">Name *</label>
                                     <input type="text" name="name" value="{{ old('name') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- Co Name -->
@@ -65,16 +64,14 @@
                                 <div>
                                     <label class="block font-semibold mb-2 text-gray-700">SKU *</label>
                                     <input type="text" name="SKU" value="{{ old('SKU') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- Stock -->
                                 <div>
                                     <label class="block font-semibold mb-2 text-gray-700">Stock Quantity *</label>
                                     <input type="number" name="stock_items" value="{{ old('stock_items') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
                             </div>
 
@@ -108,7 +105,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Category</label>
                                     <select name="category_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select category</option> -->
+                                        <option value="">Select category</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
@@ -120,7 +117,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Type</label>
                                     <select name="type_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select type</option> -->
+                                        <option value="">Select type</option>
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }}</option>
                                         @endforeach
@@ -180,7 +177,7 @@
                                     <label class="block font-semibold mb-2 text-gray-700">Material</label>
                                     <select name="material_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select material</option> -->
+                                        <option value="">Select material</option>
                                         @foreach($materials as $material)
                                             <option value="{{ $material->id }}">{{ $material->name }}</option>
                                         @endforeach
@@ -216,7 +213,7 @@
                                         <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
                                         <select name="size_id_dropdown" id="sizeDropdown"
                                             class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                            <!-- <option value="">Select size</option> -->
+                                            <option value="">Select size</option>
                                             @foreach($sizes as $size)
                                                 <option value="{{ $size->id }}" {{ old('size_id') == $size->id ? 'selected' : '' }}>{{ $size->name }}</option>
                                             @endforeach
@@ -337,8 +334,7 @@
                                     <span class="absolute left-3 top-3 text-gray-500 font-semibold">Rs</span>
                                     <input type="number" step="0.01" name="prize" id="prize"
                                         class="w-full pl-12 pr-4 py-3 rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 text-lg font-bold"
-                                        oninput="calculateInstallments()"
-                                        required>
+                                        oninput="calculateInstallments()">
                                 </div>
                             </div>
 
@@ -714,8 +710,25 @@
             }
         }
 
-        // Size radio buttons and dropdown sync
-        // (removed to keep radio + dropdown independent)
+        // Size radio buttons and dropdown mutual exclusivity
+        const sizeRadios = document.querySelectorAll('input[name="size_label"]');
+        const sizeDropdown = document.getElementById('sizeDropdown');
+
+        sizeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    sizeDropdown.value = "";
+                }
+            });
+        });
+
+        sizeDropdown.addEventListener('change', function() {
+            if (this.value !== "") {
+                sizeRadios.forEach(radio => {
+                    radio.checked = false;
+                });
+            }
+        });
 
         // Gift card functionality
         function toggleGiftCardValidity() {
