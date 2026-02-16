@@ -57,6 +57,8 @@ class ItemController extends Controller
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'photos' => 'nullable|array|max:20',
                 'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'classifications' => 'nullable|array',
+                'classifications.*' => 'exists:classifications,id',
                 'is_gift_card' => 'nullable|boolean',
                 'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
                 'is_on_offer' => 'nullable|boolean',
@@ -110,6 +112,9 @@ class ItemController extends Controller
         }
 
         $item = Item::createItem($validated);
+
+        // Sync classifications (pivot)
+        $item->classifications()->sync($validated['classifications'] ?? []);
 
         // Handle multiple photo uploads
         if ($request->hasFile('photos')) {
@@ -230,6 +235,9 @@ class ItemController extends Controller
         }
 
         $item = Item::updateItem($id, $validated);
+
+        // Sync classifications (pivot)
+        $item->classifications()->sync($validated['classifications'] ?? []);
 
         // Handle photo deletions
         if ($request->has('delete_photos')) {
