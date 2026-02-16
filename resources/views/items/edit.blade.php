@@ -49,7 +49,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Name -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Name *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Name <span class="text-red-500">*</span></label>
                                     <input type="text" name="name" value="{{ old('name', $item->name) }}"
                                         class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
                                         required>
@@ -57,14 +57,14 @@
 
                                 <!-- Co Name -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Co Name</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Co Name <span class="text-red-500">*</span></label>
                                     <input type="text" name="co_name" value="{{ old('co_name', $item->co_name) }}"
                                         class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- SKU -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">SKU *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">SKU <span class="text-red-500">*</span></label>
                                     <input type="text" name="SKU" value="{{ old('SKU', $item->SKU) }}"
                                         class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
                                         required>
@@ -72,7 +72,7 @@
 
                                 <!-- Stock -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Stock Quantity *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Stock Quantity <span class="text-red-500">*</span></label>
                                     <input type="number" name="stock_items" value="{{ old('stock_items', $item->stock_items) }}"
                                         class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
                                         required>
@@ -106,7 +106,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Category -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Category</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Category <span class="text-red-500">*</span></label>
                                     <select name="category_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
                                         <!-- <option value="">Select category</option> -->
@@ -121,7 +121,7 @@
 
                                 <!-- Type -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Type</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Type <span class="text-red-500">*</span></label>
                                     <select name="type_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
                                         <!-- <option value="">Select type</option> -->
@@ -151,7 +151,7 @@
 
                                 <!-- Colors -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Colors</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Colors <span class="text-red-500">*</span></label>
                                     <div class="relative">
                                         <div id="selectedColorsContainer"></div> <!-- Container for hidden inputs -->
                                         
@@ -185,7 +185,7 @@
 
                                 <!-- Material -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Material</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Material <span class="text-red-500">*</span></label>
                                     <select name="material_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
                                         <!-- <option value="">Select material</option> -->
@@ -244,7 +244,7 @@
                                 <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                Product Images
+                                Product Images<span class="text-red-500"> *</span>
                             </h3>
 
                             <!-- Current Main Image -->
@@ -394,7 +394,7 @@
 
                             <!-- Price -->
                             <div class="mb-4">
-                                <label class="block font-semibold mb-2 text-gray-700">Price (LKR) *</label>
+                                <label class="block font-semibold mb-2 text-gray-700">Price (LKR) <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-3 text-gray-500 font-semibold">Rs</span>
                                     <input type="number" step="0.01" name="prize" id="prize"
@@ -450,7 +450,7 @@
                             </h3>
 
                             <div>
-                                <label class="block font-semibold mb-2 text-gray-700">Status *</label>
+                                <label class="block font-semibold mb-2 text-gray-700">Status <span class="text-red-500">*</span></label>
                                 <select name="availability"
                                     class="w-full rounded-lg border-orange-200 focus:ring-orange-300 focus:border-orange-400 py-3"
                                     required>
@@ -479,7 +479,7 @@
                                 </div>
 
                                 <div id="gift_card_validity_section" class="{{ old('is_gift_card', $item->is_gift_card) ? '' : 'hidden' }}">
-                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) <span class="text-red-500">*</span></label>
                                     <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
                                         value="{{ old('gift_card_validity_months', $item->gift_card_validity_months) }}"
                                         min="1"
@@ -506,7 +506,7 @@
 
                                 <div id="offer_fields_section" class="{{ old('is_on_offer', $item->is_on_offer) ? '' : 'hidden' }} space-y-4">
                                     <div>
-                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage *</label>
+                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage <span class="text-red-500">*</span></label>
                                         <div class="relative">
                                             <input type="number" name="offer_percentage" id="offer_percentage"
                                                 value="{{ old('offer_percentage', $item->offer_percentage) }}"
@@ -522,13 +522,13 @@
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">Start Date *</label>
+                                            <label class="block font-semibold mb-2 text-gray-700">Start Date <span class="text-red-500">*</span></label>
                                             <input type="date" name="offer_start_date" id="offer_start_date"
                                                 value="{{ old('offer_start_date', $item->offer_start_date instanceof \Carbon\Carbon ? $item->offer_start_date->format('Y-m-d') : $item->offer_start_date) }}"
                                                 class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
                                         </div>
                                         <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">End Date *</label>
+                                            <label class="block font-semibold mb-2 text-gray-700">End Date <span class="text-red-500">*</span></label>
                                             <input type="date" name="offer_end_date" id="offer_end_date"
                                                 value="{{ old('offer_end_date', $item->offer_end_date instanceof \Carbon\Carbon ? $item->offer_end_date->format('Y-m-d') : $item->offer_end_date) }}"
                                                 class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
