@@ -51,7 +51,7 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Co Name</label>
                                 <div class="w-full rounded-lg border-2 border-pink-200 bg-pink-50 px-4 py-3 text-gray-800">
-                                    {{ $item->co_name ?? 'N/A' }}
+                                    {{ $item->co_name ?? 'NULL' }}
                                 </div>
                             </div>
 
@@ -112,7 +112,7 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Category</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 text-gray-800 font-semibold">
-                                    {{ $item->category?->name ?? 'N/A' }}
+                                    {{ $item->category?->name ?? 'NULL' }}
                                 </div>
                             </div>
 
@@ -120,7 +120,7 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Type</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 text-gray-800 font-semibold">
-                                    {{ $item->type?->name ?? 'N/A' }}
+                                    {{ $item->type?->name ?? 'NULL' }}
                                 </div>
                             </div>
 
@@ -139,7 +139,7 @@
                                     @elseif($item->classification)
                                         <span class="text-gray-800 font-semibold">{{ $item->classification->name }}</span>
                                     @else
-                                        <span class="text-gray-500">N/A</span>
+                                        <span class="text-gray-500">NULL</span>
                                     @endif
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                                             <span class="text-gray-800 font-semibold">{{ $item->color->name }}</span>
                                         </div>
                                     @else
-                                        <span class="text-gray-500">N/A</span>
+                                        <span class="text-gray-500">NULL</span>
                                     @endif
                                 </div>
                             </div>
@@ -172,7 +172,7 @@
                             <div>
                                 <label class="block font-semibold mb-2 text-gray-700">Material</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 text-gray-800 font-semibold">
-                                    {{ $item->material?->name ?? 'N/A' }}
+                                    {{ $item->material?->name ?? 'NULL' }}
                                 </div>
                             </div>
 
@@ -181,18 +181,18 @@
                                 <label class="block font-semibold mb-2 text-gray-700">Size</label>
                                 <div class="w-full rounded-lg border-2 border-blue-200 bg-blue-50 px-4 py-3 space-y-3" aria-label="Size details">
                                     <div>
-                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Radio Size</p>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Size</p>
                                         @if(!empty($item->size_label))
                                             <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-pink-500 bg-gradient-to-r from-pink-50 to-blue-50 text-pink-700 font-bold">
                                                 {{ strtoupper($item->size_label) }}
                                             </span>
 @else
-                                            <span class="text-gray-500">N/A</span>
+                                            <span class="text-gray-500">NULL</span>
 @endif
                                     </div>
 
                                     <div>
-                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Dropdown Size</p>
+                                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Size Grid</p>
                                         @if($item->size)
                                             @if(in_array(strtoupper($item->size->name), ['S', 'M', 'L', 'XL', 'XXL']))
                                                 <span class="inline-flex items-center px-4 py-1.5 rounded-lg border-2 border-blue-400 bg-blue-50 text-blue-700 font-semibold">
@@ -202,7 +202,7 @@
                                                 <span class="text-gray-800 font-semibold">{{ $item->size->name }}</span>
                                             @endif
                                         @else
-                                            <span class="text-gray-500">N/A</span>
+                                            <span class="text-gray-500">NULL</span>
                                         @endif
                                     </div>
                                 </div>
@@ -317,7 +317,7 @@
                                     <div class="relative">
                                         <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                         <div class="w-full pl-8 py-2 rounded border border-gray-200 bg-gray-50 text-xl font-bold text-pink-600">
-                                            {{ number_format($item->prize / 3, 2) }}
+                                            {{ number_format(($item->discounted_price ?? $item->prize) / 3, 2) }}
                                         </div>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">per month</p>
@@ -328,7 +328,7 @@
                                     <div class="relative">
                                         <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                         <div class="w-full pl-8 py-2 rounded border border-gray-200 bg-gray-50 text-xl font-bold text-blue-600">
-                                            {{ number_format($item->prize / 4, 2) }}
+                                            {{ number_format(($item->discounted_price ?? $item->prize) / 4, 2) }}
                                         </div>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">per month</p>

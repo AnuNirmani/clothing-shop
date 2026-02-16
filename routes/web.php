@@ -22,8 +22,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('frontend');
 });
+
+Route::get('/{any}', function () {
+    return view('frontend');
+})->where('any', 'shop|womens|mens|item/.*');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

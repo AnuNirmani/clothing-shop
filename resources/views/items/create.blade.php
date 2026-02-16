@@ -48,33 +48,30 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Name -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Name *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Name <span class="text-red-500">*</span></label>
                                     <input type="text" name="name" value="{{ old('name') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- Co Name -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Co Name</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Co Name <span class="text-red-500">*</span></label>
                                     <input type="text" name="co_name" value="{{ old('co_name') }}"
                                         class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- SKU -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">SKU *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">SKU <span class="text-red-500">*</span></label>
                                     <input type="text" name="SKU" value="{{ old('SKU') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
 
                                 <!-- Stock -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Stock Quantity *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Stock Quantity <span class="text-red-500">*</span></label>
                                     <input type="number" name="stock_items" value="{{ old('stock_items') }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
                                 </div>
                             </div>
 
@@ -105,10 +102,10 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Category -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Category</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Category <span class="text-red-500">*</span></label>
                                     <select name="category_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select category</option> -->
+                                        <option value="">Select category</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
@@ -117,10 +114,10 @@
 
                                 <!-- Type -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Type</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Type <span class="text-red-500">*</span></label>
                                     <select name="type_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select type</option> -->
+                                        <option value="">Select type</option>
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }}</option>
                                         @endforeach
@@ -143,7 +140,7 @@
                                 </div>
 
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Colors</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Colors <span class="text-red-500">*</span></label>
                                     <div class="relative">
                                         <div id="selectedColorsContainer"></div> <!-- Container for hidden inputs -->
                                         
@@ -177,10 +174,10 @@
 
                                 <!-- Material -->
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Material</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Material <span class="text-red-500">*</span></label>
                                     <select name="material_id"
                                         class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select material</option> -->
+                                        <option value="">Select material</option>
                                         @foreach($materials as $material)
                                             <option value="{{ $material->id }}">{{ $material->name }}</option>
                                         @endforeach
@@ -216,7 +213,7 @@
                                         <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
                                         <select name="size_id_dropdown" id="sizeDropdown"
                                             class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                            <!-- <option value="">Select size</option> -->
+                                            <option value="">Select size</option>
                                             @foreach($sizes as $size)
                                                 <option value="{{ $size->id }}" {{ old('size_id') == $size->id ? 'selected' : '' }}>{{ $size->name }}</option>
                                             @endforeach
@@ -232,12 +229,12 @@
                                 <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                Product Images
+                                Product Images <span class="text-red-500">*</span>
                             </h3>
 
                             <!-- Main Image -->
                             <div class="mb-6">
-                                <label class="block font-semibold mb-2 text-gray-700">Main Image</label>
+                                <label class="block font-semibold mb-2 text-gray-700">Main Image <span class="text-red-500">*</span></label>
                                 
                                 <!-- Preview Container -->
                                 <div id="main-image-preview" class="hidden mb-3">
@@ -332,13 +329,12 @@
 
                             <!-- Price -->
                             <div class="mb-4">
-                                <label class="block font-semibold mb-2 text-gray-700">Price (LKR) *</label>
+                                <label class="block font-semibold mb-2 text-gray-700">Price (LKR) <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-3 text-gray-500 font-semibold">Rs</span>
                                     <input type="number" step="0.01" name="prize" id="prize"
                                         class="w-full pl-12 pr-4 py-3 rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 text-lg font-bold"
-                                        oninput="calculateInstallments()"
-                                        required>
+                                        oninput="calculateInstallments()">
                                 </div>
                             </div>
 
@@ -387,7 +383,7 @@
                             </h3>
 
                             <div>
-                                <label class="block font-semibold mb-2 text-gray-700">Status *</label>
+                                <label class="block font-semibold mb-2 text-gray-700">Status <span class="text-red-500">*</span></label>
                                 <select name="availability"
                                     class="w-full rounded-lg border-orange-200 focus:ring-orange-300 focus:border-orange-400 py-3"
                                     required>
@@ -416,7 +412,7 @@
                                 </div>
 
                                 <div id="gift_card_validity_section" class="hidden">
-                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) *</label>
+                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) <span class="text-red-500">*</span></label>
                                     <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
                                         value="{{ old('gift_card_validity_months') }}"
                                         min="1"
@@ -443,7 +439,7 @@
 
                                 <div id="offer_fields_section" class="hidden space-y-4">
                                     <div>
-                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage *</label>
+                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage <span class="text-red-500">*</span></label>
                                         <div class="relative">
                                             <input type="number" name="offer_percentage" id="offer_percentage"
                                                 value="{{ old('offer_percentage') }}"
@@ -459,13 +455,13 @@
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">Start Date *</label>
+                                            <label class="block font-semibold mb-2 text-gray-700">Start Date <span class="text-red-500">*</span></label>
                                             <input type="date" name="offer_start_date" id="offer_start_date"
                                                 value="{{ old('offer_start_date') }}"
                                                 class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
                                         </div>
                                         <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">End Date *</label>
+                                            <label class="block font-semibold mb-2 text-gray-700">End Date <span class="text-red-500">*</span></label>
                                             <input type="date" name="offer_end_date" id="offer_end_date"
                                                 value="{{ old('offer_end_date') }}"
                                                 class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
@@ -529,8 +525,16 @@
         // Installment calculation function
         function calculateInstallments() {
             const price = parseFloat(document.getElementById('prize').value) || 0;
-            const installment3 = price / 3;
-            const installment4 = price / 4;
+            const isOnOffer = document.getElementById('is_on_offer').checked;
+            const offerPercentage = parseFloat(document.getElementById('offer_percentage').value) || 0;
+            
+            let targetPrice = price;
+            if (isOnOffer && offerPercentage > 0) {
+                targetPrice = price - (price * offerPercentage / 100);
+            }
+
+            const installment3 = targetPrice / 3;
+            const installment4 = targetPrice / 4;
             
             document.getElementById('installment_3').value = installment3.toFixed(2);
             document.getElementById('installment_4').value = installment4.toFixed(2);
@@ -714,8 +718,9 @@
             }
         }
 
-        // Size radio buttons and dropdown sync
-        // (removed to keep radio + dropdown independent)
+        // Size radio buttons and dropdown (Allowed to have both)
+        const sizeRadios = document.querySelectorAll('input[name="size_label"]');
+        const sizeDropdown = document.getElementById('sizeDropdown');
 
         // Gift card functionality
         function toggleGiftCardValidity() {
@@ -756,6 +761,9 @@
             if (offerPercentageInput) {
                 offerPercentageInput.addEventListener('input', calculateDiscountedPrice);
             }
+
+            // Initialize installments on load
+            calculateInstallments();
         });
 
         // Offer functionality
@@ -798,6 +806,9 @@
             
             discountedPriceDisplay.textContent = 'Rs ' + discountedPrice.toFixed(2);
             originalPriceDisplay.textContent = 'Rs ' + price.toFixed(2);
+
+            // Also update installments
+            calculateInstallments();
         }
     </script>
 </x-app-layout>

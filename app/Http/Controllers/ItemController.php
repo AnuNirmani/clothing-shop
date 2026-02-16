@@ -14,7 +14,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])
+        $items = Item::with(['type', 'category', 'classifications', 'color', 'material', 'size', 'photos'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('items.index', compact('items'));
@@ -39,40 +39,58 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'co_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'note' => 'nullable|string',
-            'prize' => 'required|numeric|min:0',
-            'type_id' => 'nullable|exists:types,id',
-            'category_id' => 'nullable|exists:categories,id',
-            'classifications' => 'nullable|array',
-            'classifications.*' => 'exists:classifications,id',
-            'colors' => 'nullable|array',
-            'colors.*' => 'exists:colors,id',
-            'material_id' => 'nullable|exists:materials,id',
-            'size_id' => 'nullable|exists:sizes,id',
-            'size_id_dropdown' => 'nullable|exists:sizes,id',
-            'stock_items' => 'required|integer|min:0',
-            'availability' => 'required|in:in stock,out of stock',
-            'SKU' => 'required|string|unique:items,SKU|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'photos' => 'nullable|array|max:20',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_gift_card' => 'nullable|boolean',
-            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
-            'is_on_offer' => 'nullable|boolean',
-            'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
-            'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
-            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
-            'size_label' => 'nullable|in:S,M,L,XL,XXL',
-        ]);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'co_name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'note' => 'nullable|string',
+                'prize' => 'required|numeric|min:0',
+                'type_id' => 'required|exists:types,id',
+                'category_id' => 'required|exists:categories,id',
+                'material_id' => 'required|exists:materials,id',
+                'size_label' => 'nullable|in:S,M,L,XL,XXL',
+                'size_id_dropdown' => 'nullable|exists:sizes,id',
+                'stock_items' => 'required|integer|min:0',
+                'availability' => 'required|in:in stock,out of stock',
+                'SKU' => 'required|string|unique:items,SKU|max:255',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'photos' => 'nullable|array|max:20',
+                'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'classifications' => 'nullable|array',
+                'classifications.*' => 'exists:classifications,id',
+                'is_gift_card' => 'nullable|boolean',
+                'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
+                'is_on_offer' => 'nullable|boolean',
+                'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
+                'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
+                'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+                'colors' => 'required|array|min:1',
+                'colors.*' => 'exists:colors,id',
+            ],
+            [
+                // No custom messages needed
+            ],
+            [
+                'stock_items' => 'stock quantity',
+                'SKU' => 'SKU',
+                'prize' => 'price',
+                'type_id' => 'type',
+                'category_id' => 'category',
+                'material_id' => 'material',
+                'size_label' => 'size',
+                'size_id_dropdown' => 'size',
+                'colors' => 'color',
+            ]
+        );
 
-        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
-        if (empty($validated['size_id']) && isset($validated['size_id_dropdown'])) {
+        // One or both selections allowed
+        if (!empty($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
+        } else {
+            $validated['size_id'] = null;
         }
+        $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
 
         // Convert checkbox to boolean
@@ -94,6 +112,9 @@ class ItemController extends Controller
         }
 
         $item = Item::createItem($validated);
+
+        // Sync classifications (pivot)
+        $item->classifications()->sync($validated['classifications'] ?? []);
 
         // Handle multiple photo uploads
         if ($request->hasFile('photos')) {
@@ -139,42 +160,60 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'co_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'note' => 'nullable|string',
-            'prize' => 'required|numeric|min:0',
-            'type_id' => 'nullable|exists:types,id',
-            'category_id' => 'nullable|exists:categories,id',
-            'classifications' => 'nullable|array',
-            'classifications.*' => 'exists:classifications,id',
-            'colors' => 'nullable|array',
-            'colors.*' => 'exists:colors,id',
-            'material_id' => 'nullable|exists:materials,id',
-            'size_id' => 'nullable|exists:sizes,id',
-            'size_id_dropdown' => 'nullable|exists:sizes,id',
-            'stock_items' => 'required|integer|min:0',
-            'availability' => 'required|in:in stock,out of stock',
-            'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'photos' => 'nullable|array|max:20',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'delete_photos' => 'nullable|array',
-            'delete_photos.*' => 'exists:item_photos,id',
-            'is_gift_card' => 'nullable|boolean',
-            'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
-            'is_on_offer' => 'nullable|boolean',
-            'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
-            'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
-            'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
-            'size_label' => 'nullable|in:S,M,L,XL,XXL',
-        ]);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'co_name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'note' => 'nullable|string',
+                'prize' => 'required|numeric|min:0',
+                'type_id' => 'required|exists:types,id',
+                'category_id' => 'required|exists:categories,id',
+                'classifications' => 'nullable|array',
+                'classifications.*' => 'exists:classifications,id',
+                'colors' => 'required|array|min:1',
+                'colors.*' => 'exists:colors,id',
+                'material_id' => 'required|exists:materials,id',
+                'size_label' => 'nullable|required_without:size_id_dropdown|in:S,M,L,XL,XXL',
+                'size_id_dropdown' => 'nullable|required_without:size_label|exists:sizes,id',
+                'stock_items' => 'required|integer|min:0',
+                'availability' => 'required|in:in stock,out of stock',
+                'SKU' => 'required|string|max:255|unique:items,SKU,' . $id,
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'photos' => 'nullable|array|max:20',
+                'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'delete_photos' => 'nullable|array',
+                'delete_photos.*' => 'exists:item_photos,id',
+                'is_gift_card' => 'nullable|boolean',
+                'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
+                'is_on_offer' => 'nullable|boolean',
+                'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
+                'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
+                'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+            ],
+            [
+                // No custom messages needed
+            ],
+            [
+                'stock_items' => 'stock quantity',
+                'SKU' => 'SKU',
+                'prize' => 'price',
+                'type_id' => 'type',
+                'category_id' => 'category',
+                'material_id' => 'material',
+                'size_label' => 'size',
+                'size_id_dropdown' => 'size',
+                'colors' => 'color',
+            ]
+        );
 
-        // Use size_id from radio buttons, or fall back to dropdown if radio not selected
-        if (empty($validated['size_id']) && isset($validated['size_id_dropdown'])) {
+        // One or both selections allowed
+        if (!empty($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
+        } else {
+            $validated['size_id'] = null;
         }
+        $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
 
         // Convert checkbox to boolean
@@ -196,6 +235,9 @@ class ItemController extends Controller
         }
 
         $item = Item::updateItem($id, $validated);
+
+        // Sync classifications (pivot)
+        $item->classifications()->sync($validated['classifications'] ?? []);
 
         // Handle photo deletions
         if ($request->has('delete_photos')) {

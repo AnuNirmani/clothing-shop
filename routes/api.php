@@ -17,3 +17,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('api')->group(function () {
+    // Latest Items API
+    Route::get('/items/latest', [App\Http\Controllers\Api\ItemController::class, 'getLatestItem']);
+    Route::get('/items/latest-womens', [App\Http\Controllers\Api\ItemController::class, 'getLatestWomensItem']);
+    Route::get('/items/latest-mens', [App\Http\Controllers\Api\ItemController::class, 'getLatestMensItem']);
+    Route::get('/items/latest-four', [App\Http\Controllers\Api\ItemController::class, 'getLatestFourItems']);
+    Route::get('/types/latest-items', [App\Http\Controllers\Api\ItemController::class, 'getTypesWithLatestItem']);
+    Route::get('/items', [App\Http\Controllers\Api\ItemController::class, 'getItems']);
+    Route::get('/items/{id}', [App\Http\Controllers\Api\ItemController::class, 'getItemById']);
+});
