@@ -31,10 +31,22 @@ class Item extends Model
         'is_on_offer',
         'offer_percentage',
         'offer_start_date',
-        'offer_end_date'
+        'offer_end_date',
+        'discounted_price'
     ];
 
     protected $dates = ['deleted_at', 'offer_start_date', 'offer_end_date'];
+
+    /**
+     * Calculate discounted price
+     */
+    public static function calculateDiscountedPrice($prize, $is_on_offer, $offer_percentage)
+    {
+        if ($is_on_offer && $offer_percentage > 0) {
+            return $prize - ($prize * ($offer_percentage / 100));
+        }
+        return $prize;
+    }
 
     /**
      * Get the type that the item belongs to
@@ -132,6 +144,13 @@ class Item extends Model
      */
     public static function createItem(array $data)
     {
+        // Calculate discounted price
+        $data['discounted_price'] = self::calculateDiscountedPrice(
+            $data['prize'],
+            $data['is_on_offer'] ?? false,
+            $data['offer_percentage'] ?? 0
+        );
+
         // Handle image upload if present
         if (isset($data['image']) && $data['image']) {
             $data['image'] = $data['image']->store('items', 'public');
@@ -155,6 +174,13 @@ class Item extends Model
     public static function updateItem($id, array $data)
     {
         $item = self::findOrFail($id);
+
+        // Calculate discounted price
+        $data['discounted_price'] = self::calculateDiscountedPrice(
+            $data['prize'],
+            $data['is_on_offer'] ?? false,
+            $data['offer_percentage'] ?? 0
+        );
 
         // Handle image upload if present
         if (isset($data['image']) && $data['image']) {

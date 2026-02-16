@@ -43,6 +43,11 @@ const ItemDetailPage = () => {
 
     const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '—');
     const classificationNames = item?.classifications || [];
+    const formatPrice = (value) => {
+        const n = Number(value);
+        if (Number.isNaN(n)) return '';
+        return Math.floor(n).toLocaleString();
+    };
 
     // Icon components for specs
     const SpecIcon = ({ path, color = 'bg-pink-50 text-pink-500' }) => (
@@ -65,7 +70,7 @@ const ItemDetailPage = () => {
                         <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
                     </div>
                 ) : item ? (
-                    <div className="flex flex-col lg:flex-row gap-6 items-start">
+                    <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start justify-center">
                         {/* Main Image Column */}
                         <div className="w-full lg:flex-1">
                             <div
@@ -83,11 +88,11 @@ const ItemDetailPage = () => {
 
                         {/* Thumbnails Column - Vertical Strip */}
                         {(item.photos?.length > 0 || item.image) && (
-                            <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-20 overflow-x-auto lg:overflow-x-visible no-scrollbar">
+                            <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-16 overflow-x-auto lg:overflow-x-visible no-scrollbar">
                                 {item.image && (
                                     <button
                                         onClick={() => setActivePhoto(item.image)}
-                                        className={`relative flex-shrink-0 w-16 h-20 rounded-lg border-2 transition-all duration-300 overflow-hidden ${activePhoto === item.image
+                                        className={`relative flex-shrink-0 w-12 h-16 rounded-md border-2 transition-all duration-300 overflow-hidden ${activePhoto === item.image
                                             ? 'border-gray-900 shadow-sm'
                                             : 'border-transparent hover:border-gray-200'
                                             }`}
@@ -99,7 +104,7 @@ const ItemDetailPage = () => {
                                     <button
                                         key={idx}
                                         onClick={() => setActivePhoto(photo.url)}
-                                        className={`relative flex-shrink-0 w-16 h-20 rounded-lg border-2 transition-all duration-300 overflow-hidden ${activePhoto === photo.url
+                                        className={`relative flex-shrink-0 w-12 h-16 rounded-md border-2 transition-all duration-300 overflow-hidden ${activePhoto === photo.url
                                             ? 'border-gray-900 shadow-sm'
                                             : 'border-transparent hover:border-gray-200'
                                             }`}
@@ -130,17 +135,17 @@ const ItemDetailPage = () => {
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <span className="text-xl font-bold text-gray-900">
-                                            Rs {item.prize?.toLocaleString()}.00
+                                            Rs {formatPrice(item.is_on_offer && item.discounted_price ? item.discounted_price : item.prize)}
                                         </span>
-                                        {item.is_on_offer && (
+                                        {!!item.is_on_offer && (
                                             <span className="text-xs font-bold text-pink-500 bg-pink-50 px-2 py-0.5 rounded">
                                                 -{item.offer_percentage}%
                                             </span>
                                         )}
                                     </div>
-                                    {item.is_on_offer && (
+                                    {!!item.is_on_offer && (
                                         <p className="text-xs text-gray-400 line-through">
-                                            Regular: Rs {item.prize?.toLocaleString()}.00
+                                            Regular: Rs {formatPrice(item.prize)}
                                         </p>
                                     )}
                                 </div>
@@ -148,11 +153,11 @@ const ItemDetailPage = () => {
                                 {/* Promo items like reference */}
                                 <div className="flex items-center gap-4 py-2 border-b border-gray-100">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-gray-500">or 3 installments with</span>
+                                        <span className="text-[12px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
                                         <span className="text-xs font-black text-purple-600">KOKO</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-gray-500">or 4 installments with</span>
+                                        <span className="text-[12px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
                                         <span className="text-xs font-black text-blue-500 italic">PayZy</span>
                                     </div>
                                 </div>
@@ -235,8 +240,10 @@ const ItemDetailPage = () => {
                                             {quantity}
                                         </span>
                                         <button
-                                            onClick={() => setQuantity(q => q + 1)}
-                                            className="px-3 py-2 hover:bg-gray-50 text-gray-500 transition-colors"
+                                            onClick={() => setQuantity(q => Math.min(item.stock_items, q + 1))}
+                                            disabled={quantity >= item.stock_items}
+                                            className={`px-3 py-2 text-gray-500 transition-colors ${quantity >= item.stock_items ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
+                                                }`}
                                         >
                                             +
                                         </button>

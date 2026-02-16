@@ -317,7 +317,7 @@
                                     <div class="relative">
                                         <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                         <div class="w-full pl-8 py-2 rounded border border-gray-200 bg-gray-50 text-xl font-bold text-pink-600">
-                                            {{ number_format($item->prize / 3, 2) }}
+                                            {{ number_format(($item->discounted_price ?? $item->prize) / 3, 2) }}
                                         </div>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">per month</p>
@@ -328,7 +328,7 @@
                                     <div class="relative">
                                         <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                         <div class="w-full pl-8 py-2 rounded border border-gray-200 bg-gray-50 text-xl font-bold text-blue-600">
-                                            {{ number_format($item->prize / 4, 2) }}
+                                            {{ number_format(($item->discounted_price ?? $item->prize) / 4, 2) }}
                                         </div>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">per month</p>

@@ -190,7 +190,10 @@ class ItemController extends Controller
             'classifications' => $item->classifications->map(fn($c) => $c->name),
             'photos' => $item->photos->map(fn($photo) => [
                 'url' => asset('storage/' . $photo->photo_path)
-            ])
+            ]),
+            'installment_3' => number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', ''),
+            'installment_4' => number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', ''),
+            'discounted_price' => $item->discounted_price
         ];
     }
 }

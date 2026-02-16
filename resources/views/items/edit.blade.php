@@ -421,7 +421,7 @@
                                             <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                             <input type="text" id="installment_3" readonly
                                                 class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-xl font-bold text-pink-600"
-                                                value="{{ number_format($item->prize / 3, 2) }}">
+                                                value="{{ number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', '') }}">
                                         </div>
                                         <p class="text-xs text-gray-500 mt-1">per month</p>
                                     </div>
@@ -432,7 +432,7 @@
                                             <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
                                             <input type="text" id="installment_4" readonly
                                                 class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-xl font-bold text-blue-600"
-                                                value="{{ number_format($item->prize / 4, 2) }}">
+                                                value="{{ number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', '') }}">
                                         </div>
                                         <p class="text-xs text-gray-500 mt-1">per month</p>
                                     </div>
@@ -596,8 +596,16 @@
         // Installment calculation function
         function calculateInstallments() {
             const price = parseFloat(document.getElementById('prize').value) || 0;
-            const installment3 = price / 3;
-            const installment4 = price / 4;
+            const isOnOffer = document.getElementById('is_on_offer').checked;
+            const offerPercentage = parseFloat(document.getElementById('offer_percentage').value) || 0;
+            
+            let targetPrice = price;
+            if (isOnOffer && offerPercentage > 0) {
+                targetPrice = price - (price * offerPercentage / 100);
+            }
+
+            const installment3 = targetPrice / 3;
+            const installment4 = targetPrice / 4;
             
             document.getElementById('installment_3').value = installment3.toFixed(2);
             document.getElementById('installment_4').value = installment4.toFixed(2);
@@ -847,6 +855,9 @@
             
             discountedPriceDisplay.textContent = 'Rs ' + discountedPrice.toFixed(2);
             originalPriceDisplay.textContent = 'Rs ' + price.toFixed(2);
+            
+            // Also update installments
+            calculateInstallments();
         }
 
         // Initialize on page load

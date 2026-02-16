@@ -525,8 +525,16 @@
         // Installment calculation function
         function calculateInstallments() {
             const price = parseFloat(document.getElementById('prize').value) || 0;
-            const installment3 = price / 3;
-            const installment4 = price / 4;
+            const isOnOffer = document.getElementById('is_on_offer').checked;
+            const offerPercentage = parseFloat(document.getElementById('offer_percentage').value) || 0;
+            
+            let targetPrice = price;
+            if (isOnOffer && offerPercentage > 0) {
+                targetPrice = price - (price * offerPercentage / 100);
+            }
+
+            const installment3 = targetPrice / 3;
+            const installment4 = targetPrice / 4;
             
             document.getElementById('installment_3').value = installment3.toFixed(2);
             document.getElementById('installment_4').value = installment4.toFixed(2);
@@ -753,6 +761,9 @@
             if (offerPercentageInput) {
                 offerPercentageInput.addEventListener('input', calculateDiscountedPrice);
             }
+
+            // Initialize installments on load
+            calculateInstallments();
         });
 
         // Offer functionality
@@ -795,6 +806,9 @@
             
             discountedPriceDisplay.textContent = 'Rs ' + discountedPrice.toFixed(2);
             originalPriceDisplay.textContent = 'Rs ' + price.toFixed(2);
+
+            // Also update installments
+            calculateInstallments();
         }
     </script>
 </x-app-layout>
