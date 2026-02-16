@@ -710,25 +710,9 @@
             }
         }
 
-        // Size radio buttons and dropdown mutual exclusivity
+        // Size radio buttons and dropdown (Allowed to have both)
         const sizeRadios = document.querySelectorAll('input[name="size_label"]');
         const sizeDropdown = document.getElementById('sizeDropdown');
-
-        sizeRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    sizeDropdown.value = "";
-                }
-            });
-        });
-
-        sizeDropdown.addEventListener('change', function() {
-            if (this.value !== "") {
-                sizeRadios.forEach(radio => {
-                    radio.checked = false;
-                });
-            }
-        });
 
         // Gift card functionality
         function toggleGiftCardValidity() {

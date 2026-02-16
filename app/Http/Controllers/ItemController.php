@@ -49,8 +49,8 @@ class ItemController extends Controller
                 'type_id' => 'required|exists:types,id',
                 'category_id' => 'required|exists:categories,id',
                 'material_id' => 'required|exists:materials,id',
-                'size_label' => 'nullable|required_without:size_id_dropdown|in:S,M,L,XL,XXL',
-                'size_id_dropdown' => 'nullable|required_without:size_label|exists:sizes,id',
+                'size_label' => 'nullable|in:S,M,L,XL,XXL',
+                'size_id_dropdown' => 'nullable|exists:sizes,id',
                 'stock_items' => 'required|integer|min:0',
                 'availability' => 'required|in:in stock,out of stock',
                 'SKU' => 'required|string|unique:items,SKU|max:255',
@@ -67,7 +67,7 @@ class ItemController extends Controller
                 'colors.*' => 'exists:colors,id',
             ],
             [
-                'size_id_dropdown.required_without' => 'The size field is required.',
+                // No custom messages needed
             ],
             [
                 'stock_items' => 'stock quantity',
@@ -82,13 +82,13 @@ class ItemController extends Controller
             ]
         );
 
-        // One from both selection
+        // One or both selections allowed
         if (!empty($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
-            $validated['size_label'] = null; // Clear label if dropdown is used
         } else {
-            $validated['size_id'] = null; // Clear id if label (radio) is used
+            $validated['size_id'] = null;
         }
+        $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
 
         // Convert checkbox to boolean
@@ -202,13 +202,13 @@ class ItemController extends Controller
             ]
         );
 
-        // One from both selection
+        // One or both selections allowed
         if (!empty($validated['size_id_dropdown'])) {
             $validated['size_id'] = $validated['size_id_dropdown'];
-            $validated['size_label'] = null; // Clear label if dropdown is used
-        } else if (!empty($validated['size_label'])) {
-            $validated['size_id'] = null; // Clear id if label (radio) is used
+        } else {
+            $validated['size_id'] = null;
         }
+        $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
 
         // Convert checkbox to boolean
