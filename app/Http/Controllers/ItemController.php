@@ -14,7 +14,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::with(['type', 'category', 'classification', 'color', 'material', 'size', 'photos'])
+        $items = Item::with(['type', 'category', 'classifications', 'color', 'material', 'size', 'photos'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('items.index', compact('items'));

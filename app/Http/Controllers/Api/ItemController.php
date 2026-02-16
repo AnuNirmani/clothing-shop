@@ -140,7 +140,7 @@ class ItemController extends Controller
     {
         $item = Item::where('id', $id)
             ->where('availability', 'in stock')
-            ->with(['category', 'type', 'colors', 'photos', 'material', 'size'])
+            ->with(['category', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
             ->first();
 
         if (!$item) {
@@ -164,16 +164,21 @@ class ItemController extends Controller
         return [
             'id' => $item->id,
             'name' => $item->name,
+            'co_name' => $item->co_name,
+            'SKU' => $item->SKU,
             'description' => $item->description,
+            'note' => $item->note,
             'prize' => $item->prize,
             'image' => $item->image ? asset('storage/' . $item->image) : null,
             'category' => $item->category?->name,
             'type' => $item->type?->name,
-            'stock' => $item->stock_items,
+            'stock_items' => $item->stock_items,
             'availability' => $item->availability,
             'material' => $item->material?->name,
             'size' => $item->size?->name,
             'size_label' => $item->size_label,
+            'is_gift_card' => $item->is_gift_card,
+            'gift_card_validity_months' => $item->gift_card_validity_months,
             'is_on_offer' => $item->is_on_offer,
             'offer_percentage' => $item->offer_percentage,
             'offer_start_date' => $item->offer_start_date,
@@ -182,6 +187,7 @@ class ItemController extends Controller
                 'name' => $color->name,
                 'hex' => $color->hex_code
             ]),
+            'classifications' => $item->classifications->map(fn($c) => $c->name),
             'photos' => $item->photos->map(fn($photo) => [
                 'url' => asset('storage/' . $photo->photo_path)
             ])

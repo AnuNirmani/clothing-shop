@@ -34,6 +34,9 @@ const ItemDetailPage = () => {
     const addToCart = () => alert('Added to cart!');
     const buyNow = () => alert('Proceeding to checkout...');
 
+    const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '—');
+    const classificationNames = item?.classifications || [];
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
             <Header />
@@ -119,40 +122,72 @@ const ItemDetailPage = () => {
                                 </p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6 mb-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Material</h3>
-                                    <p className="font-medium text-gray-800">{item.material || 'Premium Fabric'}</p>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Co Name</h3>
+                                    <p className="font-medium text-gray-800">{item.co_name || '—'}</p>
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Size</h3>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">SKU</h3>
+                                    <p className="font-medium text-gray-800">{item.SKU || item.sku || '—'}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Availability</h3>
+                                    <p className="font-medium text-gray-800">{item.availability || '—'}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Stock</h3>
                                     <p className="font-medium text-gray-800">
-                                        {item.size || 'Standard'} {item.size_label && `(${item.size_label})`}
+                                        {Number.isFinite(item.stock_items) ? `${item.stock_items} units` : '—'}
                                     </p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Material</h3>
+                                    <p className="font-medium text-gray-800">{item.material || '—'}</p>
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Classifications</h3>
+                                    <p className="font-medium text-gray-800">
+                                        {classificationNames.length ? classificationNames.join(', ') : '—'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Size Label</h3>
+                                    <p className="font-medium text-gray-800">{item.size_label || '—'}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Selected Item</h3>
+                                    <p className="font-medium text-gray-800">{item.size || '—'}</p>
                                 </div>
                             </div>
 
-                            {/* Colors */}
-                            <div className="mb-10">
-                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Available Colors</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {item.colors?.length ? (
-                                        item.colors.map((color, idx) => (
-                                            <div key={idx} className="group relative">
-                                                <div
-                                                    className="w-10 h-10 rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-110"
-                                                    style={{ backgroundColor: color.hex }}
-                                                ></div>
-                                                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                                    {color.name}
-                                                </span>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <span className="text-sm text-gray-400 italic">No color variants</span>
+                            {item.note && (
+                                <div className="mb-8 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Note</h3>
+                                    <p className="text-gray-700 leading-relaxed">{item.note}</p>
+                                </div>
+                            )}
+
+                            {(item.is_gift_card || item.is_on_offer) && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                                    {item.is_gift_card && (
+                                        <div>
+                                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Gift Card</h3>
+                                            <p className="font-medium text-gray-800">
+                                                Yes{item.gift_card_validity_months ? ` • ${item.gift_card_validity_months} months` : ''}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {item.is_on_offer && (
+                                        <div>
+                                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Offer Period</h3>
+                                            <p className="font-medium text-gray-800">
+                                                {formatDate(item.offer_start_date)} — {formatDate(item.offer_end_date)}
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
-                            </div>
+                            )}
 
                             {/* Actions */}
                             <div className="mt-auto space-y-4">
