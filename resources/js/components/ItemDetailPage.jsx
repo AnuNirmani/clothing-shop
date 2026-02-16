@@ -11,6 +11,7 @@ const ItemDetailPage = () => {
     const [isHovering, setIsHovering] = useState(false);
     const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [showSizeChart, setShowSizeChart] = useState(false);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -201,24 +202,13 @@ const ItemDetailPage = () => {
                                         <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
                                             SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'N/A'}</span>
                                         </p>
-                                        <button className="text-[10px] font-bold text-blue-600 flex items-center gap-1 group">
+                                        <button
+                                            onClick={() => setShowSizeChart(true)}
+                                            className="text-[10px] font-bold text-blue-600 flex items-center gap-1 group"
+                                        >
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /></svg>
                                             <span className="border-b border-transparent group-hover:border-blue-600 transition-all">Size Chart</span>
                                         </button>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* Mocking a few sizes to match reference look */}
-                                        {['UK-08', 'UK-10', 'UK-12', 'UK-14'].map((s) => (
-                                            <button
-                                                key={s}
-                                                className={`px-4 py-2 border text-[11px] font-bold transition-all ${s === (item.size_label || 'UK-08')
-                                                    ? 'border-gray-900 bg-gray-50'
-                                                    : 'border-gray-200 text-gray-400 hover:border-gray-400'
-                                                    }`}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
                                     </div>
                                 </div>
 
@@ -299,6 +289,51 @@ const ItemDetailPage = () => {
                         >
                             Return to Shop
                         </Link>
+                    </div>
+                )}
+
+                {/* Size Chart Modal */}
+                {showSizeChart && (
+                    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" onClick={() => setShowSizeChart(false)}>
+                        <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-xl font-bold text-gray-900">Size Chart</h3>
+                                <button
+                                    onClick={() => setShowSizeChart(false)}
+                                    className="text-gray-400 hover:text-gray-900 transition-colors"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="flex flex-col items-center justify-center min-h-[300px]">
+                                {item.size_chart ? (
+                                    <img
+                                        src={item.size_chart}
+                                        alt={`${item.size || 'Size'} Chart`}
+                                        className="max-w-full h-auto rounded-lg shadow-sm"
+                                    />
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-gray-500 font-medium">No size chart available for this item.</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-6 text-center">
+                                <button
+                                    onClick={() => setShowSizeChart(false)}
+                                    className="px-8 py-2.5 bg-[#1a1a1a] text-white rounded-lg font-bold hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </main>
