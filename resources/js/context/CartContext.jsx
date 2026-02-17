@@ -31,7 +31,7 @@ export const CartProvider = ({ children }) => {
     }, [cartItems]);
 
     // Add item to cart
-    const addToCart = (item) => {
+    const addToCart = (item, options = {}) => {
         setCartItems((prevItems) => {
             // Check if item already exists in cart (same id, color, and size)
             const existingItemIndex = prevItems.findIndex(
@@ -61,6 +61,10 @@ export const CartProvider = ({ children }) => {
                 return [...prevItems, validatedItem];
             }
         });
+
+        if (options.openCart) {
+            window.dispatchEvent(new CustomEvent('cart:open'));
+        }
     };
 
     // Remove item from cart

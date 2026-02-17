@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartPage from '../pages/CartPage';
@@ -16,6 +16,12 @@ const Header = () => {
             });
         }
     };
+
+    useEffect(() => {
+        const handleCartOpen = () => setCartOpen(true);
+        window.addEventListener('cart:open', handleCartOpen);
+        return () => window.removeEventListener('cart:open', handleCartOpen);
+    }, []);
 
 
     return (

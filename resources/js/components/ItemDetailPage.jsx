@@ -6,7 +6,7 @@ import Footer from './Footer';
 
 const ItemDetailPage = () => {
     const { id } = useParams();
-    const { addToCart: addToCartContext } = useCart();
+    const { addToCart: addToCartContext, cartItems } = useCart();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activePhoto, setActivePhoto] = useState(null);
@@ -15,6 +15,7 @@ const ItemDetailPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [showSizeChart, setShowSizeChart] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
+    const [stockError, setStockError] = useState(false);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -51,9 +52,29 @@ const ItemDetailPage = () => {
             return;
         }
 
+        const colorToUse = selectedColor || 'NULL';
+        const sizeToUse = item.size_label || item.size || 'NULL';
+        const alreadyInCart = cartItems.some(
+            (cartItem) =>
+                cartItem.id === item.id &&
+                cartItem.color === colorToUse &&
+                cartItem.size === sizeToUse
+        );
+
+        if (alreadyInCart) {
+            setStockError(false);
+            setAddedToCart(false);
+            window.dispatchEvent(new CustomEvent('cart:open'));
+            return;
+        }
+
+        // Reset error states
+        setStockError(false);
+
         // Check if adding this quantity would exceed stock
         if (quantity > item.stock_items) {
-            alert(`Only ${item.stock_items} items available in stock`);
+            setStockError(true);
+            setTimeout(() => setStockError(false), 3000);
             return;
         }
 
@@ -63,13 +84,13 @@ const ItemDetailPage = () => {
             name: item.name,
             price: item.is_on_offer && item.discounted_price ? item.discounted_price : item.prize,
             image: item.image,
-            color: selectedColor || 'N/A',
-            size: item.size_label || item.size || 'N/A',
+            color: colorToUse,
+            size: sizeToUse,
             quantity: quantity,
             stock: item.stock_items,
         };
 
-        addToCartContext(cartItem);
+        addToCartContext(cartItem, { openCart: true });
 
         // Show success feedback
         setAddedToCart(true);
@@ -236,7 +257,7 @@ const ItemDetailPage = () => {
                                 <div className="space-y-2 py-2">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
-                                            SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'N/A'}</span>
+                                            SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'NULL'}</span>
                                         </p>
                                         <button
                                             onClick={() => setShowSizeChart(true)}
@@ -276,12 +297,21 @@ const ItemDetailPage = () => {
                                     </div>
                                     <button
                                         onClick={addToCart}
-                                        className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${addedToCart
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-[#1a1a1a] text-white hover:bg-black'
+                                        className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${stockError
+                                            ? 'bg-red-500 text-white'
+                                            : addedToCart
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-[#1a1a1a] text-white hover:bg-black'
                                             }`}
                                     >
-                                        {addedToCart ? (
+                                        {stockError ? (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Stock Limit Exceeded!
+                                            </>
+                                        ) : addedToCart ? (
                                             <>
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -299,9 +329,27 @@ const ItemDetailPage = () => {
                                     </button>
                                 </div>
 
-                                {item.stock_items > 0 && quantity >= item.stock_items && (
+                                {addedToCart && (
+                                    <div className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[13.5px] text-green-700 font-semibold">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Item added to cart.
+                                    </div>
+                                )}
+
+                                {stockError && (
+                                    <p className="text-[12.5px] text-red-600 font-semibold flex items-center gap-1.5">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Only {item.stock_items} items available in stock. Please reduce quantity.
+                                    </p>
+                                )}
+
+                                {!stockError && item.stock_items > 0 && quantity >= item.stock_items && (
                                     <p className="text-[12.5px] text-red-600 font-semibold">
-                                        Nearly gone. Only{item.stock_items} pieces left in our collection.
+                                        Nearly gone. Only {item.stock_items} pieces left in our collection.
                                     </p>
                                 )}
 
