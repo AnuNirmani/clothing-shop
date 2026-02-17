@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import Header from './Header';
 import Footer from './Footer';
 
 const ItemDetailPage = () => {
     const { id } = useParams();
+    const { addToCart: addToCartContext } = useCart();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activePhoto, setActivePhoto] = useState(null);
@@ -12,6 +14,7 @@ const ItemDetailPage = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [showSizeChart, setShowSizeChart] = useState(false);
+    const [addedToCart, setAddedToCart] = useState(false);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -39,7 +42,34 @@ const ItemDetailPage = () => {
         fetchItem();
     }, [id]);
 
-    const addToCart = () => alert('Added to cart!');
+    const addToCart = () => {
+        if (!item) return;
+
+        // Validate color selection if colors are available
+        if (item.colors?.length > 0 && !selectedColor) {
+            alert('Please select a color');
+            return;
+        }
+
+        // Create cart item object
+        const cartItem = {
+            id: item.id,
+            name: item.name,
+            price: item.is_on_offer && item.discounted_price ? item.discounted_price : item.prize,
+            image: item.image,
+            color: selectedColor || 'N/A',
+            size: item.size_label || item.size || 'N/A',
+            quantity: quantity,
+            stock: item.stock_items,
+        };
+
+        addToCartContext(cartItem);
+
+        // Show success feedback
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
+
     const buyNow = () => alert('Proceeding to checkout...');
 
     const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '—');
@@ -240,10 +270,26 @@ const ItemDetailPage = () => {
                                     </div>
                                     <button
                                         onClick={addToCart}
-                                        className="flex-1 bg-[#1a1a1a] text-white py-2.5 rounded text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2"
+                                        className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${addedToCart
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-[#1a1a1a] text-white hover:bg-black'
+                                            }`}
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                        Add To Cart
+                                        {addedToCart ? (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Added to Cart!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                Add To Cart
+                                            </>
+                                        )}
                                     </button>
                                 </div>
 

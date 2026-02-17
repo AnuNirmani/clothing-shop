@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 
 const CartPage = ({ isOpen, onClose }) => {
-    const [cartItems, setCartItems] = useState([]);
+    const { cartItems, removeFromCart, updateQuantity, getCartTotal } = useCart();
 
-    // Mock cart data - replace with actual cart data from your backend/state management
-    useEffect(() => {
-        // This is where you'd fetch cart items from your backend or state
-        // For now, it's empty
-        setCartItems([]);
-    }, []);
+    const handleQuantityChange = (cartItemId, newQuantity) => {
+        updateQuantity(cartItemId, newQuantity);
+    };
+
+    const handleRemoveItem = (cartItemId) => {
+        removeFromCart(cartItemId);
+    };
+
+    const formatPrice = (value) => {
+        const n = Number(value);
+        if (Number.isNaN(n)) return '0';
+        return Math.floor(n).toLocaleString();
+    };
 
     return (
         <>
@@ -158,9 +166,9 @@ const CartPage = ({ isOpen, onClose }) => {
                         <>
                             <div className="flex-1 overflow-y-auto p-6">
                                 {cartItems.map((item) => (
-                                    <div key={item.id} className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
+                                    <div key={item.cartItemId} className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
                                         <img
-                                            src={item.image}
+                                            src={item.image || '/images/placeholder.jpg'}
                                             alt={item.name}
                                             className="w-20 h-20 object-cover rounded-lg"
                                         />
@@ -169,18 +177,31 @@ const CartPage = ({ isOpen, onClose }) => {
                                             <p className="text-sm text-gray-500">Size: {item.size}</p>
                                             <p className="text-sm text-gray-500">Color: {item.color}</p>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <button className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100">
+                                                <button
+                                                    onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}
+                                                    disabled={item.quantity <= 1}
+                                                    className={`w-6 h-6 flex items-center justify-center border border-gray-300 rounded transition-colors ${item.quantity <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                                                        }`}
+                                                >
                                                     -
                                                 </button>
                                                 <span className="text-sm font-medium">{item.quantity}</span>
-                                                <button className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100">
+                                                <button
+                                                    onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}
+                                                    disabled={item.quantity >= (item.stock || 99)}
+                                                    className={`w-6 h-6 flex items-center justify-center border border-gray-300 rounded transition-colors ${item.quantity >= (item.stock || 99) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                                                        }`}
+                                                >
                                                     +
                                                 </button>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold text-gray-800">${item.price}</p>
-                                            <button className="text-red-500 hover:text-red-700 text-sm mt-2">
+                                            <p className="font-bold text-gray-800">Rs {formatPrice(item.price * item.quantity)}</p>
+                                            <button
+                                                onClick={() => handleRemoveItem(item.cartItemId)}
+                                                className="text-red-500 hover:text-red-700 text-sm mt-2 transition-colors"
+                                            >
                                                 Remove
                                             </button>
                                         </div>
@@ -192,7 +213,7 @@ const CartPage = ({ isOpen, onClose }) => {
                             <div className="border-t border-gray-200 p-6 bg-gray-50">
                                 <div className="flex justify-between mb-4">
                                     <span className="text-gray-600">Subtotal:</span>
-                                    <span className="font-bold text-gray-800">$0.00</span>
+                                    <span className="font-bold text-gray-800">Rs {formatPrice(getCartTotal())}</span>
                                 </div>
                                 <div className="flex justify-between mb-4">
                                     <span className="text-gray-600">Shipping:</span>
@@ -200,7 +221,7 @@ const CartPage = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className="flex justify-between mb-6 text-lg">
                                     <span className="font-bold text-gray-800">Total:</span>
-                                    <span className="font-bold text-pink-500">$0.00</span>
+                                    <span className="font-bold text-pink-500">Rs {formatPrice(getCartTotal())}</span>
                                 </div>
                                 <button className="w-full bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200">
                                     Checkout

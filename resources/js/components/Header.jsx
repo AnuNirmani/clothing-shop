@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import CartPage from '../pages/CartPage';
 
 const Header = () => {
+    const { getCartItemCount } = useCart();
     const [menuOpen, setMenuOpen] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
 
@@ -79,12 +81,17 @@ const Header = () => {
 
                         <button
                             onClick={() => setCartOpen(true)}
-                            className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                            className="text-gray-700 hover:text-pink-500 transition-colors duration-200 relative"
                             aria-label="Cart"
                         >
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
+                            {getCartItemCount() > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    {getCartItemCount()}
+                                </span>
+                            )}
                         </button>
                     </div>
 
@@ -150,12 +157,17 @@ const Header = () => {
                                 </Link>
                                 <button
                                     onClick={() => setCartOpen(true)}
-                                    className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                                    className="text-gray-700 hover:text-pink-500 transition-colors duration-200 relative"
                                     aria-label="Cart"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
+                                    {getCartItemCount() > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                            {getCartItemCount()}
+                                        </span>
+                                    )}
                                 </button>
                             </div>
                         </div>
