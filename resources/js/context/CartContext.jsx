@@ -42,13 +42,23 @@ export const CartProvider = ({ children }) => {
             );
 
             if (existingItemIndex > -1) {
-                // Item exists, update quantity
+                // Item exists, update quantity with stock limit check
                 const updatedItems = [...prevItems];
-                updatedItems[existingItemIndex].quantity += item.quantity;
+                const newQuantity = updatedItems[existingItemIndex].quantity + item.quantity;
+                const stockLimit = item.stock || 99;
+
+                // Don't exceed stock limit
+                updatedItems[existingItemIndex].quantity = Math.min(newQuantity, stockLimit);
                 return updatedItems;
             } else {
-                // New item, add to cart
-                return [...prevItems, { ...item, cartItemId: Date.now() }];
+                // New item, add to cart with stock limit check
+                const stockLimit = item.stock || 99;
+                const validatedItem = {
+                    ...item,
+                    quantity: Math.min(item.quantity, stockLimit),
+                    cartItemId: Date.now()
+                };
+                return [...prevItems, validatedItem];
             }
         });
     };
@@ -63,9 +73,14 @@ export const CartProvider = ({ children }) => {
         if (newQuantity < 1) return;
 
         setCartItems((prevItems) =>
-            prevItems.map((item) =>
-                item.cartItemId === cartItemId ? { ...item, quantity: newQuantity } : item
-            )
+            prevItems.map((item) => {
+                if (item.cartItemId === cartItemId) {
+                    const stockLimit = item.stock || 99;
+                    // Don't exceed stock limit
+                    return { ...item, quantity: Math.min(newQuantity, stockLimit) };
+                }
+                return item;
+            })
         );
     };
 

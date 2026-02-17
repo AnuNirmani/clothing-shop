@@ -51,6 +51,12 @@ const ItemDetailPage = () => {
             return;
         }
 
+        // Check if adding this quantity would exceed stock
+        if (quantity > item.stock_items) {
+            alert(`Only ${item.stock_items} items available in stock`);
+            return;
+        }
+
         // Create cart item object
         const cartItem = {
             id: item.id,
@@ -184,11 +190,11 @@ const ItemDetailPage = () => {
                                 {/* Promo items like reference */}
                                 <div className="flex items-center gap-4 py-2 border-b border-gray-100">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[12px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
+                                        <span className="text-[11px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
                                         <span className="text-xs font-black text-purple-600">KOKO</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[12px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
+                                        <span className="text-[11px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
                                         <span className="text-xs font-black text-blue-500 italic">PayZy</span>
                                     </div>
                                 </div>
@@ -271,8 +277,8 @@ const ItemDetailPage = () => {
                                     <button
                                         onClick={addToCart}
                                         className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${addedToCart
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-[#1a1a1a] text-white hover:bg-black'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-[#1a1a1a] text-white hover:bg-black'
                                             }`}
                                     >
                                         {addedToCart ? (
@@ -292,6 +298,12 @@ const ItemDetailPage = () => {
                                         )}
                                     </button>
                                 </div>
+
+                                {item.stock_items > 0 && quantity >= item.stock_items && (
+                                    <p className="text-[12.5px] text-red-600 font-semibold">
+                                        Nearly gone. Only{item.stock_items} pieces left in our collection.
+                                    </p>
+                                )}
 
                                 {/* Simplified Specs */}
                                 <ul className="space-y-1.5 py-4 border-t border-gray-100">
