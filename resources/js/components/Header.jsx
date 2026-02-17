@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import CartPage from '../pages/CartPage';
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
 
     const handleProfileClick = (e) => {
         if (window.location.pathname === '/login') {
@@ -75,7 +77,11 @@ const Header = () => {
                             </svg>
                         </Link>
 
-                        <button className="text-gray-700 hover:text-pink-500 transition-colors duration-200" aria-label="Cart">
+                        <button
+                            onClick={() => setCartOpen(true)}
+                            className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                            aria-label="Cart"
+                        >
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
@@ -142,7 +148,11 @@ const Header = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 20a6 6 0 0112 0" />
                                     </svg>
                                 </Link>
-                                <button className="text-gray-700 hover:text-pink-500 transition-colors duration-200" aria-label="Cart">
+                                <button
+                                    onClick={() => setCartOpen(true)}
+                                    className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                                    aria-label="Cart"
+                                >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
@@ -152,6 +162,9 @@ const Header = () => {
                     </div>
                 )}
             </div>
+
+            {/* Cart Sidebar */}
+            <CartPage isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </nav>
     );
 };
