@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes wipe-ltr {
+    0% {
+        clip-path: inset(0 100% 0 0);
+        opacity: 0;
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+        opacity: 1;
+    }
+}
+
+.animate-wipe-ltr {
+    animation: wipe-ltr 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
