@@ -96,7 +96,7 @@ const HomePage = () => {
                             />
 
                             {/* Search Button */}
-                            <button className="ml-4 w-12 h-12 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 border-2 border-transparent flex items-center justify-center hover:from-pink-500 hover:to-blue-500 transition-all duration-300 group">
+                            <button className="ml-4 w-12 h-12 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 border-0 border-transparent flex items-center justify-center hover:from-pink-500 hover:to-blue-500 transition-all duration-300 group">
                                 <svg
                                     className="w-6 h-6 text-white transition-colors duration-300"
                                     fill="none"

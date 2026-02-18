@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            $table->boolean('is_on_offer')->default(false);
-            $table->decimal('offer_percentage', 5, 2)->nullable()->comment('Discount percentage (0-100)');
-            $table->date('offer_start_date')->nullable();
-            $table->date('offer_end_date')->nullable();
+            if (!Schema::hasColumn('items', 'material_id')) {
+                $table->unsignedBigInteger('material_id')->nullable()->after('category_id');
+                $table->foreign('material_id')->references('id')->on('materials')->onDelete('set null');
+            }
         });
     }
 
@@ -25,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            $table->dropColumn(['is_on_offer', 'offer_percentage', 'offer_start_date', 'offer_end_date']);
+            $table->dropForeign(['material_id']);
+            $table->dropColumn('material_id');
         });
     }
 };

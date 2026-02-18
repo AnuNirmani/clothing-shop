@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            $table->boolean('is_on_offer')->default(false);
-            $table->decimal('offer_percentage', 5, 2)->nullable()->comment('Discount percentage (0-100)');
-            $table->date('offer_start_date')->nullable();
-            $table->date('offer_end_date')->nullable();
+            if (!Schema::hasColumn('items', 'is_gift_card')) {
+                $table->boolean('is_gift_card')->default(false)->after('size_id');
+            }
+            if (!Schema::hasColumn('items', 'discounted_price')) {
+                $table->decimal('discounted_price', 10, 2)->nullable()->after('is_gift_card');
+            }
         });
     }
 
@@ -25,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            $table->dropColumn(['is_on_offer', 'offer_percentage', 'offer_start_date', 'offer_end_date']);
+            $table->dropColumn(['is_gift_card', 'discounted_price']);
         });
     }
 };
