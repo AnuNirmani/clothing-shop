@@ -67,15 +67,34 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$user->id],
-        ]);
+        ];
 
-        $user->update([
+        // Only validate password if it is provided
+        if ($request->filled('password')) {
+            $rules['current_password'] = ['required', 'string'];
+            $rules['password'] = ['confirmed', Rules\Password::defaults()];
+        }
+
+        $request->validate($rules);
+
+        // Update basic info
+        $user->fill([
             'name' => $request->name,
             'email' => $request->email,
         ]);
+
+        // Update password if provided and current password is correct
+        if ($request->filled('password')) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'The provided password does not match your current password.']);
+            }
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
