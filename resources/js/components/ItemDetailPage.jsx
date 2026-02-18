@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import Header from './Header';
 import Footer from './Footer';
 
 const ItemDetailPage = () => {
     const { id } = useParams();
+    const { addToCart: addToCartContext, cartItems } = useCart();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activePhoto, setActivePhoto] = useState(null);
@@ -12,6 +14,8 @@ const ItemDetailPage = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [showSizeChart, setShowSizeChart] = useState(false);
+    const [addedToCart, setAddedToCart] = useState(false);
+    const [stockError, setStockError] = useState(false);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -39,7 +43,60 @@ const ItemDetailPage = () => {
         fetchItem();
     }, [id]);
 
-    const addToCart = () => alert('Added to cart!');
+    const addToCart = () => {
+        if (!item) return;
+
+        // Validate color selection if colors are available
+        if (item.colors?.length > 0 && !selectedColor) {
+            alert('Please select a color');
+            return;
+        }
+
+        const colorToUse = selectedColor || 'NULL';
+        const sizeToUse = item.size_label || item.size || 'NULL';
+        const alreadyInCart = cartItems.some(
+            (cartItem) =>
+                cartItem.id === item.id &&
+                cartItem.color === colorToUse &&
+                cartItem.size === sizeToUse
+        );
+
+        if (alreadyInCart) {
+            setStockError(false);
+            setAddedToCart(false);
+            window.dispatchEvent(new CustomEvent('cart:open'));
+            return;
+        }
+
+        // Reset error states
+        setStockError(false);
+
+        // Check if adding this quantity would exceed stock
+        if (quantity > item.stock_items) {
+            setStockError(true);
+            setTimeout(() => setStockError(false), 3000);
+            return;
+        }
+
+        // Create cart item object
+        const cartItem = {
+            id: item.id,
+            name: item.name,
+            price: item.is_on_offer && item.discounted_price ? item.discounted_price : item.prize,
+            image: item.image,
+            color: colorToUse,
+            size: sizeToUse,
+            quantity: quantity,
+            stock: item.stock_items,
+        };
+
+        addToCartContext(cartItem, { openCart: true });
+
+        // Show success feedback
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
+
     const buyNow = () => alert('Proceeding to checkout...');
 
     const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '—');
@@ -154,11 +211,11 @@ const ItemDetailPage = () => {
                                 {/* Promo items like reference */}
                                 <div className="flex items-center gap-4 py-2 border-b border-gray-100">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[12px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
+                                        <span className="text-[11px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
                                         <span className="text-xs font-black text-purple-600">KOKO</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[12px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
+                                        <span className="text-[11px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
                                         <span className="text-xs font-black text-blue-500 italic">PayZy</span>
                                     </div>
                                 </div>
@@ -200,7 +257,7 @@ const ItemDetailPage = () => {
                                 <div className="space-y-2 py-2">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
-                                            SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'N/A'}</span>
+                                            SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'NULL'}</span>
                                         </p>
                                         <button
                                             onClick={() => setShowSizeChart(true)}
@@ -240,12 +297,61 @@ const ItemDetailPage = () => {
                                     </div>
                                     <button
                                         onClick={addToCart}
-                                        className="flex-1 bg-[#1a1a1a] text-white py-2.5 rounded text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2"
+                                        className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${stockError
+                                            ? 'bg-red-500 text-white'
+                                            : addedToCart
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-[#1a1a1a] text-white hover:bg-black'
+                                            }`}
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                        Add To Cart
+                                        {stockError ? (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Stock Limit Exceeded!
+                                            </>
+                                        ) : addedToCart ? (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Added to Cart!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                Add To Cart
+                                            </>
+                                        )}
                                     </button>
                                 </div>
+
+                                {addedToCart && (
+                                    <div className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[13.5px] text-green-700 font-semibold">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Item added to cart.
+                                    </div>
+                                )}
+
+                                {stockError && (
+                                    <p className="text-[12.5px] text-red-600 font-semibold flex items-center gap-1.5">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Only {item.stock_items} items available in stock. Please reduce quantity.
+                                    </p>
+                                )}
+
+                                {!stockError && item.stock_items > 0 && quantity >= item.stock_items && (
+                                    <p className="text-[12.5px] text-red-600 font-semibold">
+                                        Nearly gone. Only {item.stock_items} pieces left in our collection.
+                                    </p>
+                                )}
 
                                 {/* Simplified Specs */}
                                 <ul className="space-y-1.5 py-4 border-t border-gray-100">

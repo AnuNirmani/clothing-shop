@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import CartPage from '../pages/CartPage';
 
 const Header = () => {
+    const { getCartItemCount } = useCart();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
+
+    const handleProfileClick = (e) => {
+        if (window.location.pathname === '/login') {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    useEffect(() => {
+        const handleCartOpen = () => setCartOpen(true);
+        window.addEventListener('cart:open', handleCartOpen);
+        return () => window.removeEventListener('cart:open', handleCartOpen);
+    }, []);
+
 
     return (
         <nav className="bg-white shadow-lg border-b border-pink-100">
@@ -16,7 +36,7 @@ const Header = () => {
                         </span>
                     </div>
 
-                    {/* Desktop Menu */}
+                    {/* Desktop Navigation Links */}
                     <div className="hidden md:flex items-center space-x-8">
                         <Link to="/" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Home
@@ -42,8 +62,42 @@ const Header = () => {
                         <Link to="/shop?category_id=9&title=Gift Cards" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Gift Cards
                         </Link>
+                        {/* <Link to="/login" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                            Login
+                        </Link> */}
+
                         <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200">
                             Shop Now
+                        </button>
+                    </div>
+
+                    {/* Profile and Cart Icons - Right Aligned */}
+                    <div className="hidden md:flex items-center space-x-3">
+                        <Link
+                            to="/login"
+                            onClick={handleProfileClick}
+                            className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                            aria-label="Profile"
+                        >
+                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 20a6 6 0 0112 0" />
+                            </svg>
+                        </Link>
+
+                        <button
+                            onClick={() => setCartOpen(true)}
+                            className="text-gray-700 hover:text-pink-500 transition-colors duration-200 relative"
+                            aria-label="Cart"
+                        >
+                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            {getCartItemCount() > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    {getCartItemCount()}
+                                </span>
+                            )}
                         </button>
                     </div>
 
@@ -95,10 +149,40 @@ const Header = () => {
                             <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 text-white font-bold py-2 px-6 rounded-lg shadow-md w-full">
                                 Shop Now
                             </button>
+                            <div className="flex items-center space-x-4 pt-2">
+                                <Link
+                                    to="/profile"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="text-gray-700 hover:text-pink-500 transition-colors duration-200"
+                                    aria-label="Profile"
+                                >
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 20a6 6 0 0112 0" />
+                                    </svg>
+                                </Link>
+                                <button
+                                    onClick={() => setCartOpen(true)}
+                                    className="text-gray-700 hover:text-pink-500 transition-colors duration-200 relative"
+                                    aria-label="Cart"
+                                >
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    {getCartItemCount() > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                            {getCartItemCount()}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Cart Sidebar */}
+            <CartPage isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </nav>
     );
 };
