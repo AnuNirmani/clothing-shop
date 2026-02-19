@@ -12,11 +12,19 @@ class ItemController extends Controller
     /**
      * Display a listing of items
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::with(['type', 'category', 'classifications', 'color', 'material', 'size', 'photos'])
+        $search = $request->input('search');
+
+        $items = Item::with(['type', 'category', 'classifications', 'color', 'material', 'size', 'photos', 'colors'])
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('SKU', 'like', "%{$search}%");
+            })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString(); // ✅ keeps ?search= across pagination pages
+
         return view('items.index', compact('items'));
     }
 
@@ -92,6 +100,7 @@ class ItemController extends Controller
         }
         $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
+        $validated['availability'] = $validated['availability'] === 'in stock';
 
         // Convert checkbox to boolean
         $validated['is_gift_card'] = $request->has('is_gift_card') ? true : false;
@@ -215,6 +224,7 @@ class ItemController extends Controller
         }
         $validated['size_label'] = $validated['size_label'] ?? null;
         unset($validated['size_id_dropdown']);
+        $validated['availability'] = $validated['availability'] === 'in stock';
 
         // Convert checkbox to boolean
         $validated['is_gift_card'] = $request->has('is_gift_card') ? true : false;
@@ -280,4 +290,3 @@ class ItemController extends Controller
         return redirect()->route('items.index')->with('success', 'Item deleted successfully!');
     }
 }
-

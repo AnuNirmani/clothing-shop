@@ -1,377 +1,642 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800">
-            <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">
-                Edit Item
-            </span>
-        </h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('items.index') }}" class="text-gray-400 hover:text-pink-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">Edit Item</span>
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+    <style>
+        .edit-root { font-family: 'DM Sans', sans-serif; }
+        .font-display { font-family: 'Playfair Display', serif; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+        .d1 { animation-delay: 0.05s; }
+        .d2 { animation-delay: 0.12s; }
+        .d3 { animation-delay: 0.19s; }
+        .d4 { animation-delay: 0.26s; }
+        .d5 { animation-delay: 0.33s; }
+        .d6 { animation-delay: 0.40s; }
+
+        /* ── Form inputs ── */
+        .field-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1.5px solid #e8d5f0;
+            font-size: 13.5px;
+            font-family: 'DM Sans', sans-serif;
+            color: #1f2937;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .field-input:focus {
+            border-color: #f472b6;
+            box-shadow: 0 0 0 3px rgba(244,114,182,0.12);
+        }
+        .field-input::placeholder { color: #c4b5d4; }
+        textarea.field-input { resize: vertical; min-height: 90px; }
+
+        /* ── Select: placeholder colour matches "Select colors…" ── */
+        select.field-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23c084fc'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+            cursor: pointer;
+            color: #1f2937; /* edit page selects always have a value */
+            font-size: 13.5px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        select.field-input option { color: #1f2937; font-family: 'DM Sans', sans-serif; }
+
+        input[type="number"].field-input::-webkit-outer-spin-button,
+        input[type="number"].field-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        /* ── Cards ── */
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(244,114,182,0.12);
+            box-shadow: 0 2px 24px rgba(244,114,182,0.06), 0 1px 4px rgba(0,0,0,0.04);
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 24px 24px 0 0;
+        }
+        .card-pink::before   { background: linear-gradient(90deg, #f9a8d4, #93c5fd); }
+        .card-blue::before   { background: linear-gradient(90deg, #93c5fd, #c4b5fd); }
+        .card-purple::before { background: linear-gradient(90deg, #c4b5fd, #f9a8d4); }
+        .card-green::before  { background: linear-gradient(90deg, #6ee7b7, #93c5fd); }
+        .card-amber::before  { background: linear-gradient(90deg, #fcd34d, #f9a8d4); }
+        .card-red::before  { background: linear-gradient(90deg, #fc4d4d, #f9a8d4); }
+
+        /* ── Section labels ── */
+        .section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .section-label-icon {
+            width: 34px; height: 34px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .section-label h3 {
+            font-family: 'Playfair Display', serif; font-size: 16px;
+            font-weight: 600; color: #1f2937; margin: 0;
+        }
+
+        /* ── Field labels ── */
+        .field-label {
+            display: block; font-size: 11.5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: #9ca3af; margin-bottom: 7px;
+        }
+        .field-label .req { color: #f472b6; margin-left: 2px; }
+
+        /* ── Size radio pills ── */
+        .size-pill input[type="radio"] { display: none; }
+        .size-pill .pill-body {
+            padding: 8px 20px; border-radius: 10px; border: 1.5px solid #e5e7eb;
+            font-size: 13px; font-weight: 600; color: #6b7280;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
+        }
+        .size-pill input:checked + .pill-body {
+            border-color: #f472b6;
+            background: linear-gradient(135deg, #fdf2f8, #eff6ff);
+            color: #be185d; box-shadow: 0 2px 10px rgba(244,114,182,0.2);
+        }
+        .size-pill .pill-body:hover { border-color: #f9a8d4; color: #db2777; }
+
+        /* ── Checkbox items ── */
+        .check-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 10px; border-radius: 8px; cursor: pointer;
+            transition: background 0.15s ease; font-size: 13px; color: #374151;
+        }
+        .check-item:hover { background: rgba(244,114,182,0.06); }
+        .check-item input[type="checkbox"] {
+            accent-color: #f472b6; width: 15px; height: 15px; flex-shrink: 0;
+        }
+
+        /* ── Toggle rows ── */
+        .toggle-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px; border-radius: 14px;
+            border: 1.5px solid #e8d5f0; cursor: pointer; transition: all 0.2s ease;
+        }
+        .toggle-row:hover { border-color: #f9a8d4; background: #fdf9ff; }
+        .toggle-row input[type="checkbox"] { accent-color: #f472b6; width: 16px; height: 16px; cursor: pointer; }
+        .toggle-row-label { font-size: 13.5px; font-weight: 600; color: #374151; }
+
+        /* ── Upload area ── */
+        .upload-area {
+            border: 2px dashed #e8d5f0; border-radius: 16px; padding: 28px 20px;
+            text-align: center; cursor: pointer; transition: all 0.2s ease;
+            background: linear-gradient(135deg, #fdf9ff, #f0f9ff);
+        }
+        .upload-area:hover { border-color: #f472b6; background: linear-gradient(135deg, #fdf2f8, #eff6ff); }
+
+        /* ── Existing photo grid ── */
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .photo-item {
+            position: relative; border-radius: 14px; overflow: hidden;
+            border: 2px solid #e8d5f0; aspect-ratio: 1/1;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .photo-item:hover { border-color: #f9a8d4; box-shadow: 0 4px 16px rgba(244,114,182,0.15); }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo-delete-label {
+            position: absolute; top: 6px; right: 6px;
+            width: 26px; height: 26px; border-radius: 8px;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            transition: background 0.15s ease;
+        }
+        .photo-delete-label:hover { background: #fff1f2; }
+        .photo-delete-label input[type="checkbox"] { display: none; }
+        .photo-item.marked-delete { border-color: #fca5a5; }
+        .photo-item.marked-delete img { opacity: 0.45; }
+        .photo-item.marked-delete .delete-overlay {
+            display: flex !important;
+        }
+        .delete-overlay {
+            display: none;
+            position: absolute; inset: 0;
+            background: rgba(239,68,68,0.08);
+            align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+
+        /* ── Color multi-select ── */
+        #colorDropdown {
+            border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            border: 1px solid #e8d5f0;
+        }
+        .color-option { border-radius: 8px; margin: 3px 6px; }
+        .color-option:hover { background: #fdf2f8 !important; }
+
+        /* ── Installment boxes ── */
+        .installment-box {
+            background: white; border-radius: 14px; border: 1.5px solid;
+            padding: 14px; position: relative; overflow: hidden;
+        }
+        .installment-box::after {
+            content: ''; position: absolute; bottom: 0; right: 0;
+            width: 60px; height: 60px; border-radius: 50%; opacity: 0.06;
+        }
+        .installment-pink { border-color: #fce7f3; }
+        .installment-pink::after { background: #f472b6; }
+        .installment-blue { border-color: #dbeafe; }
+        .installment-blue::after { background: #60a5fa; }
+
+        /* ── Discount box ── */
+        .discount-box {
+            background: linear-gradient(135deg, #f0fdf4, #eff6ff);
+            border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 16px;
+        }
+
+        /* ── Buttons ── */
+        .btn-submit {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #ec4899, #3b82f6);
+            color: white; font-family: 'DM Sans', sans-serif; font-weight: 700;
+            font-size: 14px; border: none; border-radius: 14px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 6px 24px rgba(236,72,153,0.3);
+            transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(236,72,153,0.4); }
+
+        .btn-cancel {
+            width: 100%; padding: 13px; background: white; color: #6b7280;
+            font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+            border: 1.5px solid #e5e7eb; border-radius: 14px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none; transition: all 0.2s ease;
+        }
+        .btn-cancel:hover { border-color: #9ca3af; background: #f9fafb; }
+
+        /* ── Photo entry (new uploads) ── */
+        .photo-entry {
+            background: linear-gradient(135deg, #fdf9ff, #f0f9ff);
+            border: 1.5px solid #e8d5f0; border-radius: 14px;
+            padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px;
+        }
+
+        /* ── Error alert ── */
+        .error-alert {
+            background: #fff1f2; border: 1.5px solid #fecdd3;
+            border-radius: 16px; padding: 16px 20px;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+
+        /* ── Sticky sidebar ── */
+        @media (min-width: 1024px) { .sticky-sidebar { position: sticky; top: 24px; } }
+
+        /* ── Price prefix ── */
+        .price-wrap { position: relative; }
+        .price-prefix {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 13px; font-weight: 700; color: #9ca3af; pointer-events: none;
+        }
+        .price-wrap .field-input { padding-left: 42px; }
+
+        /* ── Suffix (%) ── */
+        .suffix-wrap { position: relative; }
+        .input-suffix {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 12px; font-weight: 700; color: #9ca3af; pointer-events: none;
+        }
+
+        /* ── Current image pill ── */
+        .current-img-wrap {
+            display: inline-flex; flex-direction: column; gap: 8px;
+            align-items: flex-start; margin-bottom: 16px;
+        }
+        .current-img-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: linear-gradient(135deg,#ede9fe,#fce7f3);
+            border: 1px solid #d8b4fe; border-radius: 8px;
+            padding: 3px 9px; font-size: 10.5px; font-weight: 700;
+            color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* ── Warning note ── */
+        .warn-note {
+            display: flex; align-items: center; gap: 8px;
+            background: #fffbeb; border: 1.5px solid #fde68a;
+            border-radius: 10px; padding: 10px 14px;
+            font-size: 12px; color: #92400e; font-weight: 500;
+        }
+
+        /* lg-hide util */
+        .lg-hide { display: block; }
+        @media(min-width:1024px){ .lg-hide { display: none !important; } }
+    </style>
+
+    <div class="edit-root" style="background: linear-gradient(135deg,#fdf2f8 0%,#f0f9ff 55%,#fdf4ff 100%); min-height: calc(100vh - 64px); padding: 28px 16px 60px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+            {{-- ── Error Alert ── --}}
             @if ($errors->any())
-                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg shadow-md mb-6">
-                    <div class="flex items-start">
-                        <svg class="w-6 h-6 mr-3 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div class="error-alert fade-up d1" style="margin-bottom:20px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:#fee2e2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg class="w-4 h-4" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p style="font-weight:700;font-size:13.5px;color:#dc2626;margin-bottom:6px;">Please fix these errors to continue:</p>
+                    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;">
+                        @foreach($errors->all() as $error)
+                        <li style="font-size:13px;color:#ef4444;display:flex;align-items:center;gap:6px;">
+                            <span style="width:4px;height:4px;border-radius:50%;background:#f87171;flex-shrink:0;"></span>
+                            {{ $error }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            @endif
+
+            {{-- ── Dark Hero Bar ── --}}
+            <div class="fade-up d1" style="margin-bottom:24px;position:relative;border-radius:24px;overflow:hidden;padding:28px 32px;background:linear-gradient(135deg,#130826,#1e0d4a,#0a1628);box-shadow:0 20px 60px rgba(13,5,32,0.3);">
+                <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(251,191,36,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+                <div style="position:absolute;bottom:-30px;left:40%;width:160px;height:160px;background:radial-gradient(circle,rgba(96,165,250,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+                <div style="position:relative;z-index:1;display:flex;align-items:center;gap:20px;">
+                    <div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(96,165,250,0.15));border:1px solid rgba(251,191,36,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg class="w-6 h-6" style="color:#fde68a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
-                        <div>
-                            <p class="font-semibold mb-2">Please fix the following errors:</p>
-                            <ul class="list-disc list-inside space-y-1">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    </div>
+                    <div>
+                        <p style="color:rgba(253,230,138,0.6);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.3em;margin:0 0 4px;">✦ Inventory · Edit Product</p>
+                        <h1 class="font-display" style="color:white;font-size:22px;font-weight:700;margin:0;">{{ $item->name }}</h1>
+                        <p style="color:rgba(255,255,255,0.35);font-size:12.5px;margin:4px 0 0;">SKU: <span style="color:rgba(255,255,255,0.55);font-weight:600;">{{ $item->SKU }}</span></p>
+                    </div>
+                    {{-- Availability badge --}}
+                    <div style="margin-left:auto;flex-shrink:0;">
+                        @if($item->availability)
+                        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:0.06em;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span> In Stock
+                        </span>
+                        @else
+                        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:0.06em;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#ef4444;animation:pulse 1.5s infinite;"></span> Out of Stock
+                        </span>
+                        @endif
                     </div>
                 </div>
-            @endif
+            </div>
 
             <form action="{{ route('items.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Left Column - Basic Information -->
-                    <div class="lg:col-span-2 space-y-6">
-                        
-                        <!-- Basic Details Card -->
-                        <div class="bg-white shadow-lg rounded-2xl border border-pink-100 p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Basic Information
-                            </h3>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Name -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Name <span class="text-red-500">*</span></label>
-                                    <input type="text" name="name" value="{{ old('name', $item->name) }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
-                                </div>
+                <div style="display:grid;grid-template-columns:1fr;gap:20px;" class="lg-grid">
+                    <style>@media(min-width:1024px){ .lg-grid { grid-template-columns: 1fr 340px !important; } }</style>
 
-                                <!-- Co Name -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Co Name <span class="text-red-500">*</span></label>
-                                    <input type="text" name="co_name" value="{{ old('co_name', $item->co_name) }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">
-                                </div>
+                    {{-- ══════════ LEFT COLUMN ══════════ --}}
+                    <div style="display:flex;flex-direction:column;gap:20px;">
 
-                                <!-- SKU -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">SKU <span class="text-red-500">*</span></label>
-                                    <input type="text" name="SKU" value="{{ old('SKU', $item->SKU) }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                        {{-- ── 1. Basic Information ── --}}
+                        <div class="form-card card-pink fade-up d2">
+                            <div class="section-label">
+                                <div class="section-label-icon" style="background:linear-gradient(135deg,#fce7f3,#dbeafe);">
+                                    <svg class="w-4 h-4" style="color:#f472b6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
                                 </div>
+                                <h3>Basic Information</h3>
+                            </div>
 
-                                <!-- Stock -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Stock Quantity <span class="text-red-500">*</span></label>
-                                    <input type="number" name="stock_items" value="{{ old('stock_items', $item->stock_items) }}"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400"
-                                        required>
+                                    <label class="field-label">Item Name <span class="req">*</span></label>
+                                    <input type="text" name="name" value="{{ old('name', $item->name) }}" placeholder="Item name" class="field-input">
+                                </div>
+                                <div>
+                                    <label class="field-label">Co. Name <span class="req">*</span></label>
+                                    <input type="text" name="co_name" value="{{ old('co_name', $item->co_name) }}" placeholder="Brand or company name" class="field-input">
+                                </div>
+                                <div>
+                                    <label class="field-label">SKU <span class="req">*</span></label>
+                                    <input type="text" name="SKU" value="{{ old('SKU', $item->SKU) }}" placeholder="e.g. DRS-001-BLK" class="field-input">
+                                </div>
+                                <div>
+                                    <label class="field-label">Stock Quantity <span class="req">*</span></label>
+                                    <input type="number" name="stock_items" value="{{ old('stock_items', $item->stock_items) }}" placeholder="0" min="0" class="field-input">
                                 </div>
                             </div>
 
-                            <!-- Description -->
-                            <div class="mt-4">
-                                <label class="block font-semibold mb-2 text-gray-700">Description</label>
-                                <textarea name="description" rows="3"
-                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">{{ old('description', $item->description) }}</textarea>
+                            <div style="margin-top:16px;">
+                                <label class="field-label">Description</label>
+                                <textarea name="description" placeholder="Describe the product in detail…" class="field-input">{{ old('description', $item->description) }}</textarea>
                             </div>
-
-                            <!-- Note -->
-                            <div class="mt-4">
-                                <label class="block font-semibold mb-2 text-gray-700">Note</label>
-                                <textarea name="note" rows="3"
-                                    class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400">{{ old('note', $item->note) }}</textarea>
+                            <div style="margin-top:14px;">
+                                <label class="field-label">Internal Note</label>
+                                <textarea name="note" rows="2" placeholder="Any internal notes (not visible to customers)" class="field-input" style="min-height:70px;">{{ old('note', $item->note) }}</textarea>
                             </div>
                         </div>
 
-                        <!-- Selections Card -->
-                        <div class="bg-white shadow-lg rounded-2xl border border-blue-100 p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                                </svg>
-                                Selections
-                            </h3>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Category -->
+                        {{-- ── 2. Selections & Attributes ── --}}
+                        <div class="form-card card-blue fade-up d3">
+                            <div class="section-label">
+                                <div class="section-label-icon" style="background:linear-gradient(135deg,#dbeafe,#ede9fe);">
+                                    <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                    </svg>
+                                </div>
+                                <h3>Selections & Attributes</h3>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+                                {{-- Category --}}
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Category <span class="text-red-500">*</span></label>
-                                    <select name="category_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select category</option> -->
+                                    <label class="field-label">Category <span class="req">*</span></label>
+                                    <select name="category_id" class="field-input">
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
+                                            <option value="{{ $category->id }}" {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <!-- Type -->
+                                {{-- Type --}}
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Type <span class="text-red-500">*</span></label>
-                                    <select name="type_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select type</option> -->
+                                    <label class="field-label">Type <span class="req">*</span></label>
+                                    <select name="type_id" class="field-input">
                                         @foreach($types as $type)
-                                            <option value="{{ $type->id }}"
-                                                {{ old('type_id', $item->type_id) == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }}
-                                            </option>
+                                            <option value="{{ $type->id }}" {{ old('type_id', $item->type_id) == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <!-- Classification -->
-                                <div class="md:col-span-2">
-                                    <label class="block font-semibold mb-2 text-gray-700">Classifications</label>
-                                    <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-blue-200 rounded-lg bg-blue-50/40">
-                                        @foreach($classifications as $classification)
-                                            <label class="inline-flex items-center space-x-2 cursor-pointer hover:bg-blue-50 p-1 rounded">
-                                                <input type="checkbox" name="classifications[]" value="{{ $classification->id }}" 
-                                                    class="form-checkbox h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
-                                                    {{ in_array($classification->id, old('classifications', $item->classifications->pluck('id')->toArray())) ? 'checked' : '' }}>
-                                                <span class="text-sm text-gray-700">{{ $classification->name }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <!-- Colors -->
+                                {{-- Material --}}
                                 <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Colors <span class="text-red-500">*</span></label>
-                                    <div class="relative">
-                                        <div id="selectedColorsContainer"></div> <!-- Container for hidden inputs -->
-                                        
-                                        <div id="colorSelectDisplay" class="w-full rounded-lg border border-blue-200 px-4 py-2 cursor-pointer bg-white flex items-center justify-between hover:border-blue-400 min-h-[42px]">
-                                            <div id="selectedColorText" class="flex flex-wrap gap-1">
-                                                <span class="text-gray-500">Select colors</span>
-                                            </div>
-                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </div>
-                                        
-                                        <div id="colorDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                            @foreach($colors as $color)
-                                                <div class="color-option px-4 py-2 hover:bg-blue-50 cursor-pointer flex items-center gap-3 justify-between" 
-                                                     data-color-id="{{ $color->id }}" 
-                                                     data-color-name="{{ $color->name }}"
-                                                     data-color-hex="{{ $color->hex_code }}">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="w-6 h-6 rounded border-2 border-gray-300 shadow-sm" style="background-color: {{ $color->hex_code ?? '#CCCCCC' }}"></div>
-                                                        <span>{{ $color->name }}</span>
-                                                    </div>
-                                                    <div class="check-icon hidden text-green-500">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Material -->
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Material <span class="text-red-500">*</span></label>
-                                    <select name="material_id"
-                                        class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                        <!-- <option value="">Select material</option> -->
+                                    <label class="field-label">Material <span class="req">*</span></label>
+                                    <select name="material_id" class="field-input">
                                         @foreach($materials as $material)
-                                            <option value="{{ $material->id }}"
-                                                {{ old('material_id', $item->material_id) == $material->id ? 'selected' : '' }}>
-                                                {{ $material->name }}
-                                            </option>
+                                            <option value="{{ $material->id }}" {{ old('material_id', $item->material_id) == $material->id ? 'selected' : '' }}>{{ $material->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <!-- Size -->
-                                <div class="md:col-span-2">
-                                    <label class="block font-semibold mb-3 text-gray-700">Size</label>
-
-                                    @php
-                                        $fixedSizes = ['S', 'M', 'L', 'XL', 'XXL'];
-                                        $selectedSizeLabel = old('size_label', $item->size_label ?? '');
-                                    @endphp
-
-                                    <!-- Radio Buttons for Common Sizes -->
-                                    <div class="flex flex-wrap gap-3 mb-2" aria-label="Radio size selection">
-                                        @foreach($fixedSizes as $sizeLabel)
-                                            <label class="inline-flex items-center cursor-pointer">
-                                                <input type="radio" name="size_label" value="{{ $sizeLabel }}"
-                                                    class="sr-only peer"
-                                                    {{ $selectedSizeLabel === $sizeLabel ? 'checked' : '' }}>
-                                                <div class="px-6 py-3 rounded-lg border-2 border-gray-300 bg-white peer-checked:border-pink-500 peer-checked:bg-gradient-to-r peer-checked:from-pink-50 peer-checked:to-blue-50 peer-checked:text-pink-700 font-semibold transition-all duration-200 hover:border-pink-300 hover:shadow-md">
-                                                    {{ $sizeLabel }}
+                                {{-- Color Multi-Select --}}
+                                <div>
+                                    <label class="field-label">Colors <span class="req">*</span></label>
+                                    <div style="position:relative;">
+                                        <div id="selectedColorsContainer"></div>
+                                        <div id="colorSelectDisplay"
+                                             style="border:1.5px solid #e8d5f0;border-radius:12px;padding:10px 36px 10px 14px;cursor:pointer;background:white;min-height:42px;display:flex;align-items:center;transition:border-color 0.2s,box-shadow 0.2s;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23c084fc'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+                                            <div id="selectedColorText" style="display:flex;flex-wrap:wrap;gap:4px;">
+                                                <span style="font-size:13px;color:#c4b5d4;">Select colors…</span>
+                                            </div>
+                                        </div>
+                                        <div id="colorDropdown" style="display:none;position:absolute;z-index:50;width:100%;margin-top:4px;background:white;overflow:hidden auto;max-height:220px;padding:6px 0;">
+                                            @foreach($colors as $color)
+                                            <div class="color-option"
+                                                 style="padding:9px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.15s ease;"
+                                                 data-color-id="{{ $color->id }}"
+                                                 data-color-name="{{ $color->name }}"
+                                                 data-color-hex="{{ $color->hex_code }}">
+                                                <div style="display:flex;align-items:center;gap:10px;">
+                                                    <div style="width:22px;height:22px;border-radius:50%;border:2px solid #e5e7eb;background:{{ $color->hex_code ?? '#ccc' }};box-shadow:0 1px 4px rgba(0,0,0,0.1);"></div>
+                                                    <span style="font-size:13px;color:#374151;font-weight:500;">{{ $color->name }}</span>
                                                 </div>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                    
-                                    <p class="text-xs text-gray-500">Radio selection is saved as size label.</p>
-
-                                    <!-- Dropdown for All Sizes -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-2">Select Item if you want:</label>
-                                        <select name="size_id_dropdown" id="sizeDropdown"
-                                            class="w-full rounded-lg border-blue-200 focus:ring-blue-300 focus:border-blue-400">
-                                            <!-- <option value="">Select size</option> -->
-                                            @foreach($sizes as $size)
-                                                <option value="{{ $size->id }}" {{ old('size_id', $item->size_id) == $size->id ? 'selected' : '' }}>{{ $size->name }}</option>
+                                                <div class="check-icon" style="display:none;color:#10b981;">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
                                             @endforeach
-                                        </select>
+                                        </div>
                                     </div>
                                 </div>
+
+                                {{-- Classifications --}}
+                                <div style="grid-column:1/-1;">
+                                    <label class="field-label">Classifications</label>
+                                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;max-height:160px;overflow-y:auto;border:1.5px solid #e0e7ff;border-radius:14px;padding:10px;background:linear-gradient(135deg,#f0f4ff,#fdf9ff);">
+                                        @foreach($classifications as $cls)
+                                        <label class="check-item">
+                                            <input type="checkbox" name="classifications[]" value="{{ $cls->id }}"
+                                                {{ in_array($cls->id, old('classifications', $item->classifications->pluck('id')->toArray())) ? 'checked' : '' }}>
+                                            {{ $cls->name }}
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- Size --}}
+                                <div style="grid-column:1/-1;">
+                                    <label class="field-label">Size</label>
+                                    @php
+                                        $fixedSizes = ['S','M','L','XL','XXL'];
+                                        $selLabel = old('size_label', $item->size_label ?? '');
+                                    @endphp
+                                    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                                        @foreach($fixedSizes as $sz)
+                                        <label class="size-pill">
+                                            <input type="radio" name="size_label" value="{{ $sz }}" {{ $selLabel===$sz?'checked':'' }}>
+                                            <div class="pill-body">{{ $sz }}</div>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                    <label class="field-label" style="margin-bottom:6px;">Or pick from size list</label>
+                                    <select name="size_id_dropdown" id="sizeDropdown" class="field-input">
+                                        <option value="">Select size…</option>
+                                        @foreach($sizes as $size)
+                                        <option value="{{ $size->id }}" {{ old('size_id', $item->size_id)==$size->id?'selected':'' }}>{{ $size->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                             </div>
                         </div>
 
-                        <!-- Images Card -->
-                        <div class="bg-white shadow-lg rounded-2xl border border-purple-100 p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                Product Images<span class="text-red-500"> *</span>
-                            </h3>
-
-                            <!-- Current Main Image -->
-                            @if($item->image)
-                                <div class="mb-6">
-                                    <label class="block font-semibold mb-2 text-gray-700">Current Main Image</label>
-                                    <div class="relative inline-block">
-                                        <img src="{{ asset('storage/'.$item->image) }}"
-                                             class="h-48 w-48 object-cover rounded-xl border-2 border-purple-200 shadow-md">
-                                        <div class="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
-                                            Main
-                                        </div>
-                                    </div>
+                        {{-- ── 3. Product Images ── --}}
+                        <div class="form-card card-purple fade-up d4">
+                            <div class="section-label">
+                                <div class="section-label-icon" style="background:linear-gradient(135deg,#ede9fe,#fce7f3);">
+                                    <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
                                 </div>
+                                <h3>Product Images</h3>
+                            </div>
+
+                            {{-- Current Main Image --}}
+                            @if($item->image)
+                            <label class="field-label" style="margin-bottom:10px;">Current Main Image</label>
+                            <div class="current-img-wrap">
+                                <div style="position:relative;display:inline-block;">
+                                    <img src="{{ asset('storage/'.$item->image) }}"
+                                         style="width:120px;height:120px;object-fit:cover;border-radius:16px;border:2px solid #e8d5f0;box-shadow:0 4px 20px rgba(167,139,250,0.2);">
+                                    <span class="current-img-badge" style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);white-space:nowrap;">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Main
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="height:8px;"></div>
                             @endif
 
-                            <!-- Change Main Image -->
-                            <div class="mb-6">
-                                <label class="block font-semibold mb-2 text-gray-700">
-                                    {{ $item->image ? 'Change Main Image' : 'Main Image' }}
-                                </label>
-                                
-                                <!-- Preview Container for new upload -->
-                                <div id="main-image-preview" class="hidden mb-3">
-                                    <img id="main-preview-img" class="h-48 w-48 object-cover rounded-xl border-2 border-purple-200 shadow-md">
-                                    <button type="button" onclick="removeMainPreview()" 
-                                        class="mt-2 px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors">
-                                        Remove New Image
+                            {{-- Change Main Image --}}
+                            <label class="field-label" style="margin-bottom:10px;">{{ $item->image ? 'Replace Main Image' : 'Main Image' }}</label>
+
+                            <div id="main-image-preview" style="display:none;margin-bottom:14px;">
+                                <div style="position:relative;display:inline-block;">
+                                    <img id="main-preview-img" style="width:120px;height:120px;object-fit:cover;border-radius:16px;border:2px solid #f9a8d4;box-shadow:0 4px 16px rgba(244,114,182,0.2);">
+                                    <button type="button" onclick="removeMainPreview()"
+                                            style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:#ef4444;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(239,68,68,0.4);">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
                                     </button>
                                 </div>
-
-                                <div id="main-image-upload"
-                                    class="flex justify-center px-6 py-10 border-2 border-dashed border-purple-200 rounded-xl hover:border-purple-400 transition-colors">
-                                    <label class="cursor-pointer text-center">
-                                        <div class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-purple-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-gray-600">
-                                                <label for="image" class="relative cursor-pointer rounded-md font-medium text-purple-600 hover:text-purple-500">
-                                                    <span>Upload a file</span>
-                                                    <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" class="sr-only" onchange="previewMainImage(event)">
-                                                </label>
-                                                <p class="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p class="text-xs text-gray-500">PNG, JPG, JPEG, WEBP up to 2MB</p>
-                                        </div>
-                                    </label>
-                                </div>
+                                <p style="font-size:11.5px;color:#f472b6;font-weight:600;margin-top:8px;">New image ready to upload</p>
                             </div>
 
-                            <!-- Existing Additional Photos -->
-                            @if($item->photos && $item->photos->count() > 0)
-                                <div class="mb-6">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <label class="block font-semibold text-gray-700">Existing Photos</label>
-                                        <span class="text-xs text-gray-500 bg-purple-100 px-3 py-1 rounded-full">
-                                            {{ $item->photos->count() }}/20
-                                        </span>
-                                    </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-3">
-                                        @foreach($item->photos as $photo)
-                                            <div class="relative group">
-                                                <img src="{{ asset('storage/'.$photo->photo_path) }}" 
-                                                     class="w-full h-32 object-cover rounded-lg border-2 border-purple-200 shadow-sm transition-all group-hover:border-purple-400">
-                                                <label class="absolute top-2 right-2 bg-white rounded-lg p-1.5 shadow-md cursor-pointer hover:bg-red-50 transition-colors flex items-center gap-1">
-                                                    <input type="checkbox" name="delete_photos[]" value="{{ $photo->id }}" 
-                                                           class="form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
-                                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <p class="text-xs text-gray-500 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                        </svg>
-                                        Check the boxes to mark photos for deletion
-                                    </p>
+                            <div id="main-image-upload" class="upload-area" onclick="document.getElementById('image').click()" style="margin-bottom:24px;">
+                                <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ede9fe,#fce7f3);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+                                    <svg class="w-5 h-5" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
                                 </div>
+                                <p style="font-weight:600;font-size:13px;color:#7c3aed;margin-bottom:3px;">Click to upload new image</p>
+                                <p style="font-size:11px;color:#9ca3af;">PNG, JPG, WEBP · max 2MB</p>
+                                <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" style="display:none;" onchange="previewMainImage(event)">
+                            </div>
+
+                            {{-- Existing Additional Photos --}}
+                            @if($item->photos && $item->photos->count() > 0)
+                            <div style="margin-bottom:24px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                    <label class="field-label" style="margin:0;">Existing Photos</label>
+                                    <span style="font-size:11px;color:#9ca3af;background:#f3f4f6;padding:3px 10px;border-radius:99px;">{{ $item->photos->count() }} / 20</span>
+                                </div>
+                                <div class="photo-grid" id="existingPhotoGrid">
+                                    @foreach($item->photos as $photo)
+                                    <div class="photo-item" id="photo-item-{{ $photo->id }}">
+                                        <img src="{{ asset('storage/'.$photo->photo_path) }}" alt="Photo">
+                                        <div class="delete-overlay">
+                                            <svg class="w-8 h-8" style="color:#ef4444;opacity:0.7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </div>
+                                        <label class="photo-delete-label" title="Mark for deletion" onclick="togglePhotoDelete({{ $photo->id }}, this)">
+                                            <input type="checkbox" name="delete_photos[]" value="{{ $photo->id }}" id="del-{{ $photo->id }}">
+                                            <svg class="w-3.5 h-3.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </label>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div class="warn-note" style="margin-top:12px;">
+                                    <svg class="w-4 h-4" style="color:#f59e0b;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                    Tap the 🗑 icon on any photo to mark it for deletion on save
+                                </div>
+                            </div>
                             @endif
 
-                            <!-- Add More Photos -->
-                            <div>
-                                <div class="flex justify-between items-center mb-3">
-                                    <label class="block font-semibold text-gray-700">Add More Photos</label>
-                                    <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Max 20 total</span>
-                                </div>
-                                
-                                <div id="photo-container" class="space-y-3 mb-3">
-                                    <!-- Photo inputs will be added here dynamically -->
-                                </div>
-
-                                <button type="button" id="add-photo-btn"
-                                    class="w-full px-4 py-3 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-dashed border-purple-300 text-purple-600 rounded-lg hover:border-purple-400 hover:bg-gradient-to-r hover:from-purple-100 hover:to-pink-100 transition-all duration-200 flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    <span class="font-semibold">Add Photo</span>
-                                </button>
+                            {{-- Add More Photos --}}
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                <label class="field-label" style="margin:0;">Add More Photos</label>
+                                <span style="font-size:11px;color:#9ca3af;background:#f3f4f6;padding:3px 10px;border-radius:99px;">Max 20 total</span>
                             </div>
+
+                            <div id="photo-container" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;"></div>
+
+                            <button type="button" id="add-photo-btn"
+                                    style="width:100%;padding:12px;border:2px dashed #d8b4fe;border-radius:14px;background:linear-gradient(135deg,#fdf9ff,#f0f9ff);color:#7c3aed;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;"
+                                    onmouseover="this.style.borderColor='#a78bfa';this.style.background='linear-gradient(135deg,#ede9fe,#eff6ff)'"
+                                    onmouseout="this.style.borderColor='#d8b4fe';this.style.background='linear-gradient(135deg,#fdf9ff,#f0f9ff)'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Add Another Photo
+                            </button>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
-                            <div class="space-y-3">
-                                <button type="submit"
-                                    class="w-full px-6 py-4 bg-gradient-to-r from-pink-500 to-blue-500 
-                                           hover:from-pink-600 hover:to-blue-600 
-                                           text-white rounded-xl font-bold shadow-lg 
-                                           hover:scale-105 transition-all duration-200
-                                           flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        {{-- Mobile Submit --}}
+                        <div class="form-card fade-up d6 lg-hide" style="background:linear-gradient(135deg,#fdf2f8,#eff6ff);">
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <button type="submit" class="btn-submit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                                     </svg>
                                     Update Item
                                 </button>
-                                
-                                <a href="{{ route('items.index') }}"
-                                    class="w-full px-6 py-4 border-2 border-gray-300 rounded-xl text-gray-700 
-                                           hover:bg-white hover:border-gray-400 hover:scale-105 
-                                           transition-all duration-200 font-semibold
-                                           flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                <a href="{{ route('items.index') }}" class="btn-cancel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                     Cancel
                                 </a>
@@ -380,196 +645,169 @@
 
                     </div>
 
-                    <!-- Right Column - Pricing & Stock -->
-                    <div class="lg:col-span-1 space-y-6">
-                        
-                        <!-- Pricing Card -->
-                        <div class="bg-white shadow-lg rounded-2xl border border-green-100 p-6 sticky top-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Pricing
-                            </h3>
+                    {{-- ══════════ RIGHT SIDEBAR ══════════ --}}
+                    <div class="sticky-sidebar" style="display:flex;flex-direction:column;gap:20px;align-self:start;">
 
-                            <!-- Price -->
-                            <div class="mb-4">
-                                <label class="block font-semibold mb-2 text-gray-700">Price (LKR) <span class="text-red-500">*</span></label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-3 text-gray-500 font-semibold">Rs</span>
-                                    <input type="number" step="0.01" name="prize" id="prize"
-                                        value="{{ old('prize', $item->prize) }}"
-                                        class="w-full pl-12 pr-4 py-3 rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 text-lg font-bold"
-                                        oninput="calculateInstallments()"
-                                        required>
+                        {{-- ── Pricing ── --}}
+                        <div class="form-card card-green fade-up d2">
+                            <div class="section-label">
+                                <div class="section-label-icon" style="background:linear-gradient(135deg,#d1fae5,#dbeafe);">
+                                    <svg class="w-4 h-4" style="color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
                                 </div>
+                                <h3>Pricing</h3>
                             </div>
 
-                            <!-- Installment Options -->
-                            <div class="bg-gradient-to-br from-blue-50 to-pink-50 p-4 rounded-xl border border-blue-200">
-                                <h4 class="font-semibold text-gray-700 mb-3 text-sm flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                    </svg>
-                                    Installment Plans
-                                </h4>
-                                
-                                <div class="space-y-3">
-                                    <div class="bg-white p-3 rounded-lg border border-pink-200 shadow-sm">
-                                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">3 Months</label>
-                                        <div class="relative">
-                                            <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
-                                            <input type="text" id="installment_3" readonly
-                                                class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-xl font-bold text-pink-600"
-                                                value="{{ number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', '') }}">
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-1">per month</p>
+                            <label class="field-label">Price (LKR) <span class="req">*</span></label>
+                            <div class="price-wrap" style="margin-bottom:18px;">
+                                <span class="price-prefix">Rs</span>
+                                <input type="number" step="0.01" name="prize" id="prize"
+                                       value="{{ old('prize', $item->prize) }}"
+                                       placeholder="0.00" class="field-input"
+                                       style="font-size:18px;font-weight:700;padding-left:42px;"
+                                       oninput="calculateInstallments(); calculateDiscountedPrice();">
+                            </div>
+
+                            <p style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;margin-bottom:10px;">Installment Plans</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                <div class="installment-box installment-pink">
+                                    <p style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#f9a8d4;margin-bottom:6px;">3 Months</p>
+                                    <div style="display:flex;align-items:baseline;gap:4px;">
+                                        <span style="font-size:10px;color:#9ca3af;font-weight:600;">Rs</span>
+                                        <input type="text" id="installment_3" readonly
+                                               value="{{ number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', '') }}"
+                                               style="border:none;outline:none;font-size:20px;font-weight:800;color:#ec4899;background:transparent;width:100%;font-family:'DM Sans',sans-serif;">
                                     </div>
-                                    
-                                    <div class="bg-white p-3 rounded-lg border border-blue-200 shadow-sm">
-                                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">4 Months</label>
-                                        <div class="relative">
-                                            <span class="absolute left-2 top-2 text-gray-400 text-sm">Rs</span>
-                                            <input type="text" id="installment_4" readonly
-                                                class="w-full pl-8 py-2 rounded border-gray-200 bg-gray-50 text-xl font-bold text-blue-600"
-                                                value="{{ number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', '') }}">
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-1">per month</p>
+                                    <p style="font-size:10px;color:#9ca3af;margin-top:2px;">per month</p>
+                                </div>
+                                <div class="installment-box installment-blue">
+                                    <p style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#93c5fd;margin-bottom:6px;">4 Months</p>
+                                    <div style="display:flex;align-items:baseline;gap:4px;">
+                                        <span style="font-size:10px;color:#9ca3af;font-weight:600;">Rs</span>
+                                        <input type="text" id="installment_4" readonly
+                                               value="{{ number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', '') }}"
+                                               style="border:none;outline:none;font-size:20px;font-weight:800;color:#3b82f6;background:transparent;width:100%;font-family:'DM Sans',sans-serif;">
                                     </div>
+                                    <p style="font-size:10px;color:#9ca3af;margin-top:2px;">per month</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Availability Card -->
-                        <div class="bg-white shadow-lg rounded-2xl border border-orange-100 p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Availability
-                            </h3>
-
-                            <div>
-                                <label class="block font-semibold mb-2 text-gray-700">Status <span class="text-red-500">*</span></label>
-                                <select name="availability"
-                                    class="w-full rounded-lg border-orange-200 focus:ring-orange-300 focus:border-orange-400 py-3"
-                                    required>
-                                    <option value="in stock" {{ old('availability', $item->availability) == 'in stock' ? 'selected' : '' }}>
-                                        ✓ In Stock
-                                    </option>
-                                    <option value="out of stock" {{ old('availability', $item->availability) == 'out of stock' ? 'selected' : '' }}>
-                                        ✗ Out of Stock
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Gift Card Option -->
-                            <div class="mt-6 pt-6 border-t border-orange-100">
-                                <div class="flex items-center mb-4">
-                                    <input type="checkbox" id="is_gift_card" name="is_gift_card" value="1"
-                                        {{ old('is_gift_card', $item->is_gift_card) ? 'checked' : '' }}
-                                        onchange="toggleGiftCardValidity()"
-                                        class="w-5 h-5 text-pink-600 rounded border-orange-300 focus:ring-pink-500">
-                                    <label for="is_gift_card" class="ml-3 font-semibold text-gray-700 cursor-pointer flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
-                                        </svg>
-                                        This is a Gift Card
-                                    </label>
-                                </div>
-
-                                <div id="gift_card_validity_section" class="{{ old('is_gift_card', $item->is_gift_card) ? '' : 'hidden' }}">
-                                    <label class="block font-semibold mb-2 text-gray-700">Gift Card Validity (Months) <span class="text-red-500">*</span></label>
-                                    <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
-                                        value="{{ old('gift_card_validity_months', $item->gift_card_validity_months) }}"
-                                        min="1"
-                                        class="w-full rounded-lg border-pink-200 focus:ring-pink-300 focus:border-pink-400 py-3"
-                                        placeholder="Enter number of months">
-                                    <p class="text-xs text-gray-500 mt-2">How many months will this gift card be valid?</p>
+                        <div class="form-card card-red fade-up d3">
+                            <div class="bg-white shadow-lg rounded-2xl border border-orange-100 p-6">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Availability
+                                </h3>
+                                <div>
+                                    <label class="block font-semibold mb-2 text-gray-700">Status <span class="text-red-500">*</span></label>
+                                    <select name="availability"
+                                        class="w-full rounded-lg border-orange-200 focus:ring-orange-300 focus:border-orange-400 py-3"
+                                        required>
+                                        <option value="in stock" {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'in stock' ? 'selected' : '' }}>
+                                            ✓ In Stock
+                                        </option>
+                                        <option value="out of stock" {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'out of stock' ? 'selected' : '' }}>
+                                            ✗ Out of Stock
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
+                        </div>
+                        {{-- ── Options (Gift Card + Offer) ── --}}
+                        <div class="form-card card-amber fade-up d3">
+                            <div class="section-label">
+                                <div class="section-label-icon" style="background:linear-gradient(135deg,#fef3c7,#fce7f3);">
+                                    <svg class="w-4 h-4" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3>Options</h3>
+                            </div>
 
-                            <!-- Offer Section -->
-                            <div class="mt-6 pt-6 border-t border-orange-100">
-                                <div class="flex items-center mb-4">
-                                    <input type="checkbox" id="is_on_offer" name="is_on_offer" value="1"
-                                        {{ old('is_on_offer', $item->is_on_offer) ? 'checked' : '' }}
-                                        onchange="toggleOfferFields()"
-                                        class="w-5 h-5 text-green-600 rounded border-orange-300 focus:ring-green-500">
-                                    <label for="is_on_offer" class="ml-3 font-semibold text-gray-700 cursor-pointer flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                        </svg>
-                                        Item is on Offer
-                                    </label>
+                            {{-- Gift Card --}}
+                            <label class="toggle-row" style="margin-bottom:12px;">
+                                <input type="checkbox" id="is_gift_card" name="is_gift_card" value="1"
+                                    {{ old('is_gift_card', $item->is_gift_card) ? 'checked' : '' }}
+                                    onchange="toggleGiftCardValidity()">
+                                <div>
+                                    <p class="toggle-row-label">🎁 Gift Card</p>
+                                    <p style="font-size:11px;color:#9ca3af;margin-top:1px;">Mark this as a gift card product</p>
+                                </div>
+                            </label>
+
+                            <div id="gift_card_validity_section" style="{{ old('is_gift_card', $item->is_gift_card) ? '' : 'display:none;' }} margin-bottom:14px;padding:14px;background:#fff7ed;border-radius:12px;border:1.5px solid #fed7aa;">
+                                <label class="field-label">Validity (Months) <span class="req">*</span></label>
+                                <input type="number" name="gift_card_validity_months" id="gift_card_validity_months"
+                                    value="{{ old('gift_card_validity_months', $item->gift_card_validity_months) }}"
+                                    min="1" placeholder="e.g. 12" class="field-input">
+                            </div>
+
+                            {{-- Offer --}}
+                            <label class="toggle-row" style="margin-bottom:12px;">
+                                <input type="checkbox" id="is_on_offer" name="is_on_offer" value="1"
+                                    {{ old('is_on_offer', $item->is_on_offer) ? 'checked' : '' }}
+                                    onchange="toggleOfferFields()">
+                                <div>
+                                    <p class="toggle-row-label">🏷️ On Offer</p>
+                                    <p style="font-size:11px;color:#9ca3af;margin-top:1px;">Apply a discount to this item</p>
+                                </div>
+                            </label>
+
+                            <div id="offer_fields_section" style="{{ old('is_on_offer', $item->is_on_offer) ? '' : 'display:none;' }}">
+                                <div style="padding:14px;background:#f0fdf4;border-radius:12px;border:1.5px solid #bbf7d0;margin-bottom:12px;">
+                                    <label class="field-label">Discount % <span class="req">*</span></label>
+                                    <div class="suffix-wrap">
+                                        <input type="number" name="offer_percentage" id="offer_percentage"
+                                            value="{{ old('offer_percentage', $item->offer_percentage) }}"
+                                            min="0" max="100" step="0.01" placeholder="0"
+                                            class="field-input" style="padding-right:36px;"
+                                            oninput="calculateDiscountedPrice()">
+                                        <span class="input-suffix">%</span>
+                                    </div>
                                 </div>
 
-                                <div id="offer_fields_section" class="{{ old('is_on_offer', $item->is_on_offer) ? '' : 'hidden' }} space-y-4">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
                                     <div>
-                                        <label class="block font-semibold mb-2 text-gray-700">Discount Percentage <span class="text-red-500">*</span></label>
-                                        <div class="relative">
-                                            <input type="number" name="offer_percentage" id="offer_percentage"
-                                                value="{{ old('offer_percentage', $item->offer_percentage) }}"
-                                                min="0"
-                                                max="100"
-                                                step="0.01"
-                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3 pr-12"
-                                                placeholder="Enter discount percentage">
-                                            <span class="absolute right-3 top-3 text-gray-500 font-semibold">%</span>
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-1">Enter discount from 0 to 100</p>
+                                        <label class="field-label">Start Date <span class="req">*</span></label>
+                                        <input type="date" name="offer_start_date" id="offer_start_date"
+                                               value="{{ old('offer_start_date', $item->offer_start_date instanceof \Carbon\Carbon ? $item->offer_start_date->format('Y-m-d') : $item->offer_start_date) }}"
+                                               class="field-input">
                                     </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">Start Date <span class="text-red-500">*</span></label>
-                                            <input type="date" name="offer_start_date" id="offer_start_date"
-                                                value="{{ old('offer_start_date', $item->offer_start_date instanceof \Carbon\Carbon ? $item->offer_start_date->format('Y-m-d') : $item->offer_start_date) }}"
-                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
-                                        </div>
-                                        <div>
-                                            <label class="block font-semibold mb-2 text-gray-700">End Date <span class="text-red-500">*</span></label>
-                                            <input type="date" name="offer_end_date" id="offer_end_date"
-                                                value="{{ old('offer_end_date', $item->offer_end_date instanceof \Carbon\Carbon ? $item->offer_end_date->format('Y-m-d') : $item->offer_end_date) }}"
-                                                class="w-full rounded-lg border-green-200 focus:ring-green-300 focus:border-green-400 py-3">
-                                        </div>
+                                    <div>
+                                        <label class="field-label">End Date <span class="req">*</span></label>
+                                        <input type="date" name="offer_end_date" id="offer_end_date"
+                                               value="{{ old('offer_end_date', $item->offer_end_date instanceof \Carbon\Carbon ? $item->offer_end_date->format('Y-m-d') : $item->offer_end_date) }}"
+                                               class="field-input">
                                     </div>
+                                </div>
 
-                                    <div id="discounted_price_display" class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border-2 border-green-200">
-                                        <p class="text-sm font-semibold text-gray-600 mb-2">Price After Discount</p>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-2xl font-bold text-green-600" id="discounted_price">Rs 0.00</span>
-                                            <span class="text-sm text-gray-500">
-                                                <span class="line-through" id="original_price_display">Rs 0.00</span>
-                                            </span>
-                                        </div>
+                                <div class="discount-box">
+                                    <p style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Price After Discount</p>
+                                    <div style="display:flex;align-items:baseline;gap:10px;">
+                                        <span style="font-size:22px;font-weight:800;color:#059669;font-family:'DM Sans',sans-serif;" id="discounted_price">Rs 0.00</span>
+                                        <span style="font-size:13px;color:#9ca3af;text-decoration:line-through;" id="original_price_display">Rs 0.00</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
-                            <div class="space-y-3">
-                                <button type="submit"
-                                    class="w-full px-6 py-4 bg-gradient-to-r from-pink-500 to-blue-500 
-                                           hover:from-pink-600 hover:to-blue-600 
-                                           text-white rounded-xl font-bold shadow-lg 
-                                           hover:scale-105 transition-all duration-200
-                                           flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        {{-- Desktop Submit --}}
+                        <div class="form-card fade-up d5" style="background:linear-gradient(135deg,#fdf2f8,#eff6ff);border-color:rgba(244,114,182,0.15);">
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <button type="submit" class="btn-submit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                                     </svg>
                                     Update Item
                                 </button>
-                                
-                                <a href="{{ route('items.index') }}"
-                                    class="w-full px-6 py-4 border-2 border-gray-300 rounded-xl text-gray-700 
-                                           hover:bg-white hover:border-gray-400 hover:scale-105 
-                                           transition-all duration-200 font-semibold
-                                           flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                <a href="{{ route('items.index') }}" class="btn-cancel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                     Cancel
                                 </a>
@@ -577,303 +815,218 @@
                         </div>
 
                     </div>
-
                 </div>
-
             </form>
-
         </div>
     </div>
 
     <script>
-        let photoCount = 0;
+        let photoCount     = 0;
         const existingPhotos = {{ $item->photos ? $item->photos->count() : 0 }};
-        const maxPhotos = 20;
-
-        // Update button state on page load
+        const maxPhotos      = 20;
         updateAddButtonState();
 
-        // Installment calculation function
+        /* ── Photo delete toggle ── */
+        function togglePhotoDelete(photoId, labelEl) {
+            const cb   = document.getElementById('del-' + photoId);
+            const item = document.getElementById('photo-item-' + photoId);
+            cb.checked = !cb.checked;
+            item.classList.toggle('marked-delete', cb.checked);
+        }
+
+        /* ── Installments ── */
         function calculateInstallments() {
-            const price = parseFloat(document.getElementById('prize').value) || 0;
-            const isOnOffer = document.getElementById('is_on_offer').checked;
-            const offerPercentage = parseFloat(document.getElementById('offer_percentage').value) || 0;
-            
-            let targetPrice = price;
-            if (isOnOffer && offerPercentage > 0) {
-                targetPrice = price - (price * offerPercentage / 100);
-            }
-
-            const installment3 = targetPrice / 3;
-            const installment4 = targetPrice / 4;
-            
-            document.getElementById('installment_3').value = installment3.toFixed(2);
-            document.getElementById('installment_4').value = installment4.toFixed(2);
+            const price    = parseFloat(document.getElementById('prize').value) || 0;
+            const isOffer  = document.getElementById('is_on_offer').checked;
+            const offerPct = parseFloat(document.getElementById('offer_percentage')?.value) || 0;
+            let target = price;
+            if (isOffer && offerPct > 0) target = price - price * offerPct / 100;
+            document.getElementById('installment_3').value = (target / 3).toFixed(2);
+            document.getElementById('installment_4').value = (target / 4).toFixed(2);
         }
 
-        // Main image preview functions
-        function previewMainImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('main-preview-img').src = e.target.result;
-                    document.getElementById('main-image-preview').classList.remove('hidden');
-                    document.getElementById('main-image-upload').classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
+        /* ── Main image preview ── */
+        function previewMainImage(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('main-preview-img').src = ev.target.result;
+                document.getElementById('main-image-preview').style.display = '';
+                document.getElementById('main-image-upload').style.display  = 'none';
+            };
+            reader.readAsDataURL(file);
         }
-
         function removeMainPreview() {
             document.getElementById('image').value = '';
-            document.getElementById('main-image-preview').classList.add('hidden');
-            document.getElementById('main-image-upload').classList.remove('hidden');
+            document.getElementById('main-image-preview').style.display = 'none';
+            document.getElementById('main-image-upload').style.display  = '';
         }
 
-        // Additional photos functions
-        document.getElementById('add-photo-btn').addEventListener('click', function() {
-            const totalPhotos = existingPhotos + photoCount;
-            
-            if (totalPhotos >= maxPhotos) {
-                alert('Maximum 20 photos allowed');
-                return;
-            }
-
-            const photoContainer = document.getElementById('photo-container');
+        /* ── Additional photos ── */
+        document.getElementById('add-photo-btn').addEventListener('click', function () {
+            if (existingPhotos + photoCount >= maxPhotos) { alert('Maximum 20 photos allowed'); return; }
             const photoId = 'photo-' + Date.now();
-            const photoDiv = document.createElement('div');
-            photoDiv.className = 'flex items-start gap-3 p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-lg border border-purple-200';
-            photoDiv.innerHTML = `
-                <div class="flex-1">
-                    <input type="file" name="photos[]" accept="image/png,image/jpeg,image/jpg,image/webp" 
-                        onchange="previewAdditionalPhoto(event, '${photoId}')"
-                        class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
-                    <div id="${photoId}" class="hidden mt-2">
-                        <img class="h-32 w-32 object-cover rounded-lg border-2 border-purple-200 shadow-sm">
+            const wrap    = document.createElement('div');
+            wrap.className = 'photo-entry';
+            wrap.innerHTML = `
+                <div style="flex:1;">
+                    <input type="file" name="photos[]" accept="image/png,image/jpeg,image/jpg,image/webp"
+                           onchange="previewAdditionalPhoto(event,'${photoId}')"
+                           style="font-size:12.5px;color:#6b7280;width:100%;"
+                           class="block file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-600 hover:file:bg-purple-100">
+                    <div id="${photoId}" style="display:none;margin-top:8px;">
+                        <img style="width:80px;height:80px;object-fit:cover;border-radius:12px;border:1.5px solid #e8d5f0;">
                     </div>
                 </div>
-                <button type="button" onclick="removePhoto(this)" 
-                    class="flex-shrink-0 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                <button type="button" onclick="removePhoto(this)"
+                        style="padding:6px;border:none;background:none;color:#f87171;cursor:pointer;border-radius:8px;transition:background 0.15s;"
+                        onmouseover="this.style.background='#fff1f2'" onmouseout="this.style.background='none'">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                </button>
-            `;
-            
-            photoContainer.appendChild(photoDiv);
+                </button>`;
+            document.getElementById('photo-container').appendChild(wrap);
             photoCount++;
             updateAddButtonState();
         });
 
-        function previewAdditionalPhoto(event, photoId) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContainer = document.getElementById(photoId);
-                    const img = previewContainer.querySelector('img');
-                    img.src = e.target.result;
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
+        function previewAdditionalPhoto(e, id) {
+            const file = e.target.files[0]; if (!file) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                const c = document.getElementById(id);
+                c.querySelector('img').src = ev.target.result;
+                c.style.display = '';
+            };
+            r.readAsDataURL(file);
         }
 
-        function removePhoto(button) {
-            button.closest('div.flex').remove();
+        function removePhoto(btn) {
+            btn.closest('.photo-entry').remove();
             photoCount--;
             updateAddButtonState();
         }
 
         function updateAddButtonState() {
-            const totalPhotos = existingPhotos + photoCount;
-            const addBtn = document.getElementById('add-photo-btn');
-            
-            if (totalPhotos >= maxPhotos) {
-                addBtn.disabled = true;
-                addBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                addBtn.disabled = false;
-                addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            const btn   = document.getElementById('add-photo-btn');
+            const total = existingPhotos + photoCount;
+            btn.disabled      = total >= maxPhotos;
+            btn.style.opacity = total >= maxPhotos ? '0.4' : '1';
+            btn.style.cursor  = total >= maxPhotos ? 'not-allowed' : 'pointer';
         }
 
-        // Color dropdown functionality (Multi-select)
-        const colorSelectDisplay = document.getElementById('colorSelectDisplay');
-        const colorDropdown = document.getElementById('colorDropdown');
-        const selectedColorsContainer = document.getElementById('selectedColorsContainer');
-        const selectedColorText = document.getElementById('selectedColorText');
-        
-        let selectedColors = []; // Array of objects {id, name, hex}
+        /* ── Color multi-select ── */
+        const colorDisplay   = document.getElementById('colorSelectDisplay');
+        const colorDropdown  = document.getElementById('colorDropdown');
+        const colorContainer = document.getElementById('selectedColorsContainer');
+        const colorText      = document.getElementById('selectedColorText');
+        let selectedColors   = [];
 
-        // Initialize from old input OR existing item colors
+        // Pre-fill existing item colors (or old() on validation fail)
         const oldColors = @json(old('colors', $item->colors->pluck('id')->toArray()));
-        
-        if (oldColors.length > 0) {
+        if (oldColors.length) {
             document.addEventListener('DOMContentLoaded', () => {
                 oldColors.forEach(id => {
-                    const option = document.querySelector(`.color-option[data-color-id="${id}"]`);
-                    if (option) {
-                        const colorName = option.getAttribute('data-color-name');
-                        const colorHex = option.getAttribute('data-color-hex');
-                        selectedColors.push({ id: id, name: colorName, hex: colorHex });
-                        
-                        // Mark as selected in UI
-                        option.classList.add('bg-blue-50');
-                        option.querySelector('.check-icon').classList.remove('hidden');
+                    const opt = document.querySelector(`.color-option[data-color-id="${id}"]`);
+                    if (opt) {
+                        selectedColors.push({ id: String(id), name: opt.dataset.colorName, hex: opt.dataset.colorHex });
+                        opt.querySelector('.check-icon').style.display = '';
+                        opt.style.background = '#fdf2f8';
                     }
                 });
-                updateSelectedColorsUI();
+                updateColorsUI();
             });
         }
 
-        // Toggle dropdown
-        colorSelectDisplay.addEventListener('click', function(e) {
+        colorDisplay.addEventListener('click', e => {
             e.stopPropagation();
-            colorDropdown.classList.toggle('hidden');
+            const isOpen = colorDropdown.style.display !== 'none';
+            colorDropdown.style.display    = isOpen ? 'none' : 'block';
+            colorDisplay.style.borderColor = isOpen ? '#e8d5f0' : '#f472b6';
+            colorDisplay.style.boxShadow   = isOpen ? 'none' : '0 0 0 3px rgba(244,114,182,0.12)';
         });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-            colorDropdown.classList.add('hidden');
+        document.addEventListener('click', () => {
+            colorDropdown.style.display    = 'none';
+            colorDisplay.style.borderColor = '#e8d5f0';
+            colorDisplay.style.boxShadow   = 'none';
         });
+        colorDropdown.addEventListener('click', e => e.stopPropagation());
 
-        colorDropdown.addEventListener('click', (e) => e.stopPropagation());
-
-        // Handle color selection
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', function() {
-                const colorId = this.getAttribute('data-color-id');
-                const colorName = this.getAttribute('data-color-name');
-                const colorHex = this.getAttribute('data-color-hex');
-                const checkIcon = this.querySelector('.check-icon');
-
-                const index = selectedColors.findIndex(c => c.id === colorId);
-
-                if (index === -1) {
-                    // Add color
-                    selectedColors.push({ id: colorId, name: colorName, hex: colorHex });
-                    checkIcon.classList.remove('hidden');
-                    this.classList.add('bg-blue-50');
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.addEventListener('click', function () {
+                const id   = this.dataset.colorId;
+                const name = this.dataset.colorName;
+                const hex  = this.dataset.colorHex;
+                const idx  = selectedColors.findIndex(c => c.id === id);
+                const icon = this.querySelector('.check-icon');
+                if (idx === -1) {
+                    selectedColors.push({ id, name, hex });
+                    icon.style.display = ''; this.style.background = '#fdf2f8';
                 } else {
-                    // Remove color
-                    selectedColors.splice(index, 1);
-                    checkIcon.classList.add('hidden');
-                    this.classList.remove('bg-blue-50');
+                    selectedColors.splice(idx, 1);
+                    icon.style.display = 'none'; this.style.background = '';
                 }
-
-                updateSelectedColorsUI();
+                updateColorsUI();
             });
         });
 
-        function updateSelectedColorsUI() {
-            // Update hidden inputs
-            selectedColorsContainer.innerHTML = '';
-            selectedColors.forEach(color => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'colors[]';
-                input.value = color.id;
-                selectedColorsContainer.appendChild(input);
+        function updateColorsUI() {
+            colorContainer.innerHTML = '';
+            selectedColors.forEach(c => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = 'colors[]'; inp.value = c.id;
+                colorContainer.appendChild(inp);
             });
-
-            // Update display text
-            if (selectedColors.length === 0) {
-                selectedColorText.innerHTML = '<span class="text-gray-500">Select colors</span>';
+            if (!selectedColors.length) {
+                colorText.innerHTML = '<span style="font-size:13px;color:#c4b5d4;">Select colors…</span>';
             } else {
-                selectedColorText.innerHTML = '';
-                selectedColors.forEach(color => {
+                colorText.innerHTML = '';
+                selectedColors.forEach(c => {
                     const badge = document.createElement('div');
-                    badge.className = 'flex items-center gap-1 bg-gray-100 rounded-full pl-1 pr-2 py-0.5 border border-gray-200';
-                    badge.innerHTML = `
-                        <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${color.hex}"></div>
-                        <span class="text-xs font-semibold text-gray-700">${color.name}</span>
-                    `;
-                    selectedColorText.appendChild(badge);
+                    badge.style.cssText = 'display:flex;align-items:center;gap:5px;background:#f3f4f6;border-radius:99px;padding:3px 8px 3px 4px;border:1px solid #e5e7eb;';
+                    badge.innerHTML = `<div style="width:16px;height:16px;border-radius:50%;background:${c.hex};border:1.5px solid #e5e7eb;"></div><span style="font-size:12px;font-weight:600;color:#374151;">${c.name}</span>`;
+                    colorText.appendChild(badge);
                 });
             }
         }
 
-        // Size radio buttons and dropdown (Allowed to have both)
-        const sizeRadios = document.querySelectorAll('input[name="size_label"]');
-        const sizeDropdown = document.getElementById('sizeDropdown');
-
-        // Gift card functionality
+        /* ── Gift card toggle ── */
         function toggleGiftCardValidity() {
-            const isGiftCard = document.getElementById('is_gift_card').checked;
-            const validitySection = document.getElementById('gift_card_validity_section');
-            const validityInput = document.getElementById('gift_card_validity_months');
-            
-            if (isGiftCard) {
-                validitySection.classList.remove('hidden');
-                validityInput.required = true;
-            } else {
-                validitySection.classList.add('hidden');
-                validityInput.required = false;
-                validityInput.value = '';
-            }
+            const sec  = document.getElementById('gift_card_validity_section');
+            const inp  = document.getElementById('gift_card_validity_months');
+            const show = document.getElementById('is_gift_card').checked;
+            sec.style.display = show ? '' : 'none';
+            inp.required = show;
+            if (!show) inp.value = '';
         }
 
-        // Offer functionality
+        /* ── Offer toggle ── */
         function toggleOfferFields() {
-            const isOnOffer = document.getElementById('is_on_offer').checked;
-            const offerSection = document.getElementById('offer_fields_section');
-            const offerPercentage = document.getElementById('offer_percentage');
-            const offerStartDate = document.getElementById('offer_start_date');
-            const offerEndDate = document.getElementById('offer_end_date');
-            
-            if (isOnOffer) {
-                offerSection.classList.remove('hidden');
-                offerPercentage.required = true;
-                offerStartDate.required = true;
-                offerEndDate.required = true;
-                calculateDiscountedPrice();
-            } else {
-                offerSection.classList.add('hidden');
-                offerPercentage.required = false;
-                offerStartDate.required = false;
-                offerEndDate.required = false;
-                offerPercentage.value = '';
-                offerStartDate.value = '';
-                offerEndDate.value = '';
-            }
+            const sec  = document.getElementById('offer_fields_section');
+            const show = document.getElementById('is_on_offer').checked;
+            sec.style.display = show ? '' : 'none';
+            const pct = document.getElementById('offer_percentage');
+            const sd  = document.getElementById('offer_start_date');
+            const ed  = document.getElementById('offer_end_date');
+            pct.required = sd.required = ed.required = show;
+            if (!show) { pct.value = ''; sd.value = ''; ed.value = ''; }
+            calculateDiscountedPrice();
         }
 
-        // Calculate discounted price
+        /* ── Discounted price ── */
         function calculateDiscountedPrice() {
-            const priceInput = document.getElementById('prize');
-            const offerPercentageInput = document.getElementById('offer_percentage');
-            const discountedPriceDisplay = document.getElementById('discounted_price');
-            const originalPriceDisplay = document.getElementById('original_price_display');
-            
-            const price = parseFloat(priceInput.value) || 0;
-            const offerPercentage = parseFloat(offerPercentageInput.value) || 0;
-            
-            const discount = (price * offerPercentage) / 100;
-            const discountedPrice = price - discount;
-            
-            discountedPriceDisplay.textContent = 'Rs ' + discountedPrice.toFixed(2);
-            originalPriceDisplay.textContent = 'Rs ' + price.toFixed(2);
-            
-            // Also update installments
+            const price = parseFloat(document.getElementById('prize').value) || 0;
+            const pct   = parseFloat(document.getElementById('offer_percentage')?.value) || 0;
+            const disc  = price - price * pct / 100;
+            document.getElementById('discounted_price').textContent       = 'Rs ' + disc.toFixed(2);
+            document.getElementById('original_price_display').textContent = 'Rs ' + price.toFixed(2);
             calculateInstallments();
         }
 
-        // Initialize on page load
-        const priceInput = document.getElementById('prize');
-        const offerPercentageInput = document.getElementById('offer_percentage');
-        
-        if (priceInput) {
-            priceInput.addEventListener('input', calculateDiscountedPrice);
-        }
-        if (offerPercentageInput) {
-            offerPercentageInput.addEventListener('input', calculateDiscountedPrice);
-        }
-
-        // Initialize values on page load
-        if (document.getElementById('is_on_offer').checked) {
-            calculateDiscountedPrice();
-        }
+        /* ── Init on load ── */
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('is_on_offer').checked) calculateDiscountedPrice();
+            calculateInstallments();
+        });
     </script>
 </x-app-layout>

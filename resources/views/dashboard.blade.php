@@ -305,11 +305,11 @@
                             </div>
                             <div class="flex flex-col items-end gap-0.5 ml-3 flex-shrink-0">
                                 <span class="text-xs font-bold px-2.5 py-1 rounded-full
-                                    {{ $item->availability === 'out of stock'
-                                        ? 'bg-red-100 text-red-500'
-                                        : ($item->stock_items <= 5
-                                            ? 'bg-amber-100 text-amber-600'
-                                            : 'bg-emerald-100 text-emerald-600') }}">
+                                    {{ !$item->availability
+                ? 'bg-red-100 text-red-500'
+                : ($item->stock_items <= 5
+                    ? 'bg-amber-100 text-amber-600'
+                    : 'bg-emerald-100 text-emerald-600') }}">
                                     {{ $item->stock_items }}
                                 </span>
                                 <span class="text-[10px] text-gray-300 font-medium">units</span>
