@@ -32,7 +32,7 @@ const Header = () => {
                     <div className="flex items-center space-x-3">
                         <img src="/images/Logo.png" alt="Logo" className="h-12 w-12" />
                         <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-blue-500 to-pink-600 bg-clip-text text-transparent">
-                            Clothing Shop
+                            AURA EDIT
                         </span>
                     </div>
 
@@ -41,9 +41,9 @@ const Header = () => {
                         <Link to="/" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Home
                         </Link>
-                        <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                        {/* <Link to="/shop?title=Our Collection" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Shop
-                        </Link>
+                        </Link> */}
                         <Link to="/shop?category_id=1&title=Men's Wear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Men
                         </Link>
@@ -59,16 +59,16 @@ const Header = () => {
                         <Link to="/shop?category_id=5&title=Footwear" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Shoes
                         </Link>
-                        <Link to="/shop?category_id=9&title=Gift Cards" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
+                        <Link to="/shop?category_id=6&title=Gift Cards" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Gift Cards
                         </Link>
                         {/* <Link to="/login" className="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-200">
                             Login
                         </Link> */}
 
-                        <button className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200">
+                        <Link to="/shop?title=Our Collection" className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200">
                             Shop Now
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Profile and Cart Icons - Right Aligned */}

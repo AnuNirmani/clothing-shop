@@ -171,18 +171,18 @@ const HomePage = () => {
 
                     {/* Tagline */}
                     <p className="text-gray-400 text-sm font-semibold tracking-widest uppercase mb-6">
-                        REIMAGINE Clothing
+                        Loom & Lore
                     </p>
 
                     {/* Main Heading */}
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-                        Each day is a page<br />
-                        in your fashion story
+                        Your style story<br />
+                        starts here
                     </h1>
 
                     {/* Description */}
                     <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-                        Don’t stress about the dress, we’ll dress you to impress. Explore our collection of trendy, elegant fashion and find your perfect look for any occasion.
+                        Stop overthinking the outfit. We’ve done the hard work so you can show up and stand out. Explore bold textures and iconic silhouettes designed for every "main character" moment.
                     </p>
                 </div>
             </section>
@@ -323,10 +323,10 @@ const HomePage = () => {
                     </div>
 
                     {/* View All Button */}
-                    <div className="text-center mt-12">
-                        <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 px-10 rounded-lg hover:from-pink-500 hover:to-blue-500 transition-colors duration-300">
+                     <div className="text-center mt-12">
+                        <Link to="/shop?title=Our Collection" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 px-10 rounded-lg hover:from-pink-500 hover:to-blue-500 transition-colors duration-300">
                             View All Products
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -384,7 +384,7 @@ const HomePage = () => {
 
                     <div className="relative">
                         {/* Navigation Arrows */}
-                        <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+                        {/* <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
                             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                             </svg>
@@ -394,7 +394,7 @@ const HomePage = () => {
                             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </button>
+                        </button> */}
 
                         {/* Store Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -406,16 +406,24 @@ const HomePage = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">KANDY CELLULAR - NUGEGODA</h3>
-                                        <p className="text-sm text-gray-600 mb-3">#300, High Level Road, Kirulapone, Nugegoda (00600)</p>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - NUGEGODA</h3>
+                                        <p className="text-sm text-gray-600 mb-3">350, High Level Road, Kirulapone (00600)</p>
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center text-sm text-gray-600">
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="underline">info@auraedit.lk</span>
+                                    </div>
                                 <div className="flex items-center text-sm text-gray-600">
                                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                     </svg>
-                                    <span className="underline">+94 112 816 980</span>
+                                    <span className="underline">+94 777 777 777</span>
                                 </div>
+                            </div>
                             </div>
 
                             {/* Store 2 */}
@@ -426,8 +434,8 @@ const HomePage = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">KANDY SELECTION - KADAWATHA</h3>
-                                        <p className="text-sm text-gray-600 mb-3">#43, Colombo-Kandy Road, Kadawatha (11850)</p>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - KADAWATHA</h3>
+                                        <p className="text-sm text-gray-600 mb-3">43, Colombo-Kandy Road, Kadawatha (11850)</p>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -435,13 +443,13 @@ const HomePage = () => {
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        <span className="underline">info@kandyselection.lk</span>
+                                        <span className="underline">info@auraedit.lk</span>
                                     </div>
                                     <div className="flex items-center text-sm text-gray-600">
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        <span className="underline">+94 112 925 925</span>
+                                        <span className="underline">+94 777 777 777</span>
                                     </div>
                                 </div>
                             </div>
@@ -454,7 +462,7 @@ const HomePage = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">KANDY SELECTION - NUGEGODA</h3>
+                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - NUGEGODA</h3>
                                         <p className="text-sm text-gray-600 mb-3">#300, High Level Road, Kirulapone, Nugegoda (00600)</p>
                                     </div>
                                 </div>
@@ -463,13 +471,13 @@ const HomePage = () => {
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        <span className="underline">nugegoda@kandyselection.lk</span>
+                                        <span className="underline">info@auraedit.lk</span>
                                     </div>
                                     <div className="flex items-center text-sm text-gray-600">
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        <span className="underline">+94 112 816 980</span>
+                                        <span className="underline">+94 777 777 777</span>
                                     </div>
                                 </div>
                             </div>
@@ -498,9 +506,9 @@ const HomePage = () => {
                     </div>
 
                     <h2 className="text-4xl font-bold text-gray-800 mb-3">
-                        Explore Kandy Selection
+                        Explore Aura Edit Selection
                     </h2>
-                    <p className="text-gray-600 text-lg">@kandy_selection</p>
+                    <p className="text-gray-600 text-lg">@auraedit_selection</p>
                 </div>
             </section>
 
@@ -512,15 +520,15 @@ const HomePage = () => {
                     <div className="w-full px-4 sm:px-6 lg:px-12 py-12">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                             <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                ★ Quality Products
+                                ✨ Quality Products
                                 <p className="text-sm text-gray-500 mt-1">Premium quality clothing</p>
                             </div>
                             <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                ₹ Secure Payments
+                                🔒 Secure Payments
                                 <p className="text-sm text-gray-500 mt-1">Instant secure checkouts</p>
                             </div>
                             <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                ↔ 7 Days Exchange
+                                🔄 7 Days Exchange
                                 <p className="text-sm text-gray-500 mt-1">Easy exchange policy</p>
                             </div>
                             <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">

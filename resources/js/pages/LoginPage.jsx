@@ -36,7 +36,7 @@ const LoginPage = () => {
                 <div className="max-w-md mx-auto">
                     <div className="mb-8">
                         <h2 className="text-2xl font-bold mb-2">Log in</h2>
-                        <p className="text-gray-500 text-lg">Login to the kandy account</p>
+                        <p className="text-gray-500 text-lg">Login to the aura edit account</p>
                     </div>
 
                     <form className="space-y-6">
