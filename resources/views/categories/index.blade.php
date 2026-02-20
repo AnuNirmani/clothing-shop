@@ -230,192 +230,252 @@
     <div class="root" style="background: linear-gradient(135deg,#fdf2f8 0%,#f0f9ff 55%,#fdf4ff 100%); min-height: calc(100vh - 64px); padding: 28px 16px 60px;">
         <div style="max-width: 780px; margin: 0 auto;">
 
-        <div class="mb-8">
-                <span class="bg-gradient-to-r from-pink-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">
-                    Manage your product categories
-                </span>
+                {{-- ── Dark Hero Bar ── --}}
+            <div class="fade-up d1" style="margin-bottom:24px;position:relative;border-radius:24px;overflow:hidden;padding:26px 32px;background:linear-gradient(135deg,#130826,#1e0d4a,#0a1628);box-shadow:0 20px 60px rgba(13,5,32,0.3);">
+                <div style="position:absolute;top:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(244,114,182,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+                <div style="position:absolute;bottom:-20px;left:45%;width:140px;height:140px;background:radial-gradient(circle,rgba(96,165,250,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+                <div style="position:relative;z-index:1;display:flex;align-items:center;gap:18px;">
+                    <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(244,114,182,0.22),rgba(96,165,250,0.18));border:1px solid rgba(244,114,182,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg class="w-5 h-5" style="color:#f9a8d4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="color:rgba(249,168,212,0.6);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.3em;margin:0 0 3px;font-family:'DM Sans',sans-serif;">✦ Inventory · Configuration</p>
+                        <h1 style="color:white;font-size:20px;font-weight:700;margin:0;font-family:'Playfair Display',serif;">Categories Management</h1>
+                        <p style="color:rgba(255,255,255,0.32);font-size:12px;margin:3px 0 0;font-family:'DM Sans',sans-serif;">Organise and manage your product categories</p>
+                    </div>
+                    <div style="margin-left:auto;">
+                        <span class="count-badge">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            {{ $categories->total() }} {{ Str::plural('category', $categories->total()) }}
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Add New Category -->
-            <div class="bg-gradient-to-r from-pink-50 to-blue-50 rounded-xl shadow-md p-6 mb-6 border border-pink-100 ">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Category</h3>
-                <form method="POST" action="{{ route('categories.store') }}">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Enter category name *"
-                            value="{{ old('name') }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-pink-500"
-                            required
-                        >
-                        <button
-                            type="submit"
-                            class="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white rounded-lg font-semibold px-6 py-3 hover:scale-105 transition-transform duration-200"
-                        >
-                            Add Category
-                        </button>
+            {{-- ── Flash messages ── --}}
+            @if(session('success'))
+            <div class="fade-up d1" style="margin-bottom:16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+                <svg class="w-4 h-4" style="color:#059669;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span style="font-size:13.5px;font-weight:600;color:#065f46;">{{ session('success') }}</span>
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="fade-up d1" style="margin-bottom:16px;background:#fff1f2;border:1.5px solid #fecdd3;border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+                <svg class="w-4 h-4" style="color:#ef4444;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span style="font-size:13.5px;font-weight:600;color:#9f1239;">{{ $errors->first() }}</span>
+            </div>
+            @endif
+
+            {{-- ── Add New Category ── --}}
+            <div class="panel panel-pink fade-up d2" style="margin-bottom:18px;">
+                <div class="section-label">
+                    <div class="section-label-icon" style="background:linear-gradient(135deg,#fce7f3,#dbeafe);">
+                        <svg class="w-4 h-4" style="color:#f472b6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
                     </div>
-                </form>
+                    <h3>Add New Category</h3>
+                </div>
+
+                <div style="padding: 0 24px 22px;">
+                    <form method="POST" action="{{ route('categories.store') }}">
+                        @csrf
+                        <div style="display:flex;gap:12px;align-items:center;">
+                            <input type="text" name="name" placeholder="Enter category name…"
+                                   value="{{ old('name') }}"
+                                   class="add-input" style="flex:1;">
+                            <button type="submit" class="btn-add">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Add Category
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <!-- Categories Table -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="px-6 py-4 border-b bg-gradient-to-r from-pink-50 to-blue-50">
-                    <h3 class="text-lg font-semibold text-gray-900">All Categories</h3>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-center">
-                        <thead>
-                            <tr class="bg-gradient-to-r from-pink-50 to-blue-50 border-b">
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-700 uppercase">Name</th>
-                                <th class="px-6 py-4 text-xs font-semibold text-gray-700 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y">
-                            @forelse($categories as $category)
-                                @php $editError = session('edit_error_id') == $category->id; @endphp
-                                <tr class="hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50">
-
-                                    <!-- Name -->
-                                    <td class="px-6 py-4">
-                                        <div class="flex justify-center">
-                                            <span
-                                                id="name-display-{{ $category->id }}"
-                                                @if($editError) style="display:none" @endif
-                                                class="font-semibold text-pink-600"
-                                            >
-                                                {{ $category->name }}
-                                            </span>
-
-                                            <form
-                                                id="edit-form-{{ $category->id }}"
-                                                method="POST"
-                                                action="{{ route('categories.update', $category->id) }}"
-                                                @if(!$editError) style="display:none" @endif
-                                            >
-                                                @csrf
-                                                @method('PUT')
-                                                <input
-                                                    id="name-input-{{ $category->id }}"
-                                                    type="text"
-                                                    name="name"
-                                                    value="{{ old('name', $category->name) }}"
-                                                    class="border rounded-lg px-3 py-2 focus:ring-pink-500"
-                                                >
-                                            </form>
-                                        </div>
-                                    </td>
-
-                                    <!-- Actions -->
-                                    <td class="px-6 py-4">
-                                        <div
-                                            id="action-buttons-{{ $category->id }}"
-                                            @if($editError) style="display:none" @endif
-                                            class="flex justify-center gap-3"
-                                        >
-                                            <button
-                                                type="button"
-                                                onclick="enableEdit({{ $category->id }})"
-                                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 hover:bg-amber-200 hover:text-amber-700 hover:border-amber-500 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5"
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    onclick="return confirm('Delete this category?')"
-                                                    class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-200 hover:text-red-700 hover:border-red-500 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        <div
-                                            id="edit-buttons-{{ $category->id }}"
-                                            @if($editError) style="display:flex" @else class="hidden" @endif
-                                            class="flex justify-center gap-3"
-                                        >
-                                            <button
-                                                type="button"
-                                                onclick="submitEdit({{ $category->id }})"
-                                                class="px-4 py-2 bg-pink-500 text-white rounded-lg"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onclick="cancelEdit({{ $category->id }})"
-                                                class="px-4 py-2 bg-gray-100 rounded-lg"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="py-12 text-center text-gray-500">
-                                        No categories found
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-            <div class="px-6 py-4 bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-t border-pink-100">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-600">
-                        Showing <span class="font-semibold text-pink-600">{{ $categories->firstItem() ?? 0 }}</span> to <span class="font-semibold text-pink-600">{{ $categories->lastItem() ?? 0 }}</span> of <span class="font-semibold text-blue-600">{{ $categories->total() }}</span> results
+            {{-- ── Categories Table ── --}}
+            <div class="panel panel-blue fade-up d3">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="section-label-icon" style="background:linear-gradient(135deg,#dbeafe,#ede9fe);">
+                            <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                        </div>
+                        <h3 style="font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:#1f2937;margin:0;">All Categories</h3>
                     </div>
-                    <div class="flex space-x-1">
-                        @if ($categories->onFirstPage())
-                            <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Previous</span>
+                    <span style="font-size:11px;color:#9ca3af;background:#f3f4f6;padding:3px 10px;border-radius:99px;font-weight:600;">
+                        Page {{ $categories->currentPage() }} of {{ $categories->lastPage() }}
+                    </span>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="padding-left:24px;">Category Name</th>
+                            <th style="padding-right:24px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($categories as $category)
+                        @php $editError = session('edit_error_id') == $category->id; @endphp
+                        <tr>
+                            {{-- Name cell --}}
+                            <td style="padding-left:24px;">
+                                <div id="name-display-{{ $category->id }}" class="name-badge" @if($editError) style="display:none;" @endif>
+                                    <span class="name-dot"></span>
+                                    {{ $category->name }}
+                                </div>
+
+                                <form id="edit-form-{{ $category->id }}"
+                                      method="POST" action="{{ route('categories.update', $category->id) }}"
+                                      @if(!$editError) style="display:none;" @endif>
+                                    @csrf @method('PUT')
+                                    <input id="name-input-{{ $category->id }}" type="text" name="name"
+                                           value="{{ old('name', $category->name) }}"
+                                           class="edit-input">
+                                </form>
+                            </td>
+
+                            {{-- Actions cell --}}
+                            <td style="padding-right:24px;">
+                                {{-- Default buttons --}}
+                                <div id="action-buttons-{{ $category->id }}"
+                                     @if($editError) style="display:none;" @else style="display:flex;justify-content:flex-end;gap:8px;" @endif>
+                                    <button type="button" onclick="enableEdit({{ $category->id }})" class="btn-edit">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" onclick="return confirm('Delete this category?')" class="btn-delete">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {{-- Edit mode buttons --}}
+                                <div id="edit-buttons-{{ $category->id }}"
+                                     @if($editError) style="display:flex;justify-content:flex-end;gap:8px;" @else style="display:none;" @endif>
+                                    <button type="button" onclick="submitEdit({{ $category->id }})" class="btn-save">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Save
+                                    </button>
+                                    <button type="button" onclick="cancelEdit({{ $category->id }})" class="btn-cancel-sm">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="2">
+                                <div class="empty-state">
+                                    <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#fce7f3,#eff6ff);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                                        <svg class="w-6 h-6" style="color:#c4b5d4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                        </svg>
+                                    </div>
+                                    <p style="font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:#374151;margin-bottom:5px;">No categories yet</p>
+                                    <p style="font-size:12.5px;color:#9ca3af;">Add your first product category using the form above</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                {{-- Pagination --}}
+                <div style="padding:16px 24px;background:linear-gradient(135deg,#fdf9ff,#f0f9ff);border-top:1px solid #f3e8ff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                    <p style="font-size:12.5px;color:#6b7280;margin:0;">
+                        Showing
+                        <span style="font-weight:700;color:#be185d;">{{ $categories->firstItem() ?? 0 }}</span>–<span style="font-weight:700;color:#be185d;">{{ $categories->lastItem() ?? 0 }}</span>
+                        of
+                        <span style="font-weight:700;color:#3b82f6;">{{ $categories->total() }}</span>
+                        categories
+                    </p>
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                        @if($categories->onFirstPage())
+                            <span class="page-btn disabled">← Prev</span>
                         @else
-                            <a href="{{ $categories->previousPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">Previous</a>
+                            <a href="{{ $categories->previousPageUrl() }}" class="page-btn">← Prev</a>
                         @endif
 
-                        @foreach ($categories->getUrlRange(1, $categories->lastPage()) as $page => $url)
-                            @if ($page == $categories->currentPage())
-                                <span class="px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 border border-pink-500 rounded-lg shadow-md">{{ $page }}</span>
+                        @foreach($categories->getUrlRange(1, $categories->lastPage()) as $page => $url)
+                            @if($page == $categories->currentPage())
+                                <span class="page-btn active">{{ $page }}</span>
                             @else
-                                <a href="{{ $url }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-pink-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-pink-300 transition-all duration-200">{{ $page }}</a>
+                                <a href="{{ $url }}" class="page-btn">{{ $page }}</a>
                             @endif
                         @endforeach
 
-                        @if ($categories->hasMorePages())
-                            <a href="{{ $categories->nextPageUrl() }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-blue-200 rounded-lg hover:bg-gradient-to-r hover:from-pink-100 hover:to-blue-100 hover:border-blue-300 transition-all duration-200">Next</a>
+                        @if($categories->hasMorePages())
+                            <a href="{{ $categories->nextPageUrl() }}" class="page-btn">Next →</a>
                         @else
-                            <span class="px-3 py-2 text-sm text-gray-400 bg-white border border-gray-200 rounded-lg cursor-not-allowed">Next</span>
+                            <span class="page-btn disabled">Next →</span>
                         @endif
                     </div>
                 </div>
             </div>
+
+        </div>
+    </div>
     <script>
         function enableEdit(id) {
-            document.getElementById('name-display-' + id).style.display = 'none';
-            document.getElementById('edit-form-' + id).style.display = 'block';
-            document.getElementById('action-buttons-' + id).style.display = 'none';
-            document.getElementById('edit-buttons-' + id).style.display = 'flex';
+            document.getElementById('name-display-' + id).style.display    = 'none';
+            document.getElementById('edit-form-' + id).style.display       = 'block';
+            document.getElementById('action-buttons-' + id).style.display  = 'none';
+            document.getElementById('edit-buttons-' + id).style.display    = 'flex';
+            document.getElementById('edit-buttons-' + id).style.justifyContent = 'flex-end';
+            document.getElementById('edit-buttons-' + id).style.gap        = '8px';
+            document.getElementById('name-input-' + id).focus();
         }
 
         function cancelEdit(id) {
-            document.getElementById('name-display-' + id).style.display = 'inline';
-            document.getElementById('edit-form-' + id).style.display = 'none';
-            document.getElementById('action-buttons-' + id).style.display = 'flex';
-            document.getElementById('edit-buttons-' + id).style.display = 'none';
+            document.getElementById('name-display-' + id).style.display    = 'flex';
+            document.getElementById('edit-form-' + id).style.display       = 'none';
+            document.getElementById('action-buttons-' + id).style.display  = 'flex';
+            document.getElementById('edit-buttons-' + id).style.display    = 'none';
         }
 
         function submitEdit(id) {
             document.getElementById('edit-form-' + id).submit();
         }
+
+        // Press Enter to save while editing
+        document.querySelectorAll('.edit-input').forEach(input => {
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const id = input.id.replace('name-input-', '');
+                    submitEdit(id);
+                }
+                if (e.key === 'Escape') {
+                    const id = input.id.replace('name-input-', '');
+                    cancelEdit(id);
+                }
+            });
+        });
     </script>
 </x-app-layout>
