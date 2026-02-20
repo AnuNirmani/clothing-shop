@@ -108,7 +108,7 @@
         .field-label {
             display: block; font-size: 11.5px; font-weight: 600;
             text-transform: uppercase; letter-spacing: 0.08em;
-            color: #9ca3af; margin-bottom: 7px;
+            color: #515151; margin-bottom: 7px;
         }
         .field-label .req { color: #f472b6; margin-left: 2px; }
 
@@ -694,30 +694,30 @@
                             </div>
                         </div>
 
-                        <!-- Availability Card -->
-                        <div class="form-card card-red fade-up d3">
-                            <div class="bg-white shadow-lg rounded-2xl border border-orange-100 p-6">
-                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    Availability
-                                </h3>
-                                <div>
-                                    <label class="block font-semibold mb-2 text-gray-700">Status <span class="text-red-500">*</span></label>
-                                    <select name="availability"
-                                        class="w-full rounded-lg border-orange-200 focus:ring-orange-300 focus:border-orange-400 py-3"
-                                        required>
-                                        <option value="in stock" {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'in stock' ? 'selected' : '' }}>
-                                            ✓ In Stock
-                                        </option>
-                                        <option value="out of stock" {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'out of stock' ? 'selected' : '' }}>
-                                            ✗ Out of Stock
-                                        </option>
-                                    </select>
+                        {{-- ── Availability ── --}}
+                            <div class="form-card card-red fade-up d3">
+                                <div class="section-label">
+                                    <div class="section-label-icon" style="background:linear-gradient(135deg,#fee2e2,#fce7f3);">
+                                        <svg class="w-4 h-4" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <h3>Availability</h3>
+                                </div>
+
+                                <label class="field-label">Status <span class="req">*</span></label>
+                                <select name="availability" class="field-input" required>
+                                    <option value="in stock"      {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'in stock'      ? 'selected' : '' }}>✓ In Stock</option>
+                                    <option value="out of stock"  {{ old('availability', $item->availability ? 'in stock' : 'out of stock') == 'out of stock'  ? 'selected' : '' }}>✗ Out of Stock</option>
+                                </select>
+
+                                {{-- Live preview badge --}}
+                                <div id="availabilityPreview" style="margin-top:12px;padding:10px 14px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;transition:all 0.25s ease;
+                                    {{ $item->availability ? 'background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.25);color:#059669;' : 'background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:#dc2626;' }}">
+                                    <span id="availDot" style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ $item->availability ? '#10b981' : '#ef4444' }};"></span>
+                                    <span id="availText">{{ $item->availability ? 'Item is currently In Stock' : 'Item is currently Out of Stock' }}</span>
                                 </div>
                             </div>
-                        </div>
                         {{-- ── Options (Gift Card + Offer) ── --}}
                         <div class="form-card card-amber fade-up d3">
                             <div class="section-label">
