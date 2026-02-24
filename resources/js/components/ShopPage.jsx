@@ -42,13 +42,235 @@ const ShopPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
+        <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/20 to-white">
+
+                       <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+                * {
+                    font-family: 'Poppins', sans-serif;
+                }
+
+                h1, h2, h3, h4, h5, h6 {
+                    font-family: 'Playfair Display', serif;
+                }
+
+
+                .gradient-text {
+                    background: linear-gradient(135deg, #d4a574 0%, #8b5cf6 50%, #ec4899 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                .product-card {
+                    position: relative;
+                    overflow: hidden;
+                    border-radius: 20px;
+                    background: white;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    border: 1px solid rgba(236, 72, 153, 0.1);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                }
+
+                .product-card:hover {
+                    box-shadow: 0 20px 50px rgba(236, 72, 153, 0.15);
+                    transform: translateY(-8px);
+                    border-color: rgba(236, 72, 153, 0.2);
+                }
+
+                .product-image {
+                    position: relative;
+                    overflow: hidden;
+                    width: 100%;
+                    aspect-ratio: 3/4;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #f0f0f0 100%);
+                }
+
+                .product-image img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .product-card:hover .product-image img {
+                    transform: scale(1.12);
+                }
+
+                .product-overlay {
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0);
+                    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .product-card:hover .product-overlay {
+                    background: rgba(0, 0, 0, 0.15);
+                }
+
+                .quick-view-btn {
+                    position: absolute;
+                    bottom: 24px;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(20px);
+                    opacity: 0;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    z-index: 20;
+                }
+
+                .product-card:hover .quick-view-btn {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+
+                .price-badge {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+                    color: white;
+                    padding: 10px 16px;
+                    border-radius: 50px;
+                    font-weight: 700;
+                    font-size: 14px;
+                    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+                    opacity: 0;
+                    transform: translateY(-10px);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .product-card:hover .price-badge {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+
+                .wishlist-btn {
+                    position: absolute;
+                    top: 16px;
+                    left: 16px;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    background: white;
+                    border: 2px solid rgba(236, 72, 153, 0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-center;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    opacity: 0;
+                    transform: translateX(-10px);
+                }
+
+                .product-card:hover .wishlist-btn {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+
+                .wishlist-btn:hover {
+                    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+                    border-color: transparent;
+                    color: white;
+                    transform: scale(1.1);
+                    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+                }
+
+                .product-content {
+                    padding: 24px 20px;
+                }
+
+                .product-card:hover .product-name {
+                    color: transparent;
+                    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+                    background-clip: text;
+                    -webkit-background-clip: text;
+                }
+
+                .color-swatch {
+                    display: inline-block;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    border: 2px solid rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                }
+
+                .color-swatch:hover {
+                    transform: scale(1.2);
+                    border-color: #8b5cf6;
+                    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+                }
+
+                .loading-skeleton {
+                    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                    background-size: 200% 100%;
+                    animation: shimmer 2s infinite;
+                    border-radius: 20px;
+                }
+
+                .filter-btn {
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    border: 2px solid rgba(139, 92, 246, 0.2);
+                    background: white;
+                    color: #6b7280;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    font-size: 14px;
+                }
+
+                .filter-btn.active {
+                    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+                    color: white;
+                    border-color: transparent;
+                    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+                }
+
+                .filter-btn:hover {
+                    border-color: #8b5cf6;
+                    color: #8b5cf6;
+                }
+
+                .section-subtitle {
+                    font-size: 14px;
+                    font-weight: 600;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    color: #8b5cf6;
+                    margin-bottom: 12px;
+                }
+
+                .page-title {
+                    font-size: 56px;
+                    font-weight: 700;
+                    margin-bottom: 16px;
+                    line-height: 1.2;
+                }
+
+                @media (max-width: 768px) {
+                    .page-title {
+                        font-size: 36px;
+                    }
+
+                    .product-card {
+                        border-radius: 16px;
+                    }
+
+                    .product-content {
+                        padding: 16px;
+                    }
+                }
+            `}</style>
             <Header />
 
             <section className="py-20 px-6 sm:px-10 lg:px-16">
                 <div className="max-w-[1600px] mx-auto">
                     <div className="text-center mb-16">
-                        <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-500 via-blue-500 to-pink-600 bg-clip-text text-transparent mb-4">
+                        <h1 className="page-title gradient-text">
                             {title}
                         </h1>
                         <p className="text-gray-600 text-lg">Explore our curated selection of premium fashion</p>
@@ -72,7 +294,7 @@ const ShopPage = () => {
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                                             <Link
                                                 to={`/item/${product.id}`}
-                                                className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 px-8 py-3 rounded-full font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-pink-500 hover:text-white"
+                                                className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 px-8 py-3 rounded-full font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-pink-300 hover:text-gray"
                                             >
                                                 Quick View
                                             </Link>

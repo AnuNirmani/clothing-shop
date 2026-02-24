@@ -4,8 +4,6 @@ import Header from './Header';
 import Footer from './Footer';
 
 const HomePage = () => {
-
-
     const [latestItem, setLatestItem] = useState(null);
     const [latestWomensItem, setLatestWomensItem] = useState(null);
     const [latestMensItem, setLatestMensItem] = useState(null);
@@ -45,276 +43,260 @@ const HomePage = () => {
         }
     };
 
-
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
+        <div className="min-h-screen bg-white">
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+                * {
+                    font-family: 'Poppins', sans-serif;
+                }
+
+                h1, h2, h3, h4, h5, h6 {
+                    font-family: 'Playfair Display', serif;
+                }
+
+                .gradient-text {
+                    background: linear-gradient(135deg, #d4a574 0%, #8b5cf6 50%, #ec4899 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                .smooth-transition {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .fade-in {
+                    animation: fadeInUp 0.6s ease-out;
+                }
+
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .stagger-item {
+                    animation: fadeInUp 0.6s ease-out;
+                }
+
+                .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+                .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+                .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+                .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+
+                .hover-lift {
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .hover-lift:hover {
+                    transform: translateY(-8px);
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                }
+
+                .glow-on-hover:hover {
+                    box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+                }
+            `}</style>
+
             <Header />
 
-            {/* Hero Section */}
-            <section id="home" className="relative h-[700px] w-full overflow-hidden bg-gradient-to-br from-pink-50 via-white to-blue-50">
-                {/* Background Image with Blur Overlay */}
+            {/* Hero Section - Luxurious & Bold */}
+            <section className="relative h-screen w-full  flex items-center justify-center">
+                {/* Background Image with Sophisticated Overlay */}
                 <div className="absolute inset-0">
                     <img
                         src="/images/hero01.png"
                         alt="Fashion Hero"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full "
                     />
-                    <div className="absolute inset-0 bg-pink-200/25 backdrop-blur-sm"></div>
-                </div>
+                        </div>
 
                 {/* Content */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
-                    {/* Heading */}
-                    <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold mb-12 tracking-wider text-center">
-                        WHAT ARE YOU LOOKING FOR?
-                    </h1>
+                <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-6xl mx-auto text-center">
+                        {/* Main Heading */}
+                        <h1 className="fade-in text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                            Discover Your
+                            <br />
+                            <span className="gradient-text">Signature Style</span>
+                        </h1>
 
-                    {/* Search Bar */}
-                    <div className="w-full max-w-3xl mb-16">
-                        <div className="relative flex items-center bg-white/90 backdrop-blur-md rounded-full px-6 py-4 shadow-2xl">
-                            {/* Search Icon */}
-                            <svg
-                                className="w-6 h-6 text-gray-400 mr-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
+                        {/* Subheading */}
+                        <p className="fade-in text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto opacity-90" style={{ animationDelay: '0.2s' }}>
+                            Curated fashion pieces that tell your unique story
+                        </p>
 
-                            {/* Input Field */}
-                            <input
-                                type="text"
-                                placeholder="Trendy elegant fashion"
-                                className="flex-1 bg-transparent border-0 outline-none text-gray-700 placeholder-gray-400 text-lg focus:ring-0"
-                            />
-
-                            {/* Search Button */}
-                            <button className="ml-4 w-12 h-12 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 border-0 border-transparent flex items-center justify-center hover:from-pink-500 hover:to-blue-500 transition-all duration-300 group">
-                                <svg
-                                    className="w-6 h-6 text-white transition-colors duration-300"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                    />
+                        {/* Search Bar - Refined */}
+                        <div className="fade-in w-full max-w-2xl mx-auto mb-12" style={{ animationDelay: '0.4s' }}>
+                            <div className="relative flex items-center bg-white/10 backdrop-blur-xl rounded-full px-6 py-4 border border-white/20 hover:border-white/40 smooth-transition shadow-2xl">
+                                <svg className="w-5 h-5 text-gray-300 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </button>
+                                <input
+                                    type="text"
+                                    placeholder="Search elegant fashion..."
+                                    className="flex-1 bg-transparent border-0 outline-none text-white placeholder-gray-400 text-lg focus:ring-0"
+                                />
+                                <button className="ml-4 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center hover:from-purple-600 hover:to-pink-600 smooth-transition">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Featured Images Carousel */}
+                        <div className="fade-in" style={{ animationDelay: '0.6s' }}>
+                            <div className="flex gap-4 justify-center overflow-x-auto pb-4 scrollbar-hide">
+                                {['/images/1.png', '/images/3.png', '/images/4.png', '/images/2.png', '/images/5.png'].map((img, idx) => (
+                                    <div key={idx} className="flex-shrink-0 h-64 w-48 rounded-2xl overflow-hidden cursor-pointer hover-lift group">
+                                        <img src={img} alt={`Featured ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 smooth-transition" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Featured Images */}
-                    <div className="w-full max-w-6xl px-4">
-                        <div className="flex gap-4 justify-center overflow-x-auto pb-4">
-                            <div className="flex-shrink-0 w-48 h-64 rounded-3xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl">
-                                <img
-                                    src="/images/1.png"
-                                    alt="Featured Look 1"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="flex-shrink-0 w-48 h-64 rounded-3xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl">
-                                <img
-                                    src="/images/3.png"
-                                    alt="Featured Look 2"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="flex-shrink-0 w-48 h-64 rounded-3xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl">
-                                <img
-                                    src="/images/4.png"
-                                    alt="Featured Look 3"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="flex-shrink-0 w-48 h-64 rounded-3xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl">
-                                <img
-                                    src="/images/2.png"
-                                    alt="Featured Look 4"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="flex-shrink-0 w-48 h-64 rounded-3xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl">
-                                <img
-                                    src="/images/5.png"
-                                    alt="Featured Look 5"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
+                {/* Scroll Indicator */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </div>
+            </section>
+
+            {/* Brand Story Section - Elegant & Spacious */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="max-w-4xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                        {/* Image */}
+                        <div className="fade-in order-2 md:order-1">
+                            <img src="/images/Logo.png" alt="Aura Edit" className="w-full max-w-sm mx-auto" />
+                        </div>
+
+                        {/* Text */}
+                        <div className="fade-in order-1 md:order-2" style={{ animationDelay: '0.2s' }}>
+                            <p className="text-sm font-semibold text-purple-600 uppercase tracking-widest mb-4">LOOM & LORE</p>
+                            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                                Your style story
+                                <br />
+                                <span className="gradient-text">starts here</span>
+                            </h2>
+                            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                                We believe fashion is more than clothing—it's a form of self-expression. Our curated collection brings together bold textures, iconic silhouettes, and timeless pieces designed for every moment you want to stand out.
+                            </p>
+                            <Link to="/shop?title=Our Collection" className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift">
+                                Explore Collection →
+                            </Link>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Reimagine Section */}
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-pink-50 to-blue-50">
-                <div className="max-w-4xl mx-auto text-center">
-                    {/* Logo */}
-                    <div className="mb-8 flex justify-center">
-                        <img
-                            src="/images/Logo.png"
-                            alt="Emerald Logo"
-                            className="w-24 h-24 object-contain"
-                        />
+            {/* Collection Gallery - Premium Layout */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-16 text-center">
+                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Featured Collections</h2>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto"></div>
                     </div>
 
-                    {/* Tagline */}
-                    <p className="text-gray-400 text-sm font-semibold tracking-widest uppercase mb-6">
-                        Loom & Lore
-                    </p>
-
-                    {/* Main Heading */}
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-                        Your style story<br />
-                        starts here
-                    </h1>
-
-                    {/* Description */}
-                    <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-                        Stop overthinking the outfit. We’ve done the hard work so you can show up and stand out. Explore bold textures and iconic silhouettes designed for every "main character" moment.
-                    </p>
-                </div>
-            </section>
-
-            {/* Collection Gallery Section */}
-            <section id="collection" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50 via-white to-blue-50">
-                <div className="max-w-8xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Large Left Image - Shop the Latest */}
-                        <Link to="/shop?title=Shop the Latest" className="relative overflow-hidden cursor-pointer group">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Large Feature - Latest */}
+                        <Link to="/shop?title=Shop the Latest" className="fade-in md:col-span-2 md:row-span-2 group overflow-hidden rounded-2xl relative h-96 md:h-full hover-lift">
                             <img
                                 src={latestItem?.image || "/images/shop-latest.jpg"}
-                                alt={latestItem?.name || "Shop the Latest"}
-                                className="w-full h-[850px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                alt="Shop the Latest"
+                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
                             />
-                            <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
-
-                            {/* Text Overlay - Clickable */}
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-500/90 to-blue-500/90 text-white p-6 group-hover:from-pink-500/95 group-hover:to-blue-500/95 transition-all duration-300">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <h3 className="text-3xl font-bold mb-1">Shop the Latest</h3>
-                                        <p className="text-sm text-gray-300 uppercase tracking-wide">View Collection</p>
-                                    </div>
-                                    <div className="text-white transform group-hover:translate-x-1 transition-transform duration-300">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                        </svg>
-                                    </div>
-                                </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                                <h3 className="text-4xl font-bold mb-2">Shop the Latest</h3>
+                                <p className="text-gray-200">Discover what's new</p>
                             </div>
                         </Link>
 
-                        {/* Right Column - Two Images Stacked */}
-                        <div className="grid grid-rows-2 gap-8">
-                            {/* Women's Collection */}
-                            <Link to="/shop?category_id=2&title=Women's Collection" className="relative overflow-hidden cursor-pointer group">
-                                <img
-                                    src={latestWomensItem?.image || "/images/collection-women.jpg"}
-                                    alt={latestWomensItem?.name || "Women's Collection"}
-                                    className="w-full h-[410px] object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
+                        {/* Women's Collection */}
+                        <Link to="/shop?category_id=2&title=Women's Collection" className="fade-in group overflow-hidden rounded-2xl relative h-64 hover-lift" style={{ animationDelay: '0.1s' }}>
+                            <img
+                                src={latestWomensItem?.image || "/images/collection-women.jpg"}
+                                alt="Women's Collection"
+                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                <h3 className="text-2xl font-bold mb-1">Women's</h3>
+                                <p className="text-gray-200 text-sm">Elegance & Style</p>
+                            </div>
+                        </Link>
 
-                                {/* Text Overlay - Clickable */}
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-500/90 to-blue-500/90 text-white p-6 group-hover:from-pink-500/95 group-hover:to-blue-500/95 transition-all duration-300">
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <h3 className="text-2xl font-bold mb-1">Women's Collection</h3>
-                                            <p className="text-sm text-gray-300 uppercase tracking-wide">View Collection</p>
-                                        </div>
-                                        <div className="text-white transform group-hover:translate-x-1 transition-transform duration-300">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Men's Collection */}
-                            <Link to="/shop?category_id=1&title=Men's Collections" className="relative overflow-hidden cursor-pointer group">
-                                <img
-                                    src={latestMensItem?.image || "/images/collection-men.jpg"}
-                                    alt={latestMensItem?.name || "Men's Collections"}
-                                    className="w-full h-[410px] object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
-
-                                {/* Text Overlay - Clickable */}
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-500/90 to-blue-500/90 text-white p-6 group-hover:from-pink-500/95 group-hover:to-blue-500/95 transition-all duration-300">
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <h3 className="text-2xl font-bold mb-1">Men's Collections</h3>
-                                            <p className="text-sm text-gray-300 uppercase tracking-wide">View Collection</p>
-                                        </div>
-                                        <div className="text-white transform group-hover:translate-x-1 transition-transform duration-300">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
+                        {/* Men's Collection */}
+                        <Link to="/shop?category_id=1&title=Men's Collections" className="fade-in group overflow-hidden rounded-2xl relative h-64 hover-lift" style={{ animationDelay: '0.2s' }}>
+                            <img
+                                src={latestMensItem?.image || "/images/collection-men.jpg"}
+                                alt="Men's Collections"
+                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                <h3 className="text-2xl font-bold mb-1">Men's</h3>
+                                <p className="text-gray-200 text-sm">Bold & Refined</p>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Latest Arrivals Section */}
-            <section id="latest-arrivals" className="py-16 px-6 sm:px-10 lg:px-16 bg-gradient-to-br from-white via-blue-50 to-pink-50">
-                <div className="max-w-[1600px] mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                            Latest Arrivals
-                        </h2>
-                        <p className="text-gray-600 text-lg">Discover our newest collection</p>
+            {/* Latest Arrivals - Product Grid */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Latest Arrivals</h2>
+                        <p className="text-lg text-gray-600">Handpicked for you</p>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {latestFourItems.map((product) => (
-                            <div key={product.id} className="bg-white overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                                <div className="relative group cursor-pointer">
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        className="w-full h-[500px] object-cover"
-                                    />
-                                    {/* Quick Add Button - Appears on Hover */}
-                                    <Link
-                                        to={`/item/${product.id}`}
-                                        className="absolute bottom-4 left-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:from-pink-500 hover:to-blue-500"
-                                    >
-                                        Quick View
-                                    </Link>
-                                </div>
-                                <div className="p-5">
-                                    <h3 className="text-gray-800 font-medium mb-1">{product.name}</h3>
-                                    <p className="text-gray-800 font-bold text-lg mb-3">Rs {product.prize?.toLocaleString()}.00</p>
+                        {latestFourItems.map((product, idx) => (
+                            <div key={product.id} className="fade-in stagger-item group">
+                                <Link to={`/item/${product.id}`} className="block relative overflow-hidden rounded-xl mb-4 hover-lift">
+                                    <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 smooth-transition"></div>
+                                    </div>
+                                </Link>
 
-                                    <div className="flex items-center gap-1.5">
+                                <div className="space-y-3">
+                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 smooth-transition">{product.name}</h3>
+                                    <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Rs {product.prize?.toLocaleString()}.00
+                                    </p>
+
+                                    {/* Colors */}
+                                    <div className="flex items-center gap-2 flex-wrap">
                                         {product.colors && product.colors.length > 0 ? (
                                             product.colors.map((color, idx) => (
                                                 <div
                                                     key={idx}
-                                                    className="w-3.5 h-3.5 rounded-full border border-gray-200"
+                                                    className="w-4 h-4 rounded-full border-2 border-gray-200 hover:border-gray-400 smooth-transition cursor-pointer hover-lift"
                                                     style={{ backgroundColor: color.hex }}
                                                     title={color.name}
                                                 ></div>
                                             ))
                                         ) : (
-                                            <div className="text-[10px] text-gray-400 italic">No colors</div>
+                                            <span className="text-xs text-gray-400">No variants</span>
                                         )}
                                     </div>
                                 </div>
@@ -322,174 +304,103 @@ const HomePage = () => {
                         ))}
                     </div>
 
-                    {/* View All Button */}
-                     <div className="text-center mt-12">
-                        <Link to="/shop?title=Our Collection" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 px-10 rounded-lg hover:from-pink-500 hover:to-blue-500 transition-colors duration-300">
-                            View All Products
+                    {/* CTA Button */}
+                    <div className="text-center mt-16">
+                        <Link to="/shop?title=Our Collection" className="inline-block px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift glow-on-hover">
+                            View All Products →
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Featured Categories */}
-            <section id="shop" className="py-16 px-6 sm:px-10 lg:px-16 bg-gray-50">
-                <div className="max-w-[1600px] mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                            Shop by Category
-                        </h2>
-                        <p className="text-gray-600 text-lg">Explore our collection</p>
+            {/* Shop by Category */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-purple-50 to-white">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+                        <p className="text-lg text-gray-600">Find what you love</p>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {typesWithItems.map((type) => (
-                            <div key={type.type_id} className="relative group cursor-pointer overflow-hidden">
-                                <Link to={`/shop?type_id=${type.type_id}&title=${type.type_name}`}>
-                                    <img
-                                        src={type.item_image || "/images/placeholder-category.jpg"}
-                                        alt={type.type_name}
-                                        className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-pink-200/0 group-hover:bg-pink-200/20 transition-all duration-300"></div>
-
-                                    {/* Category Label */}
-                                    <div className="absolute bottom-4 left-4 right-4">
-                                        <div className="bg-gradient-to-r from-pink-500/90 to-blue-500/90 text-white px-4 py-2 text-sm font-semibold backdrop-blur-sm flex justify-between items-center group-hover:from-pink-500/95 group-hover:to-blue-500/95 transition-all duration-300">
-                                            <span>{type.type_name}</span>
-                                            <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
+                        {typesWithItems.map((type, idx) => (
+                            <Link key={type.type_id} to={`/shop?type_id=${type.type_id}&title=${type.type_name}`} className="fade-in stagger-item group relative overflow-hidden rounded-2xl h-72 hover-lift">
+                                <img
+                                    src={type.item_image || "/images/placeholder-category.jpg"}
+                                    alt={type.type_name}
+                                    className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent group-hover:from-black/70 smooth-transition"></div>
+                                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                    <h3 className="text-xl font-semibold">{type.type_name}</h3>
+                                    <p className="text-sm text-gray-300 mt-1">Explore collection →</p>
+                                </div>
+                            </Link>
                         ))}
                     </div>
-
-                    {/* <div className="text-center mt-12">
-                        <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 px-10 rounded-lg hover:from-pink-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-pink-200/50">
-                            View All Categories
-                        </button>
-                    </div> */}
                 </div>
             </section>
 
-            {/* Store Locations Section */}
-            <section className="py-16 px-6 sm:px-10 lg:px-16 bg-gradient-to-br from-pink-50 via-white to-blue-50">
+            {/* Store Locations */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold text-gray-800 mb-3">
-                            Store Locations
-                        </h2>
-                        <p className="text-gray-500 text-lg">Find Us Near You: Style Just a Step Away</p>
+                    <div className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Visit Our Stores</h2>
+                        <p className="text-lg text-gray-600">Experience fashion in person</p>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
-                    <div className="relative">
-                        {/* Navigation Arrows */}
-                        {/* <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-
-                        <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button> */}
-
-                        {/* Store Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Store 1 */}
-                            <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start mb-3">
-                                    <svg className="w-5 h-5 text-gray-400 mr-2 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            { name: 'Aura Edit - NUGEGODA', address: '350, High Level Road, Kirulapone (00600)' },
+                            { name: 'Aura Edit - KADAWATHA', address: '43, Colombo-Kandy Road, Kadawatha (11850)' },
+                            { name: 'Aura Edit - NUGEGODA', address: '#300, High Level Road, Kirulapone (00600)' }
+                        ].map((store, idx) => (
+                            <div key={idx} className="fade-in stagger-item p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-xl smooth-transition group hover-lift border border-purple-100">
+                                <div className="flex items-start mb-6">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white mr-4 flex-shrink-0">
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                                        </svg>
+                                    </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - NUGEGODA</h3>
-                                        <p className="text-sm text-gray-600 mb-3">350, High Level Road, Kirulapone (00600)</p>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">{store.name}</h3>
+                                        <p className="text-gray-600">{store.address}</p>
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                        <span className="underline">info@auraedit.lk</span>
-                                    </div>
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    <span className="underline">+94 777 777 777</span>
+                                <div className="space-y-3 text-sm">
+                                    <p className="text-gray-700"><span className="font-semibold">Email:</span> info@auraedit.lk</p>
+                                    <p className="text-gray-700"><span className="font-semibold">Phone:</span> +94 777 777 777</p>
                                 </div>
                             </div>
-                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-                            {/* Store 2 */}
-                            <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start mb-3">
-                                    <svg className="w-5 h-5 text-gray-400 mr-2 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - KADAWATHA</h3>
-                                        <p className="text-sm text-gray-600 mb-3">43, Colombo-Kandy Road, Kadawatha (11850)</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                        <span className="underline">info@auraedit.lk</span>
-                                    </div>
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                        <span className="underline">+94 777 777 777</span>
-                                    </div>
-                                </div>
+            {/* Features Section */}
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-100 via-purple-100 to-slate-100">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {[
+                            { icon: '✨', title: 'Premium Quality', desc: 'Finest materials & craftsmanship' },
+                            { icon: '🔒', title: 'Secure Checkout', desc: 'Safe & encrypted payments' },
+                            { icon: '↔️', title: '7 Days Exchange', desc: 'Hassle-free exchanges' },
+                            { icon: '📦', title: 'Fast Delivery', desc: 'Quick & reliable shipping' }
+                        ].map((feature, idx) => (
+                            <div key={idx} className="fade-in stagger-item text-center group">
+                                <div className="text-5xl mb-4 group-hover:scale-125 smooth-transition">{feature.icon}</div>
+                                <h3 className="text-xl font-bold mb-2 text-black">{feature.title}</h3>
+                                <p className="text-gray-400 text-sm">{feature.desc}</p>
                             </div>
-
-                            {/* Store 3 */}
-                            <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start mb-3">
-                                    <svg className="w-5 h-5 text-gray-400 mr-2 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-800 mb-2">Aura Edit - NUGEGODA</h3>
-                                        <p className="text-sm text-gray-600 mb-3">#300, High Level Road, Kirulapone, Nugegoda (00600)</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                        <span className="underline">info@auraedit.lk</span>
-                                    </div>
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                        <span className="underline">+94 777 777 777</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
             {/* Instagram Section */}
-            <section className="py-16 px-6 bg-gradient-to-br from-white via-pink-50 to-blue-50">
+            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white to-gray-50">
                 <div className="max-w-4xl mx-auto text-center">
-                    {/* Instagram Icon */}
                     <div className="mb-6 flex justify-center">
                         <svg className="w-16 h-16" viewBox="0 0 24 24" fill="url(#instagram-gradient)">
                             <defs>
@@ -504,92 +415,59 @@ const HomePage = () => {
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                         </svg>
                     </div>
-
-                    <h2 className="text-4xl font-bold text-gray-800 mb-3">
-                        Explore Aura Edit Selection
-                    </h2>
-                    <p className="text-gray-600 text-lg">@auraedit_selection</p>
+                    <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-3">Explore Aura Edit Selection</h2>
+                    <p className="text-xl text-gray-600 mb-6">@auraedit_selection</p>
+                    <Link to="https://instagram.com" target="_blank" className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift">
+                        Visit Instagram →
+                    </Link>
                 </div>
             </section>
-
-            {/* Features Section */}
-            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50 via-white to-blue-50">
-                <div className="max-w-7xl mx-auto">
-
-                    {/* NEW TOP FEATURE STRIP */}
-                    <div className="w-full px-4 sm:px-6 lg:px-12 py-12">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                            <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                ✨ Quality Products
-                                <p className="text-sm text-gray-500 mt-1">Premium quality clothing</p>
-                            </div>
-                            <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                🔒 Secure Payments
-                                <p className="text-sm text-gray-500 mt-1">Instant secure checkouts</p>
-                            </div>
-                            <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                🔄 7 Days Exchange
-                                <p className="text-sm text-gray-500 mt-1">Easy exchange policy</p>
-                            </div>
-                            <div className="bg-gradient-to-br from-pink-100 to-blue-100 p-4 rounded-lg text-gray-700">
-                                📦 Fast Delivery
-                                <p className="text-sm text-gray-500 mt-1">Quick & reliable shipping</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
 
             {/* Contact Section */}
-            <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-blue-500 to-pink-600 bg-clip-text text-transparent mb-4">
-                            Get in Touch
-                        </h2>
-                        <p className="text-gray-600 text-lg">We'd love to hear from you</p>
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Get in Touch</h2>
+                        <p className="text-lg text-gray-600">We'd love to hear from you</p>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border-2 border-pink-100">
-                        <form className="space-y-6">
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-gray-700 font-semibold mb-2">Name</label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-4 py-3 border-2 border-pink-100 rounded-lg focus:outline-none focus:border-pink-400 transition-colors duration-200"
-                                        placeholder="Your name"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700 font-semibold mb-2">Email</label>
-                                    <input
-                                        type="email"
-                                        className="w-full px-4 py-3 border-2 border-pink-100 rounded-lg focus:outline-none focus:border-pink-400 transition-colors duration-200"
-                                        placeholder="your@email.com"
-                                    />
-                                </div>
+                    <form className="space-y-6 bg-gradient-to-br from-purple-50 to-pink-50 p-8 md:p-12 rounded-2xl border border-purple-100">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-gray-800 font-semibold mb-3">Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Your name"
+                                    className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition"
+                                />
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-2">Message</label>
-                                <textarea
-                                    rows="5"
-                                    className="w-full px-4 py-3 border-2 border-pink-100 rounded-lg focus:outline-none focus:border-pink-400 transition-colors duration-200"
-                                    placeholder="Your message..."
-                                ></textarea>
+                                <label className="block text-gray-800 font-semibold mb-3">Email</label>
+                                <input
+                                    type="email"
+                                    placeholder="your@email.com"
+                                    className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition"
+                                />
                             </div>
-                            <div className="text-center">
-                                <button
-                                    type="submit"
-                                    className="bg-gradient-to-r from-pink-400 via-pink-500 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-200 hover:scale-105"
-                                >
-                                    Send Message
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div>
+                            <label className="block text-gray-800 font-semibold mb-3">Message</label>
+                            <textarea
+                                rows="6"
+                                placeholder="Your message..."
+                                className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition resize-none"
+                            ></textarea>
+                        </div>
+                        <div className="text-center pt-4">
+                            <button
+                                type="submit"
+                                className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover-lift glow-on-hover"
+                            >
+                                Send Message →
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </section>
 
