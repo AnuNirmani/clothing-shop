@@ -1,0 +1,11 @@
+{
+    "outputDirectory": "public/build",
+    "buildCommand": "npm run build",
+    "framework": null,
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}

@@ -59,6 +59,7 @@ const Header = () => {
         { label: 'Kids', path: '/shop?category_id=3&title=Kids Wear' },
         { label: 'Accessories', path: '/shop?category_id=4&title=Accessories' },
         { label: 'Shoes', path: '/shop?category_id=5&title=Footwear' },
+        { label: 'Gift Cards', path: '/shop?category_id=6&title=Gift Cards' },
     ];
 
     return (
@@ -183,9 +184,9 @@ const Header = () => {
                         {/* Logo Section */}
                         <Link to="/" className="flex items-center space-x-2 group">
                             <div className="relative">
-                                <img 
-                                    src="/images/Logo.png" 
-                                    alt="Logo" 
+                                <img
+                                    src="/images/Logo.png"
+                                    alt="Logo"
                                     className="h-12 w-12 smooth-transition group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 smooth-transition"></div>
@@ -202,11 +203,10 @@ const Header = () => {
                                 <Link
                                     key={idx}
                                     to={link.path}
-                                    className={`nav-link-hover px-4 py-2 font-medium text-sm smooth-transition ${
-                                        isActive(link.path)
+                                    className={`nav-link-hover px-4 py-2 font-medium text-sm smooth-transition ${isActive(link.path)
                                             ? 'text-pink-600 bg-pink-50/40 rounded-lg'
                                             : 'text-gray-700 hover:text-pink-500'
-                                    }`}
+                                        }`}
                                 >
                                     {link.label}
                                     {isActive(link.path) && (
@@ -281,11 +281,10 @@ const Header = () => {
                                         key={idx}
                                         to={link.path}
                                         onClick={() => setMenuOpen(false)}
-                                        className={`text-gray-700 font-medium px-4 py-2.5 rounded-lg smooth-transition ${
-                                            isActive(link.path)
+                                        className={`text-gray-700 font-medium px-4 py-2.5 rounded-lg smooth-transition ${isActive(link.path)
                                                 ? 'bg-gradient-to-r from-pink-100 to-purple-100 text-pink-600 border-l-4 border-pink-500 pl-3'
                                                 : 'hover:text-pink-500 hover:bg-pink-50/50'
-                                        }`}
+                                            }`}
                                     >
                                         {link.label}
                                     </Link>
