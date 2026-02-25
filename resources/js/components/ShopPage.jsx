@@ -57,7 +57,7 @@ const ShopPage = () => {
 
 
                 .gradient-text {
-                    background: linear-gradient(135deg, #d4a574 0%, #8b5cf6 50%, #ec4899 100%);
+                    background: linear-gradient(135deg, #d4a574 25%, #8b5cf6 25%, #ec4899 75%);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                     background-clip: text;
