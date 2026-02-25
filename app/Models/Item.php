@@ -32,13 +32,35 @@ class Item extends Model
         'offer_percentage',
         'offer_start_date',
         'offer_end_date',
-        'discounted_price'
+        'discounted_price',
     ];
 
     protected $dates = ['deleted_at', 'offer_start_date', 'offer_end_date'];
 
+    // ✅ Cast availability, is_gift_card, is_on_offer to boolean
+    protected $casts = [
+        'availability' => 'boolean',
+        'is_gift_card' => 'boolean',
+        'is_on_offer'  => 'boolean',
+    ];
+
+    public function setAvailabilityAttribute($value): void
+    {
+        if (is_string($value)) {
+            $normalized = strtolower(trim($value));
+            $this->attributes['availability'] = $normalized === 'in stock';
+            return;
+        }
+
+        $this->attributes['availability'] = (bool) $value;
+    }
+
+    // ─────────────────────────────────────────
+    // Helper Methods
+    // ─────────────────────────────────────────
+
     /**
-     * Calculate discounted price
+     * Calculate discounted price based on offer
      */
     public static function calculateDiscountedPrice($prize, $is_on_offer, $offer_percentage)
     {
@@ -48,99 +70,85 @@ class Item extends Model
         return $prize;
     }
 
-    /**
-     * Get the type that the item belongs to
-     */
+    // ─────────────────────────────────────────
+    // Relationships
+    // ─────────────────────────────────────────
+
     public function type()
     {
         return $this->belongsTo(Type::class);
     }
 
-    /**
-     * Get the category that the item belongs to
-     */
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * Get the classifications that the item belongs to
-     */
     public function classifications()
     {
         return $this->belongsToMany(Classification::class, 'classification_item');
     }
 
-    /**
-     * Get the colors that the item belongs to
-     */
     public function colors()
     {
         return $this->belongsToMany(Color::class, 'color_item');
     }
 
-    /**
-     * Get the material that the item belongs to
-     */
     public function material()
     {
         return $this->belongsTo(Material::class);
     }
 
-    /**
-     * Get the size that the item belongs to
-     */
     public function size()
     {
         return $this->belongsTo(Size::class);
     }
 
-    /**
-     * Get all photos for the item
-     */
     public function photos()
     {
         return $this->hasMany(ItemPhoto::class)->orderBy('order');
     }
 
-    /**
-     * Get the classification that the item belongs to
-     */
+    // Singular aliases kept for backward compatibility
     public function classification()
     {
-        return $this->belongsTo(\App\Models\Classification::class);
+        return $this->belongsTo(Classification::class);
     }
 
-    /**
-     * Get the color that the item belongs to
-     */
     public function color()
     {
-        return $this->belongsTo(\App\Models\Color::class);
+        return $this->belongsTo(Color::class);
     }
 
+    // ─────────────────────────────────────────
+    // Static Query Methods
+    // ─────────────────────────────────────────
+
     /**
-     * Get all items with optional filtering
+     * Get all items with optional soft-deleted
      */
     public static function getAllItems($includeTrashed = false)
     {
-        if ($includeTrashed) {
-            return self::withTrashed()->with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
-        }
-        return self::with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])->orderBy('created_at', 'desc')->get();
+        $query = $includeTrashed ? self::withTrashed() : self::query();
+
+        return $query
+            ->with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**
-     * Get a single item by ID
+     * Get a single item by ID with relationships
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'classifications', 'colors', 'photos'])->findOrFail($id);
+        return self::with(['type', 'category', 'classifications', 'colors', 'photos'])
+            ->findOrFail($id);
     }
 
     /**
      * Create a new item
+     * ✅ availability is passed in from controller (auto-calculated from stock_items)
      */
     public static function createItem(array $data)
     {
@@ -151,13 +159,14 @@ class Item extends Model
             $data['offer_percentage'] ?? 0
         );
 
-        // Handle image upload if present
-        if (isset($data['image']) && $data['image']) {
+        // Handle main image upload
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $data['image'] = $data['image']->store('items', 'public');
         }
 
         $item = self::create($data);
 
+        // Sync pivot tables
         if (isset($data['classifications'])) {
             $item->classifications()->sync($data['classifications']);
         }
@@ -170,6 +179,7 @@ class Item extends Model
 
     /**
      * Update an existing item
+     * ✅ availability is passed in from controller (auto-calculated from stock_items)
      */
     public static function updateItem($id, array $data)
     {
@@ -182,9 +192,8 @@ class Item extends Model
             $data['offer_percentage'] ?? 0
         );
 
-        // Handle image upload if present
-        if (isset($data['image']) && $data['image']) {
-            // Delete old image if exists
+        // Handle main image upload
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
@@ -193,6 +202,7 @@ class Item extends Model
 
         $item->update($data);
 
+        // Sync pivot tables
         if (isset($data['classifications'])) {
             $item->classifications()->sync($data['classifications']);
         }
@@ -208,18 +218,16 @@ class Item extends Model
      */
     public static function deleteItem($id)
     {
-        $item = self::findOrFail($id);
-        return $item->delete();
+        return self::findOrFail($id)->delete();
     }
 
     /**
-     * Permanently delete an item
+     * Permanently delete an item and its image
      */
     public static function forceDeleteItem($id)
     {
         $item = self::withTrashed()->findOrFail($id);
-        
-        // Delete image if exists
+
         if ($item->image) {
             Storage::disk('public')->delete($item->image);
         }
@@ -232,50 +240,38 @@ class Item extends Model
      */
     public static function restoreItem($id)
     {
-        $item = self::withTrashed()->findOrFail($id);
-        return $item->restore();
+        return self::withTrashed()->findOrFail($id)->restore();
     }
 
     /**
-     * Search items by name, SKU, category, or type
+     * Search items by name or SKU
      */
     public static function searchItems($query)
     {
         return self::where('name', 'like', "%{$query}%")
             ->orWhere('SKU', 'like', "%{$query}%")
-            ->orWhere('category', 'like', "%{$query}%")
-            ->orWhere('type', 'like', "%{$query}%")
             ->orderBy('created_at', 'desc')
             ->get();
     }
 
     /**
-     * Get items by category
+     * Get items with low stock
      */
-    public static function getItemsByCategory($category)
+    public static function getLowStockItems($threshold = 5)
     {
-        return self::where('category', $category)
-            ->orderBy('created_at', 'desc')
-            ->get();
-    }
-
-    /**
-     * Get items by type
-     */
-    public static function getItemsByType($type)
-    {
-        return self::where('type', $type)
-            ->orderBy('created_at', 'desc')
-            ->get();
-    }
-
-    /**
-     * Get low stock items
-     */
-    public static function getLowStockItems($threshold = 10)
-    {
-        return self::where('stock_items', '<=', $threshold)
+        return self::where('stock_items', '>', 0)
+            ->where('stock_items', '<=', $threshold)
             ->orderBy('stock_items', 'asc')
+            ->get();
+    }
+
+    /**
+     * Get out of stock items
+     */
+    public static function getOutOfStockItems()
+    {
+        return self::where('stock_items', 0)
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 }

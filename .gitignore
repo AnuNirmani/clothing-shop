@@ -21,3 +21,5 @@ yarn-error.log
 node_modules/
 /migrations
 /seeders
+/database/migrations
+/database/seeders

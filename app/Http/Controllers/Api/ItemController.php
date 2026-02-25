@@ -15,7 +15,7 @@ class ItemController extends Controller
      */
     public function getLatestItem(): JsonResponse
     {
-        $item = Item::where('availability', 'in stock')
+        $item = Item::where('availability', true)
             ->with(['category', 'type', 'colors'])
             ->latest()
             ->first();
@@ -32,7 +32,7 @@ class ItemController extends Controller
     public function getLatestWomensItem(): JsonResponse
     {
         $item = Item::where('category_id', 2)
-            ->where('availability', 'in stock')
+            ->where('availability', true)
             ->with(['category', 'type', 'colors'])
             ->latest()
             ->first();
@@ -49,7 +49,7 @@ class ItemController extends Controller
     public function getLatestMensItem(): JsonResponse
     {
         $item = Item::where('category_id', 1)
-            ->where('availability', 'in stock')
+            ->where('availability', true)
             ->with(['category', 'type', 'colors'])
             ->latest()
             ->first();
@@ -65,7 +65,7 @@ class ItemController extends Controller
      */
     public function getLatestFourItems(): JsonResponse
     {
-        $items = Item::where('availability', 'in stock')
+        $items = Item::where('availability', true)
             ->with(['category', 'type', 'colors'])
             ->latest()
             ->limit(4)
@@ -86,7 +86,7 @@ class ItemController extends Controller
 
         $data = $types->map(function ($type) {
             $latestItem = Item::where('type_id', $type->id)
-                ->where('availability', 'in stock')
+                ->where('availability', true)
                 ->latest()
                 ->first();
 
@@ -108,7 +108,7 @@ class ItemController extends Controller
      */
     public function getItems(Request $request): JsonResponse
     {
-        $query = Item::where('availability', 'in stock')
+        $query = Item::where('availability', true)
             ->with(['category', 'type', 'colors']);
 
         if ($request->has('category_id')) {
@@ -139,7 +139,7 @@ class ItemController extends Controller
     public function getItemById(int $id): JsonResponse
     {
         $item = Item::where('id', $id)
-            ->where('availability', 'in stock')
+            ->where('availability', true)
             ->with(['category', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
             ->first();
 
