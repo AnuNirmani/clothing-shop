@@ -294,7 +294,7 @@ const ShopPage = () => {
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                                             <Link
                                                 to={`/item/${product.id}`}
-                                                className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 px-8 py-3 rounded-full font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-pink-300 hover:text-gray"
+                                                className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white px-6 py-2 text-sm font-semibold text-[var(--ink)] opacity-0 translate-y-2 transition duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white"
                                             >
                                                 Quick View
                                             </Link>

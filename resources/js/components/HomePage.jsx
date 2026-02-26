@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -46,7 +46,17 @@ const HomePage = () => {
     return (
         <div className="min-h-screen bg-white">
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&display=swap');
+
+                :root {
+                    --bg: #f8f6f2;
+                    --surface: #fffcf7;
+                    --ink: #1f1b16;
+                    --muted: #6f6357;
+                    --accent: #c26838;
+                    --accent-deep: #8f3f1f;
+                    --line: #e8dfd4;
+                }
 
                 * {
                     font-family: 'Poppins', sans-serif;
@@ -201,139 +211,138 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Collection Gallery - Premium Layout */}
             <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-16 text-center">
-                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Featured Collections</h2>
-                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto"></div>
+                <div className="mx-auto max-w-7xl">
+                    <div className="mb-14 text-center">
+                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Featured Collections</h2>
+                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Large Feature - Latest */}
-                        <Link to="/shop?title=Shop the Latest" className="fade-in md:col-span-2 md:row-span-2 group overflow-hidden rounded-2xl relative h-96 md:h-full hover-lift">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                        <Link to="/shop?title=Shop the Latest" className="group relative overflow-hidden rounded-3xl md:col-span-2 md:row-span-2">
                             <img
-                                src={latestItem?.image || "/images/shop-latest.jpg"}
+                                src={latestItem?.image || '/images/shop-latest.jpg'}
                                 alt="Shop the Latest"
-                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                className="h-full min-h-[420px] w-full object-cover transition duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                                <h3 className="text-4xl font-bold mb-2">Shop the Latest</h3>
-                                <p className="text-gray-200">Discover what's new</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                            <div className="absolute bottom-0 left-0 p-8 text-white">
+                                <p className="mb-2 text-xs tracking-[0.2em] text-white/85">JUST IN</p>
+                                <h3 className="text-4xl font-bold">Shop the Latest</h3>
+                                <p className="mt-1 text-sm text-gray-200">New arrivals ready to elevate your wardrobe.</p>
                             </div>
                         </Link>
 
-                        {/* Women's Collection */}
-                        <Link to="/shop?category_id=2&title=Women's Collection" className="fade-in group overflow-hidden rounded-2xl relative h-64 hover-lift" style={{ animationDelay: '0.1s' }}>
+                        <Link to="/shop?category_id=2&title=Women's Collection" className="group relative overflow-hidden rounded-3xl">
                             <img
-                                src={latestWomensItem?.image || "/images/collection-women.jpg"}
+                                src={latestWomensItem?.image || '/images/collection-women.jpg'}
                                 alt="Women's Collection"
-                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                <h3 className="text-2xl font-bold mb-1">Women's</h3>
-                                <p className="text-gray-200 text-sm">Elegance & Style</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 className="text-2xl font-bold">Women&apos;s</h3>
+                                <p className="text-sm text-gray-200">Elegant and expressive</p>
                             </div>
                         </Link>
 
-                        {/* Men's Collection */}
-                        <Link to="/shop?category_id=1&title=Men's Collections" className="fade-in group overflow-hidden rounded-2xl relative h-64 hover-lift" style={{ animationDelay: '0.2s' }}>
+                        <Link to="/shop?category_id=1&title=Men's Collections" className="group relative overflow-hidden rounded-3xl">
                             <img
-                                src={latestMensItem?.image || "/images/collection-men.jpg"}
-                                alt="Men's Collections"
-                                className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                src={latestMensItem?.image || '/images/collection-men.jpg'}
+                                alt="Men's Collection"
+                                className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                <h3 className="text-2xl font-bold mb-1">Men's</h3>
-                                <p className="text-gray-200 text-sm">Bold & Refined</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-0 left-0 p-6 text-white">
+                                <h3 className="text-2xl font-bold">Men&apos;s</h3>
+                                <p className="text-sm text-gray-200">Modern and sharp</p>
                             </div>
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Latest Arrivals - Product Grid */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Latest Arrivals</h2>
-                        <p className="text-lg text-gray-600">Handpicked for you</p>
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-purple-50 to-white">
+                <div className="mx-auto max-w-7xl">
+                    <div className="mb-14 text-center">
+                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Latest Arrivals</h2>
+                        <p className="mt-8 text-[var(--muted)]">Handpicked new pieces from the latest drop.</p>
                         <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {latestFourItems.map((product, idx) => (
-                            <div key={product.id} className="fade-in stagger-item group">
-                                <Link to={`/item/${product.id}`} className="block relative overflow-hidden rounded-xl mb-4 hover-lift">
-                                    <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
-                                        />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 smooth-transition"></div>
+                    {loading ? (
+                        <p className="text-center text-[var(--muted)]">Loading latest products...</p>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                            {latestFourItems.map((product) => (
+                                <div key={product.id} className="float-in overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                                    <div className="group relative">
+                                        <img src={product.image} alt={product.name} className="h-[430px] w-full object-cover" />
+                                        <Link
+                                            to={`/item/${product.id}`}
+                                            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white px-6 py-2 text-sm font-semibold text-[var(--ink)] opacity-0 translate-y-2 transition duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white"
+                                        >
+                                            Quick View
+                                        </Link>
                                     </div>
-                                </Link>
-
-                                <div className="space-y-3">
-                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 smooth-transition">{product.name}</h3>
-                                    <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                                        Rs {product.prize?.toLocaleString()}.00
-                                    </p>
-
-                                    {/* Colors */}
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        {product.colors && product.colors.length > 0 ? (
-                                            product.colors.map((color, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="w-4 h-4 rounded-full border-2 border-gray-200 hover:border-gray-400 smooth-transition cursor-pointer hover-lift"
-                                                    style={{ backgroundColor: color.hex }}
-                                                    title={color.name}
-                                                ></div>
-                                            ))
-                                        ) : (
-                                            <span className="text-xs text-gray-400">No variants</span>
-                                        )}
+                                    <div className="space-y-3 p-5">
+                                        <h3 className="line-clamp-1 font-semibold text-[var(--ink)]">{product.name}</h3>
+                                        <p className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Rs {product.prize?.toLocaleString()}.00</p>
+                                        <div className="flex items-center gap-2">
+                                            {product.colors?.length > 0 ? (
+                                                product.colors.map((color, index) => (
+                                                    <span
+                                                        key={`${product.id}-${index}`}
+                                                        className="h-4 w-4 rounded-full border border-gray-200"
+                                                        style={{ backgroundColor: color.hex }}
+                                                        title={color.name}
+                                                    />
+                                                ))
+                                            ) : (
+                                                <span className="text-xs italic text-gray-400">No colors</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
 
-                    {/* CTA Button */}
-                    <div className="text-center mt-16">
-                        <Link to="/shop?title=Our Collection" className="inline-block px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift glow-on-hover">
-                            View All Products →
+                    <div className="mt-12 text-center">
+                        <Link
+                            to="/shop?title=Our Collection"
+                            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift"
+                        >
+                            View All Products
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Shop by Category */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-purple-50 to-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-                        <p className="text-lg text-gray-600">Find what you love</p>
+            <section id="shop" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
+                <div className="mx-auto max-w-7xl">
+                    <div className="mb-14 text-center">
+                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Shop by Category</h2>
+                        <p className="mt-8 text-[var(--muted)]">Find what fits your mood and moment.</p>
                         <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {typesWithItems.map((type, idx) => (
-                            <Link key={type.type_id} to={`/shop?type_id=${type.type_id}&title=${type.type_name}`} className="fade-in stagger-item group relative overflow-hidden rounded-2xl h-72 hover-lift">
+                    <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+                        {typesWithItems.map((type) => (
+                            <Link
+                                key={type.type_id}
+                                to={`/shop?type_id=${type.type_id}&title=${type.type_name}`}
+                                className="group relative overflow-hidden rounded-2xl"
+                            >
                                 <img
-                                    src={type.item_image || "/images/placeholder-category.jpg"}
+                                    src={type.item_image || '/images/placeholder-category.jpg'}
                                     alt={type.type_name}
-                                    className="w-full h-full object-cover group-hover:scale-110 smooth-transition"
+                                    className="h-[320px] w-full object-cover transition duration-500 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent group-hover:from-black/70 smooth-transition"></div>
-                                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                    <h3 className="text-xl font-semibold">{type.type_name}</h3>
-                                    <p className="text-sm text-gray-300 mt-1">Explore collection →</p>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-xl bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] transition duration-300 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 group-hover:text-white">
+                                    <span>{type.type_name}</span>
+                                    <span>→</span>
                                 </div>
                             </Link>
                         ))}
@@ -342,11 +351,11 @@ const HomePage = () => {
             </section>
 
             {/* Store Locations */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-100 via-pink-50 to-purple-100">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Visit Our Stores</h2>
-                        <p className="text-lg text-gray-600">Experience fashion in person</p>
+                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Visit Our Stores</h2>
+                        <p className="mt-8 text-[var(--muted)]">Experience fashion in person</p>
                         <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
                     </div>
 
@@ -356,7 +365,7 @@ const HomePage = () => {
                             { name: 'Aura Edit - KADAWATHA', address: '43, Colombo-Kandy Road, Kadawatha (11850)' },
                             { name: 'Aura Edit - NUGEGODA', address: '#300, High Level Road, Kirulapone (00600)' }
                         ].map((store, idx) => (
-                            <div key={idx} className="fade-in stagger-item p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-xl smooth-transition group hover-lift border border-purple-100">
+                            <div key={idx} className="p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                                 <div className="flex items-start mb-6">
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white mr-4 flex-shrink-0">
                                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -372,26 +381,6 @@ const HomePage = () => {
                                     <p className="text-gray-700"><span className="font-semibold">Email:</span> info@auraedit.lk</p>
                                     <p className="text-gray-700"><span className="font-semibold">Phone:</span> +94 777 777 777</p>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-100 via-purple-100 to-slate-100">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {[
-                            { icon: '✨', title: 'Premium Quality', desc: 'Finest materials & craftsmanship' },
-                            { icon: '🔒', title: 'Secure Checkout', desc: 'Safe & encrypted payments' },
-                            { icon: '↔️', title: '7 Days Exchange', desc: 'Hassle-free exchanges' },
-                            { icon: '📦', title: 'Fast Delivery', desc: 'Quick & reliable shipping' }
-                        ].map((feature, idx) => (
-                            <div key={idx} className="fade-in stagger-item text-center group">
-                                <div className="text-5xl mb-4 group-hover:scale-125 smooth-transition">{feature.icon}</div>
-                                <h3 className="text-xl font-bold mb-2 text-black">{feature.title}</h3>
-                                <p className="text-gray-400 text-sm">{feature.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -415,7 +404,7 @@ const HomePage = () => {
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                         </svg>
                     </div>
-                    <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-3">Explore Aura Edit Selection</h2>
+                    <h2 className="mb-3 text-4xl font-bold sm:text-5xl">Explore Aura Edit Selection</h2>
                     <p className="text-xl text-gray-600 mb-6">@auraedit_selection</p>
                     <Link to="https://instagram.com" target="_blank" className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift">
                         Visit Instagram →
@@ -423,51 +412,67 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Contact Section */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-                <div className="max-w-3xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Get in Touch</h2>
-                        <p className="text-lg text-gray-600">We'd love to hear from you</p>
-                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-100 via-pink-50 to-purple-100">
+                <div className="mx-auto max-w-3xl rounded-3xl border border-[var(--line)] bg-white p-8 shadow-sm sm:p-12">
+                    <div className="mb-10 text-center">
+                        <h2 className="text-4xl font-bold sm:text-5xl">Get in Touch</h2>
+                        <p className="mt-3 text-[var(--muted)]">We would love to hear from you.</p>
                     </div>
 
-                    <form className="space-y-6 bg-gradient-to-br from-purple-50 to-pink-50 p-8 md:p-12 rounded-2xl border border-purple-100">
-                        <div className="grid md:grid-cols-2 gap-6">
+                    <form className="space-y-6">
+                        <div className="grid gap-6 md:grid-cols-2">
                             <div>
-                                <label className="block text-gray-800 font-semibold mb-3">Name</label>
+                                <label className="mb-2 block text-sm font-semibold">Name</label>
                                 <input
                                     type="text"
                                     placeholder="Your name"
-                                    className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition"
+                                    className="w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none transition focus:border-[var(--accent)]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-800 font-semibold mb-3">Email</label>
+                                <label className="mb-2 block text-sm font-semibold">Email</label>
                                 <input
                                     type="email"
-                                    placeholder="your@email.com"
-                                    className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition"
+                                    placeholder="you@email.com"
+                                    className="w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none transition focus:border-[var(--accent)]"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-gray-800 font-semibold mb-3">Message</label>
+                            <label className="mb-2 block text-sm font-semibold">Message</label>
                             <textarea
                                 rows="6"
                                 placeholder="Your message..."
-                                className="w-full px-6 py-3 bg-white border-2 border-purple-100 rounded-lg focus:outline-none focus:border-purple-500 smooth-transition resize-none"
-                            ></textarea>
+                                className="w-full resize-none rounded-xl border border-[var(--line)] px-4 py-3 outline-none transition focus:border-[var(--accent)]"
+                            />
                         </div>
-                        <div className="text-center pt-4">
-                            <button
-                                type="submit"
-                                className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover-lift glow-on-hover"
-                            >
-                                Send Message →
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white transition hover-lift"
+                        >
+                            Send Message
+                        </button>
                     </form>
+                </div>
+            </section>
+
+            {/* Features Section */}
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-purple-50 to-white">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {[
+                            { icon: '✨', title: 'Premium Quality', desc: 'Finest materials & craftsmanship' },
+                            { icon: '🔒', title: 'Secure Checkout', desc: 'Safe & encrypted payments' },
+                            { icon: '↔️', title: '7 Days Exchange', desc: 'Hassle-free exchanges' },
+                            { icon: '📦', title: 'Fast Delivery', desc: 'Quick & reliable shipping' }
+                        ].map((feature, idx) => (
+                            <div key={idx} className="text-center transition-transform duration-300 hover:-translate-y-1">
+                                <div className="text-5xl mb-4 transition-transform duration-300 hover:scale-110">{feature.icon}</div>
+                                <h3 className="text-xl font-bold mb-2 text-black">{feature.title}</h3>
+                                <p className="text-gray-600 text-sm">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
