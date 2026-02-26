@@ -398,9 +398,18 @@
 
                             {{-- Category cell --}}
                             <td>
-                                <span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:600;">
+                                <div id="category-display-{{ $type->id }}" style="display:{{ $editError ? 'none' : 'inline-flex' }};align-items:center;padding:4px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:600;">
                                     {{ $type->category->name ?? '—' }}
-                                </span>
+                                </div>
+                                <div id="category-edit-{{ $type->id }}" style="display:{{ $editError ? 'block' : 'none' }};">
+                                    <select name="category_id" form="edit-form-{{ $type->id }}" class="edit-input" style="width:180px;">
+                                        @foreach($categoryOptions as $cat)
+                                            <option value="{{ $cat->id }}" {{ (string) old('category_id', $type->category_id) === (string) $cat->id ? 'selected' : '' }}>
+                                                {{ $cat->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </td>
 
                             {{-- Actions cell --}}
@@ -501,6 +510,8 @@
         function enableEdit(id) {
             document.getElementById('name-display-' + id).style.display    = 'none';
             document.getElementById('edit-form-' + id).style.display       = 'block';
+            document.getElementById('category-display-' + id).style.display = 'none';
+            document.getElementById('category-edit-' + id).style.display   = 'block';
             document.getElementById('action-buttons-' + id).style.display  = 'none';
             document.getElementById('edit-buttons-' + id).style.display    = 'flex';
             document.getElementById('edit-buttons-' + id).style.justifyContent = 'flex-end';
@@ -511,6 +522,8 @@
         function cancelEdit(id) {
             document.getElementById('name-display-' + id).style.display    = 'flex';
             document.getElementById('edit-form-' + id).style.display       = 'none';
+            document.getElementById('category-display-' + id).style.display = 'inline-flex';
+            document.getElementById('category-edit-' + id).style.display   = 'none';
             document.getElementById('action-buttons-' + id).style.display  = 'flex';
             document.getElementById('edit-buttons-' + id).style.display    = 'none';
         }

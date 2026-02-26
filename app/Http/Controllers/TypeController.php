@@ -65,25 +65,27 @@ class TypeController extends Controller
      * Update the specified type in database
      */
     public function update(Request $request, Type $type)
-{
-    $request->validate([
-        'name' => 'required|string|max:255|unique:types,name,' . $type->id,
-    ]);
-
-    try {
-        $type->update([
-            'name' => $request->name,
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:types,name,' . $type->id,
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        return redirect()->route('types.index')
-            ->with('success', 'Type updated successfully!');
-    } catch (\Exception $e) {
-        return redirect()->route('types.index')
-            ->withErrors(['name' => 'Failed to update type.'])
-            ->with('edit_error_id', $type->id)
-            ->withInput();
+        try {
+            $type->update([
+                'name' => $request->name,
+                'category_id' => $request->category_id,
+            ]);
+
+            return redirect()->route('types.index')
+                ->with('success', 'Type updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('types.index')
+                ->withErrors(['name' => 'Failed to update type.'])
+                ->with('edit_error_id', $type->id)
+                ->withInput();
+        }
     }
-}
 
     /**
      * Remove the specified type from database
