@@ -462,7 +462,7 @@
                                 {{-- Category --}}
                                 <div>
                                     <label class="field-label">Category <span class="req">*</span></label>
-                                    <select name="category_id" class="field-input">
+                                    <select name="category_id" id="category_id" class="field-input">
                                         <option value="">Select category…</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -473,10 +473,15 @@
                                 {{-- Type --}}
                                 <div>
                                     <label class="field-label">Type <span class="req">*</span></label>
-                                    <select name="type_id" class="field-input">
-                                        <option value="">Select type…</option>
+                                    <select name="type_id" id="type_id" class="field-input" required disabled>
+                                        <option value="">{{ old('category_id') ? 'Select type…' : 'Select category first…' }}</option>
                                         @foreach($types as $type)
-                                            <option value="{{ $type->id }}" {{ old('type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                            <option
+                                                value="{{ $type->id }}"
+                                                data-category-id="{{ $type->category_id }}"
+                                                {{ old('type_id') == $type->id ? 'selected' : '' }}>
+                                                {{ $type->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -1021,11 +1026,52 @@
             calculateInstallments();
         }
 
+        /* ── Category -> Type dependency ── */
+        function syncTypeByCategory() {
+            const categorySelect = document.getElementById('category_id');
+            const typeSelect = document.getElementById('type_id');
+            if (!categorySelect || !typeSelect) return;
+
+            const categoryId = categorySelect.value;
+            const placeholder = typeSelect.options[0];
+            const currentType = typeSelect.value;
+
+            let hasMatch = false;
+            Array.from(typeSelect.options).forEach((opt, i) => {
+                if (i === 0) return; // keep placeholder
+                const match = categoryId && String(opt.dataset.categoryId) === String(categoryId);
+                opt.hidden = !match;
+                opt.disabled = !match;
+                if (match) hasMatch = true;
+            });
+
+            if (!categoryId) {
+                typeSelect.disabled = true;
+                typeSelect.value = '';
+                placeholder.text = 'Select category first…';
+            } else {
+                typeSelect.disabled = false;
+                placeholder.text = hasMatch ? 'Select type…' : 'No types for selected category';
+
+                const selectedOption = typeSelect.querySelector(`option[value="${currentType}"]`);
+                if (!selectedOption || selectedOption.hidden || selectedOption.disabled) {
+                    typeSelect.value = '';
+                }
+            }
+
+            typeSelect.dispatchEvent(new Event('change'));
+        }
+
         /* ── Init on load ── */
         document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('is_gift_card').checked) toggleGiftCardValidity();
             if (document.getElementById('is_on_offer').checked)  toggleOfferFields();
             calculateInstallments();
+            const categorySelect = document.getElementById('category_id');
+            if (categorySelect) {
+                categorySelect.addEventListener('change', syncTypeByCategory);
+                syncTypeByCategory();
+            }
         });
     </script>
 </x-app-layout>

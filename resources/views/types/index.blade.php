@@ -312,21 +312,33 @@
 
                     <form method="POST" action="{{ route('types.store') }}">
                         @csrf
-                        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-                            <input type="text" name="name" placeholder="Enter type name…"
-                                   value="{{ old('name') }}"
-                                   class="add-input" style="flex:1;min-width:220px;">
+                        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:220px;">
+                                <input type="text" name="name" placeholder="Enter type name…"
+                                       value="{{ old('name') }}"
+                                       class="add-input"
+                                       style="width:100%;{{ $errors->has('name') ? 'border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,0.10);' : '' }}">
+                                @error('name')
+                                    <p style="margin-top:6px;font-size:12px;color:#dc2626;font-weight:600;">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                            <select name="category_id" class="add-select" required>
-                                <option value="" disabled {{ old('category_id') ? '' : 'selected' }}>Select category…</option>
-                                @forelse($categoryOptions as $category)
-                                    <option value="{{ $category->id }}" {{ (string) old('category_id') === (string) $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @empty
-                                    <option value="" disabled>No categories available</option>
-                                @endforelse
-                            </select>
+                            <div style="width:220px;">
+                                <select name="category_id" class="add-select"
+                                        style="width:100%;{{ $errors->has('category_id') ? 'border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,0.10);' : '' }}">
+                                    <option value="" disabled {{ old('category_id') ? '' : 'selected' }}>Select category…</option>
+                                    @forelse($categoryOptions as $category)
+                                        <option value="{{ $category->id }}" {{ (string) old('category_id') === (string) $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @empty
+                                        <option value="" disabled>No categories available</option>
+                                    @endforelse
+                                </select>
+                                @error('category_id')
+                                    <p style="margin-top:6px;font-size:12px;color:#dc2626;font-weight:600;">{{ $message }}</p>
+                                @enderror
+                            </div>
 
                             <button type="submit" class="btn-add">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
