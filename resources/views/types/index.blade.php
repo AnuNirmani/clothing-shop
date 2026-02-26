@@ -56,6 +56,23 @@
         }
         .add-input::placeholder { color: #c4b5d4; }
 
+        .add-select {
+            width: 220px;
+            padding: 11px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #e8d5f0;
+            font-size: 13.5px;
+            font-family: 'DM Sans', sans-serif;
+            color: #1f2937;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .add-select:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.12);
+        }
+
         /* ── Inline edit input ── */
         .edit-input {
             padding: 7px 12px;
@@ -287,12 +304,30 @@
                 </div>
 
                 <div style="padding: 0 24px 22px;">
+                    @php
+                        $categoryOptions = isset($categories)
+                            ? $categories
+                            : \App\Models\Category::query()->orderBy('name')->get();
+                    @endphp
+
                     <form method="POST" action="{{ route('types.store') }}">
                         @csrf
-                        <div style="display:flex;gap:12px;align-items:center;">
+                        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                             <input type="text" name="name" placeholder="Enter type name…"
                                    value="{{ old('name') }}"
-                                   class="add-input" style="flex:1;">
+                                   class="add-input" style="flex:1;min-width:220px;">
+
+                            <select name="category_id" class="add-select" required>
+                                <option value="" disabled {{ old('category_id') ? '' : 'selected' }}>Select category…</option>
+                                @forelse($categoryOptions as $category)
+                                    <option value="{{ $category->id }}" {{ (string) old('category_id') === (string) $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>No categories available</option>
+                                @endforelse
+                            </select>
+
                             <button type="submit" class="btn-add">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -324,6 +359,7 @@
                     <thead>
                         <tr>
                             <th style="padding-left:24px;">Type Name</th>
+                            <th>Category</th>
                             <th style="padding-right:24px;">Actions</th>
                         </tr>
                     </thead>
@@ -346,6 +382,13 @@
                                            value="{{ old('name', $type->name) }}"
                                            class="edit-input">
                                 </form>
+                            </td>
+
+                            {{-- Category cell --}}
+                            <td>
+                                <span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:600;">
+                                    {{ $type->category->name ?? '—' }}
+                                </span>
                             </td>
 
                             {{-- Actions cell --}}
@@ -390,7 +433,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="2">
+                            <td colspan="3">
                                 <div class="empty-state">
                                     <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#fce7f3,#eff6ff);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                                         <svg class="w-6 h-6" style="color:#c4b5d4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

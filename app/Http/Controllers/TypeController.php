@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,10 @@ class TypeController extends Controller
      */
     public function index()
     {
-        $types = Type::latest()->paginate(10);
-        return view('types.index', compact('types'));
+        $types = Type::with('category')->latest()->paginate(10);
+        $categories = Category::orderBy('name')->get();
+
+        return view('types.index', compact('types', 'categories'));
     }
 
     /**
@@ -21,7 +24,8 @@ class TypeController extends Controller
      */
     public function create()
     {
-        return view('types.create');
+        $categories = Category::orderBy('name')->get();
+        return view('types.create', compact('categories'));
     }
 
     /**
@@ -30,12 +34,13 @@ class TypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:types,name'
+            'name' => ['required', 'string', 'max:255'],
+            'category_id' => ['required', 'exists:categories,id'],
         ]);
 
-        Type::createType($validated);
+        Type::create($validated);
 
-        return redirect()->route('types.index')->with('success', 'Type created successfully!');
+        return redirect()->route('types.index')->with('success', 'Type created successfully.');
     }
 
     /**
