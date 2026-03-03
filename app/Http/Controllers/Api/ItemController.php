@@ -104,6 +104,61 @@ class ItemController extends Controller
     }
 
     /**
+     * Get types by category id
+     */
+    public function getTypesByCategory(int $categoryId): JsonResponse
+    {
+        $types = Type::where('category_id', $categoryId)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $types->map(fn($type) => [
+                'id' => $type->id,
+                'name' => $type->name
+            ])
+        ]);
+    }
+
+    /**
+     * Get all categories with their types
+     */
+    public function getCategoriesWithTypes(): JsonResponse
+    {
+        $types = Type::with('category')
+            ->orderBy('name', 'asc')
+            ->get()
+            ->filter(fn($type) => $type->category !== null);
+
+        $grouped = $types
+            ->groupBy(fn($type) => $type->category->id)
+            ->map(function ($typesByCategory) {
+                $category = $typesByCategory->first()->category;
+
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'types' => $typesByCategory
+                        ->sortBy('name')
+                        ->values()
+                        ->map(fn($type) => [
+                            'id' => $type->id,
+                            'name' => $type->name,
+                        ]),
+                ];
+            })
+            ->values()
+            ->sortBy('name')
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $grouped,
+        ]);
+    }
+
+    /**
      * Get items with filtering
      */
     public function getItems(Request $request): JsonResponse
