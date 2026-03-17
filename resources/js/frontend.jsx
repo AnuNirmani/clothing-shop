@@ -8,6 +8,7 @@ import ShopPage from './components/ShopPage';
 import ItemDetailPage from './components/ItemDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 console.log('Frontend.jsx loaded');
 
@@ -24,6 +25,7 @@ if (document.getElementById('app')) {
                         <Route path="/item/:id" element={<ItemDetailPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/login" element={<LoginPage />} />
+                        <Route path="/checkout" element={<CheckoutPage />} />
                         {/* Add more routes here as needed */}
                     </Routes>
                 </BrowserRouter>

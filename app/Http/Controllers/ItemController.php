@@ -120,6 +120,9 @@ class ItemController extends Controller
             $validated['offer_end_date'] = null;
         }
 
+        // Handle free delivery
+        $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
+
         $item = Item::createItem($validated);
 
         // Sync classifications (pivot)
@@ -243,6 +246,9 @@ class ItemController extends Controller
             $validated['offer_start_date'] = null;
             $validated['offer_end_date'] = null;
         }
+
+        // Handle free delivery
+        $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
 
         $item = Item::updateItem($id, $validated);
 

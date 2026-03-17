@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const CartPage = ({ isOpen, onClose }) => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal } = useCart();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [hoveredItem, setHoveredItem] = useState(null);
+    const navigate = useNavigate();
 
     const handleQuantityChange = (cartItemId, newQuantity) => {
         if (newQuantity >= 1) {
@@ -16,12 +18,13 @@ const CartPage = ({ isOpen, onClose }) => {
         removeFromCart(cartItemId);
     };
 
-    const handleCheckout = async () => {
+    const handleCheckout = () => {
         setIsCheckingOut(true);
         setTimeout(() => {
             setIsCheckingOut(false);
-            alert('Proceeding to checkout...');
-        }, 1500);
+            onClose();
+            navigate('/checkout');
+        }, 800);
     };
 
     const formatPrice = (value) => {
@@ -31,7 +34,7 @@ const CartPage = ({ isOpen, onClose }) => {
     };
 
     const subtotal = getCartTotal();
-    const shipping = subtotal > 5000 ? 0 : 300;
+    const shipping = subtotal > 5000 ? 0 : 450;
     const total = subtotal + shipping;
 
     return (
@@ -319,9 +322,8 @@ const CartPage = ({ isOpen, onClose }) => {
 
             {/* Cart Sidebar */}
             <div
-                className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-                    isOpen ? 'translate-x-0' : 'translate-x-full'
-                } ${isOpen ? 'cart-sidebar' : ''}`}
+                className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
+                    } ${isOpen ? 'cart-sidebar' : ''}`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
@@ -346,7 +348,7 @@ const CartPage = ({ isOpen, onClose }) => {
                     <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
                         {/* Animated background orbs */}
                         <div className="absolute -top-32 -left-32 w-64 h-64 bg-pink-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
-                        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-200 rounded-full blur-3xl opacity-40 animate-pulse" style={{animationDelay: '1s'}}></div>
+                        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-200 rounded-full blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
                         {/* Animated particles */}
                         <div className="absolute inset-0 pointer-events-none">
@@ -393,15 +395,15 @@ const CartPage = ({ isOpen, onClose }) => {
                             </div>
                         </div>
 
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3 fade-in" style={{animationDelay: '0.1s'}}>Your cart is empty</h3>
-                        <p className="text-gray-600 text-center mb-8 max-w-xs fade-in" style={{animationDelay: '0.2s'}}>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3 fade-in" style={{ animationDelay: '0.1s' }}>Your cart is empty</h3>
+                        <p className="text-gray-600 text-center mb-8 max-w-xs fade-in" style={{ animationDelay: '0.2s' }}>
                             Explore our collection and add something you love to your cart.
                         </p>
 
                         <button
                             onClick={onClose}
                             className="premium-btn py-3 px-8 rounded-lg text-lg fade-in"
-                            style={{animationDelay: '0.3s'}}
+                            style={{ animationDelay: '0.3s' }}
                         >
                             Start Shopping
                         </button>
@@ -411,10 +413,10 @@ const CartPage = ({ isOpen, onClose }) => {
                     <>
                         <div className="flex-1 overflow-y-auto no-scrollbar p-4">
                             {cartItems.map((item, idx) => (
-                                <div 
-                                    key={item.cartItemId} 
+                                <div
+                                    key={item.cartItemId}
                                     className="cart-item p-4 mb-3"
-                                    style={{animationDelay: `${idx * 0.1}s`}}
+                                    style={{ animationDelay: `${idx * 0.1}s` }}
                                     onMouseEnter={() => setHoveredItem(item.cartItemId)}
                                     onMouseLeave={() => setHoveredItem(null)}
                                 >
@@ -490,7 +492,7 @@ const CartPage = ({ isOpen, onClose }) => {
                                         {shipping === 0 ? 'Free' : `Rs ${shipping}`}
                                     </span>
                                 </div>
-                                
+
                                 {/* Free Shipping Info */}
                                 {shipping > 0 && (
                                     <div className="shipping-info">

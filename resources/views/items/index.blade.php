@@ -132,7 +132,6 @@
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Item</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Type</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Category</th>
-                                <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Colors</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Price</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Stock</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Status</th>
@@ -155,7 +154,12 @@
                                             </div>
                                         @endif
                                         <div class="min-w-0">
-                                            <p class="text-sm font-semibold text-gray-800 truncate max-w-[140px]">{{ $item->name }}</p>
+                                            <div class="flex items-center gap-1.5">
+                                                <p class="text-sm font-semibold text-gray-800 truncate max-w-[140px]">{{ $item->name }}</p>
+                                                @if($item->free_delivery)
+                                                    <span title="Free Delivery" class="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-md font-bold flex-shrink-0">🚚</span>
+                                                @endif
+                                            </div>
                                             <p class="text-[11px] text-gray-400 truncate">{{ $item->SKU ?? '' }}</p>
                                         </div>
                                     </div>
@@ -173,22 +177,6 @@
                                     <span class="inline-flex items-center px-2.5 py-1 text-blue-600 text-xs font-semibold">
                                         {{ $item->category?->name ?? '—' }}
                                     </span>
-                                </td>
-
-                                {{-- Colors --}}
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-1 flex-wrap">
-                                        @forelse($item->colors->take(6) as $color)
-                                            <span class="w-5 h-5 rounded-full border-2 border-white shadow-md ring-1 ring-gray-200"
-                                                  title="{{ $color->name }}"
-                                                  style="background-color: {{ $color->hex_code }}"></span>
-                                        @empty
-                                            <span class="text-xs text-gray-300">—</span>
-                                        @endforelse
-                                        @if($item->colors->count() > 6)
-                                            <span class="text-[10px] text-gray-400 font-medium">+{{ $item->colors->count() - 6 }}</span>
-                                        @endif
-                                    </div>
                                 </td>
 
                                 {{-- Price --}}

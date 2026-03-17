@@ -249,6 +249,7 @@ class ItemController extends Controller
             'installment_3' => number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', ''),
             'installment_4' => number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', ''),
             'discounted_price' => $item->discounted_price,
+            'free_delivery' => (bool) $item->free_delivery,
             'size_chart' => $item->size?->photo ? asset('storage/' . $item->size->photo) : null,
         ];
     }

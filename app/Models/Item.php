@@ -33,15 +33,17 @@ class Item extends Model
         'offer_start_date',
         'offer_end_date',
         'discounted_price',
+        'free_delivery',
     ];
 
     protected $dates = ['deleted_at', 'offer_start_date', 'offer_end_date'];
 
     // ✅ Cast availability, is_gift_card, is_on_offer to boolean
     protected $casts = [
-        'availability' => 'boolean',
-        'is_gift_card' => 'boolean',
-        'is_on_offer'  => 'boolean',
+        'availability'   => 'boolean',
+        'is_gift_card'   => 'boolean',
+        'is_on_offer'    => 'boolean',
+        'free_delivery'  => 'boolean',
     ];
 
     public function setAvailabilityAttribute($value): void

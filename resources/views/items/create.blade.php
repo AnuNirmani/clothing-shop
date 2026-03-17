@@ -755,6 +755,16 @@
                                 </div>
                             </label>
 
+                            {{-- Free Delivery Toggle --}}
+                            <label class="toggle-row" style="margin-bottom:12px;">
+                                <input type="checkbox" id="free_delivery" name="free_delivery" value="1"
+                                    {{ old('free_delivery') ? 'checked' : '' }}>
+                                <div>
+                                    <p class="toggle-row-label">🚚 Free Delivery</p>
+                                    <p style="font-size:11px;color:#9ca3af;margin-top:1px;">Offer free delivery for this item</p>
+                                </div>
+                            </label>
+
                             <div id="offer_fields_section" style="{{ old('is_on_offer') ? '' : 'display:none;' }}">
                                 <div style="padding:14px;background:#f0fdf4;border-radius:12px;border:1.5px solid #bbf7d0;margin-bottom:12px;">
                                     <label class="field-label">Discount % <span class="req">*</span></label>
