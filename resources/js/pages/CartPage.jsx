@@ -34,7 +34,8 @@ const CartPage = ({ isOpen, onClose }) => {
     };
 
     const subtotal = getCartTotal();
-    const shipping = subtotal > 5000 ? 0 : 450;
+    const isFreeDeliveryItem = cartItems.length === 1 && cartItems[0].free_delivery;
+    const shipping = (subtotal > 5000 || isFreeDeliveryItem) ? 0 : 450;
     const total = subtotal + shipping;
 
     return (

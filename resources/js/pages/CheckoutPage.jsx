@@ -7,7 +7,8 @@ const CheckoutPage = () => {
     const { cartItems, getCartTotal, clearCart } = useCart();
 
     const subtotal = getCartTotal();
-    const shipping = subtotal > 5000 ? 0 : 450;
+    const isFreeDeliveryItem = cartItems.length === 1 && cartItems[0].free_delivery;
+    const shipping = (subtotal > 5000 || isFreeDeliveryItem) ? 0 : 450;
     const total = subtotal + shipping;
 
     const formatPrice = (value) => {
@@ -557,14 +558,14 @@ const CheckoutPage = () => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         <div className="radio-dot checked" />
                                         <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>
-                                            {subtotal > 5000 ? 'Free Shipping' : 'Standard Shipping (3–5 days)'}
+                                            {shipping === 0 ? 'Free Shipping' : 'Standard Shipping (3–5 days)'}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '14px', fontWeight: 700, color: shipping === 0 ? '#059669' : '#111827' }}>
                                         {shipping === 0 ? 'FREE' : `Rs ${shipping}`}
                                     </span>
                                 </div>
-                                {subtotal <= 5000 && (
+                                {shipping > 0 && subtotal <= 5000 && (
                                     <p style={{ fontSize: '13px', color: '#6b7280', marginTop: '10px' }}>
                                         🎉 Spend Rs {formatPrice(5000 - subtotal)} more for free shipping!
                                     </p>
