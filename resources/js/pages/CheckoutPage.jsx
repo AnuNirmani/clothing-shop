@@ -34,9 +34,79 @@ const CheckoutPage = () => {
     const [billingAddress, setBillingAddress] = useState('same');
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardName, setCardName] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCvv, setCardCvv] = useState('');
+    const [billingFirstName, setBillingFirstName] = useState('');
+    const [billingLastName, setBillingLastName] = useState('');
+    const [billingAddress_val, setBillingAddress_val] = useState('');
+    const [billingApartment, setBillingApartment] = useState('');
+    const [billingCity, setBillingCity] = useState('');
+    const [billingPostalCode, setBillingPostalCode] = useState('');
+    const [errors, setErrors] = useState({});
 
     const handlePayNow = async (e) => {
         e.preventDefault();
+
+        const newErrors = {};
+
+        // Validation logic
+        if (!contact.trim()) {
+            newErrors.contact = 'Email is required';
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(contact)) {
+                newErrors.contact = 'Enter a valid email address';
+            }
+        }
+
+        if (!firstName.trim()) newErrors.firstName = 'First name is required';
+        if (!lastName.trim()) newErrors.lastName = 'Last name is required';
+        if (!address.trim()) newErrors.address = 'Address is required';
+        if (!apartment.trim()) newErrors.apartment = 'Apartment/Suite is required';
+        if (!city.trim()) newErrors.city = 'City is required';
+        if (!postalCode.trim()) newErrors.postalCode = 'Postal code is required';
+        if (!phone.trim()) newErrors.phone = 'Phone number is required';
+
+        if (paymentMethod === 'card') {
+            const cleanCard = cardNumber.replace(/\s/g, '');
+            if (!cleanCard.match(/^\d{16}$/)) {
+                newErrors.cardNumber = 'Enter a valid 16-digit card number';
+            }
+            if (!cardName.trim()) {
+                newErrors.cardName = 'Name on card is required';
+            }
+            if (!cardExpiry.match(/^(0[1-9]|1[0-2])\s?\/\s?([0-9]{2})$/)) {
+                newErrors.cardExpiry = 'Enter a valid expiry (MM/YY)';
+            }
+            if (!cardCvv.match(/^\d{3,4}$/)) {
+                newErrors.cardCvv = 'Enter a valid CVV';
+            }
+        }
+
+        if (billingAddress === 'different') {
+            if (!billingFirstName.trim()) newErrors.billingFirstName = 'First name is required';
+            if (!billingLastName.trim()) newErrors.billingLastName = 'Last name is required';
+            if (!billingAddress_val.trim()) newErrors.billingAddress_val = 'Address is required';
+            if (!billingApartment.trim()) newErrors.billingApartment = 'Apartment/Suite is required';
+            if (!billingCity.trim()) newErrors.billingCity = 'City is required';
+            if (!billingPostalCode.trim()) newErrors.billingPostalCode = 'Postal code is required';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            // Scroll to the first error
+            setTimeout(() => {
+                const firstError = document.querySelector('[data-error="true"]');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return;
+        }
+
+        setErrors({});
         setIsPlacingOrder(true);
         await new Promise((res) => setTimeout(res, 2000));
         setIsPlacingOrder(false);
@@ -143,6 +213,18 @@ const CheckoutPage = () => {
                     box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
                 }
                 .co-input::placeholder { color: #9ca3af; }
+                .co-input.error {
+                    border-color: #ef4444;
+                    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+                }
+                .error-text {
+                    color: #ef4444;
+                    font-size: 11px;
+                    margin-top: 4px;
+                    font-weight: 500;
+                    display: block;
+                    animation: fadeInUp 0.3s ease-out;
+                }
 
                 .co-select {
                     width: 100%;
@@ -445,22 +527,28 @@ const CheckoutPage = () => {
                             Return to cart
                         </button>
 
-                        <form onSubmit={handlePayNow}>
+                        <form onSubmit={handlePayNow} noValidate>
                             {/* Contact */}
                             <div className="section-card">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                     <h3 className="section-title" style={{ margin: 0 }}>Contact</h3>
                                     <a href="#" style={{ color: '#7c3aed', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>Sign in</a>
                                 </div>
-                                <input
-                                    id="contact-email"
-                                    className="co-input"
-                                    type="text"
-                                    placeholder="Email or mobile phone number"
-                                    value={contact}
-                                    onChange={e => setContact(e.target.value)}
-                                    required
-                                />
+                                <div id="contact-group" data-error={!!errors.contact}>
+                                    <input
+                                        id="contact-email"
+                                        className={`co-input ${errors.contact ? 'error' : ''}`}
+                                        type="text"
+                                        placeholder="Email or mobile phone number"
+                                        value={contact}
+                                        onChange={e => {
+                                            setContact(e.target.value);
+                                            if (errors.contact) setErrors({ ...errors, contact: null });
+                                        }}
+                                        required
+                                    />
+                                    {errors.contact && <span className="error-text">{errors.contact}</span>}
+                                </div>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', cursor: 'pointer', fontSize: '14px', color: '#374151' }}>
                                     <input
                                         type="checkbox"
@@ -510,25 +598,52 @@ const CheckoutPage = () => {
                                     </select>
 
                                     <div style={{ display: 'flex', gap: '12px' }}>
-                                        <input id="first-name" className="co-input" type="text" placeholder="First name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
-                                        <input id="last-name" className="co-input" type="text" placeholder="Last name" value={lastName} onChange={e => setLastName(e.target.value)} required />
+                                        <div style={{ flex: 1 }} data-error={!!errors.firstName}>
+                                            <input id="first-name" className={`co-input ${errors.firstName ? 'error' : ''}`} type="text" placeholder="First name" value={firstName}
+                                                onChange={e => { setFirstName(e.target.value); if (errors.firstName) setErrors({ ...errors, firstName: null }); }} required />
+                                            {errors.firstName && <span className="error-text">{errors.firstName}</span>}
+                                        </div>
+                                        <div style={{ flex: 1 }} data-error={!!errors.lastName}>
+                                            <input id="last-name" className={`co-input ${errors.lastName ? 'error' : ''}`} type="text" placeholder="Last name" value={lastName}
+                                                onChange={e => { setLastName(e.target.value); if (errors.lastName) setErrors({ ...errors, lastName: null }); }} required />
+                                            {errors.lastName && <span className="error-text">{errors.lastName}</span>}
+                                        </div>
                                     </div>
 
-                                    <input id="address" className="co-input" type="text" placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} required />
-                                    <input id="apartment" className="co-input" type="text" placeholder="Apartment, suite, etc. (optional)" value={apartment} onChange={e => setApartment(e.target.value)} />
+                                    <div data-error={!!errors.address}>
+                                        <input id="address" className={`co-input ${errors.address ? 'error' : ''}`} type="text" placeholder="Address" value={address}
+                                            onChange={e => { setAddress(e.target.value); if (errors.address) setErrors({ ...errors, address: null }); }} required />
+                                        {errors.address && <span className="error-text">{errors.address}</span>}
+                                    </div>
+
+                                    <div data-error={!!errors.apartment}>
+                                        <input id="apartment" className={`co-input ${errors.apartment ? 'error' : ''}`} type="text" placeholder="Apartment, suite, etc." value={apartment}
+                                            onChange={e => { setApartment(e.target.value); if (errors.apartment) setErrors({ ...errors, apartment: null }); }} required />
+                                        {errors.apartment && <span className="error-text">{errors.apartment}</span>}
+                                    </div>
 
                                     <div style={{ display: 'flex', gap: '12px' }}>
-                                        <input id="city" className="co-input" type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)} required />
-                                        <input id="postal-code" className="co-input" type="text" placeholder="Postal code (optional)" value={postalCode} onChange={e => setPostalCode(e.target.value)} />
+                                        <div style={{ flex: 1 }} data-error={!!errors.city}>
+                                            <input id="city" className={`co-input ${errors.city ? 'error' : ''}`} type="text" placeholder="City" value={city}
+                                                onChange={e => { setCity(e.target.value); if (errors.city) setErrors({ ...errors, city: null }); }} required />
+                                            {errors.city && <span className="error-text">{errors.city}</span>}
+                                        </div>
+                                        <div style={{ flex: 1 }} data-error={!!errors.postalCode}>
+                                            <input id="postal-code" className={`co-input ${errors.postalCode ? 'error' : ''}`} type="text" placeholder="Postal code" value={postalCode}
+                                                onChange={e => { setPostalCode(e.target.value); if (errors.postalCode) setErrors({ ...errors, postalCode: null }); }} required />
+                                            {errors.postalCode && <span className="error-text">{errors.postalCode}</span>}
+                                        </div>
                                     </div>
 
-                                    <div style={{ position: 'relative' }}>
-                                        <input id="phone" className="co-input" type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required style={{ paddingRight: '40px' }} />
-                                        <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>
+                                    <div style={{ position: 'relative' }} data-error={!!errors.phone}>
+                                        <input id="phone" className={`co-input ${errors.phone ? 'error' : ''}`} type="tel" placeholder="Phone" value={phone}
+                                            onChange={e => { setPhone(e.target.value); if (errors.phone) setErrors({ ...errors, phone: null }); }} required style={{ paddingRight: '40px' }} />
+                                        <span style={{ position: 'absolute', right: '12px', top: '15px', color: '#9ca3af' }}>
                                             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
                                             </svg>
                                         </span>
+                                        {errors.phone && <span className="error-text">{errors.phone}</span>}
                                     </div>
 
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: '#374151' }}>
@@ -598,16 +713,50 @@ const CheckoutPage = () => {
 
                                     {paymentMethod === 'card' && (
                                         <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <input id="card-number" className="co-input" type="text" placeholder="Card number" maxLength={19}
-                                                onChange={e => {
-                                                    const v = e.target.value.replace(/\D/g, '').slice(0, 16);
-                                                    e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
-                                                }}
-                                            />
-                                            <input id="card-name" className="co-input" type="text" placeholder="Name on card" />
+                                            <div data-error={!!errors.cardNumber}>
+                                                <input id="card-number" className={`co-input ${errors.cardNumber ? 'error' : ''}`} type="text" placeholder="Card number" maxLength={19}
+                                                    value={cardNumber}
+                                                    onChange={e => {
+                                                        const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+                                                        setCardNumber(v.replace(/(.{4})/g, '$1 ').trim());
+                                                        if (errors.cardNumber) setErrors({ ...errors, cardNumber: null });
+                                                    }}
+                                                />
+                                                {errors.cardNumber && <span className="error-text">{errors.cardNumber}</span>}
+                                            </div>
+
+                                            <div data-error={!!errors.cardName}>
+                                                <input id="card-name" className={`co-input ${errors.cardName ? 'error' : ''}`} type="text" placeholder="Name on card"
+                                                    value={cardName}
+                                                    onChange={e => { setCardName(e.target.value); if (errors.cardName) setErrors({ ...errors, cardName: null }); }}
+                                                />
+                                                {errors.cardName && <span className="error-text">{errors.cardName}</span>}
+                                            </div>
+
                                             <div style={{ display: 'flex', gap: '12px' }}>
-                                                <input id="card-expiry" className="co-input" type="text" placeholder="Expiration date (MM / YY)" />
-                                                <input id="card-cvv" className="co-input" type="text" placeholder="Security code" maxLength={4} />
+                                                <div style={{ flex: 1 }} data-error={!!errors.cardExpiry}>
+                                                    <input id="card-expiry" className={`co-input ${errors.cardExpiry ? 'error' : ''}`} type="text" placeholder="MM / YY"
+                                                        value={cardExpiry}
+                                                        onChange={e => {
+                                                            let v = e.target.value.replace(/\D/g, '');
+                                                            if (v.length > 2) v = v.slice(0, 2) + ' / ' + v.slice(2, 4);
+                                                            setCardExpiry(v);
+                                                            if (errors.cardExpiry) setErrors({ ...errors, cardExpiry: null });
+                                                        }}
+                                                    />
+                                                    {errors.cardExpiry && <span className="error-text">{errors.cardExpiry}</span>}
+                                                </div>
+                                                <div style={{ flex: 1 }} data-error={!!errors.cardCvv}>
+                                                    <input id="card-cvv" className={`co-input ${errors.cardCvv ? 'error' : ''}`} type="text" placeholder="CVV" maxLength={4}
+                                                        value={cardCvv}
+                                                        onChange={e => {
+                                                            const v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                            setCardCvv(v);
+                                                            if (errors.cardCvv) setErrors({ ...errors, cardCvv: null });
+                                                        }}
+                                                    />
+                                                    {errors.cardCvv && <span className="error-text">{errors.cardCvv}</span>}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -659,14 +808,38 @@ const CheckoutPage = () => {
                                             <option>Maldives</option>
                                         </select>
                                         <div style={{ display: 'flex', gap: '12px' }}>
-                                            <input className="co-input" type="text" placeholder="First name" />
-                                            <input className="co-input" type="text" placeholder="Last name" />
+                                            <div style={{ flex: 1 }} data-error={!!errors.billingFirstName}>
+                                                <input className={`co-input ${errors.billingFirstName ? 'error' : ''}`} type="text" placeholder="First name"
+                                                    value={billingFirstName} onChange={e => { setBillingFirstName(e.target.value); if (errors.billingFirstName) setErrors({ ...errors, billingFirstName: null }); }} required />
+                                                {errors.billingFirstName && <span className="error-text">{errors.billingFirstName}</span>}
+                                            </div>
+                                            <div style={{ flex: 1 }} data-error={!!errors.billingLastName}>
+                                                <input className={`co-input ${errors.billingLastName ? 'error' : ''}`} type="text" placeholder="Last name"
+                                                    value={billingLastName} onChange={e => { setBillingLastName(e.target.value); if (errors.billingLastName) setErrors({ ...errors, billingLastName: null }); }} required />
+                                                {errors.billingLastName && <span className="error-text">{errors.billingLastName}</span>}
+                                            </div>
                                         </div>
-                                        <input className="co-input" type="text" placeholder="Address" />
-                                        <input className="co-input" type="text" placeholder="Apartment, suite, etc. (optional)" />
+                                        <div data-error={!!errors.billingAddress_val}>
+                                            <input className={`co-input ${errors.billingAddress_val ? 'error' : ''}`} type="text" placeholder="Address"
+                                                value={billingAddress_val} onChange={e => { setBillingAddress_val(e.target.value); if (errors.billingAddress_val) setErrors({ ...errors, billingAddress_val: null }); }} required />
+                                            {errors.billingAddress_val && <span className="error-text">{errors.billingAddress_val}</span>}
+                                        </div>
+                                        <div data-error={!!errors.billingApartment}>
+                                            <input className={`co-input ${errors.billingApartment ? 'error' : ''}`} type="text" placeholder="Apartment, suite, etc."
+                                                value={billingApartment} onChange={e => { setBillingApartment(e.target.value); if (errors.billingApartment) setErrors({ ...errors, billingApartment: null }); }} required />
+                                            {errors.billingApartment && <span className="error-text">{errors.billingApartment}</span>}
+                                        </div>
                                         <div style={{ display: 'flex', gap: '12px' }}>
-                                            <input className="co-input" type="text" placeholder="City" />
-                                            <input className="co-input" type="text" placeholder="Postal code (optional)" />
+                                            <div style={{ flex: 1 }} data-error={!!errors.billingCity}>
+                                                <input className={`co-input ${errors.billingCity ? 'error' : ''}`} type="text" placeholder="City"
+                                                    value={billingCity} onChange={e => { setBillingCity(e.target.value); if (errors.billingCity) setErrors({ ...errors, billingCity: null }); }} required />
+                                                {errors.billingCity && <span className="error-text">{errors.billingCity}</span>}
+                                            </div>
+                                            <div style={{ flex: 1 }} data-error={!!errors.billingPostalCode}>
+                                                <input className={`co-input ${errors.billingPostalCode ? 'error' : ''}`} type="text" placeholder="Postal code"
+                                                    value={billingPostalCode} onChange={e => { setBillingPostalCode(e.target.value); if (errors.billingPostalCode) setErrors({ ...errors, billingPostalCode: null }); }} required />
+                                                {errors.billingPostalCode && <span className="error-text">{errors.billingPostalCode}</span>}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
