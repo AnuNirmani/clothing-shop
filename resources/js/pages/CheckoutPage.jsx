@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js/min';
+import countries from 'i18n-iso-countries';
+import enLocale from 'i18n-iso-countries/langs/en.json';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+countries.registerLocale(enLocale);
+
+const toFlagEmoji = (countryCode) => {
+    if (!countryCode || countryCode.length !== 2) return '🏳️';
+    return countryCode
+        .toUpperCase()
+        .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+};
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
     const { cartItems, getCartTotal, clearCart } = useCart();
 
+    const [deliveryMethod, setDeliveryMethod] = useState('ship');
+
     const subtotal = getCartTotal();
     const isFreeDeliveryItem = cartItems.length === 1 && cartItems[0].free_delivery;
-    const shipping = (subtotal > 5000 || isFreeDeliveryItem) ? 0 : 450;
+    const baseShipping = (subtotal > 5000 || isFreeDeliveryItem) ? 0 : 450;
+    const shipping = deliveryMethod === 'ship' ? baseShipping : 0;
     const total = subtotal + shipping;
 
     const formatPrice = (value) => {
@@ -19,37 +36,115 @@ const CheckoutPage = () => {
 
     const [contact, setContact] = useState('');
     const [emailOffers, setEmailOffers] = useState(true);
-    const [deliveryMethod, setDeliveryMethod] = useState('ship');
-    const [country, setCountry] = useState('Sri Lanka');
+    const [country, setCountry] = useState('');
+    const [countrySearch, setCountrySearch] = useState('');
+    const [isCountryOpen, setIsCountryOpen] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [address, setAddress] = useState('');
     const [apartment, setApartment] = useState('');
     const [city, setCity] = useState('');
     const [postalCode, setPostalCode] = useState('');
-    const [phone, setPhone] = useState('');
+    const [phoneWithCode, setPhoneWithCode] = useState('');
     const [saveInfo, setSaveInfo] = useState(false);
     const [discountCode, setDiscountCode] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('card');
-    const [billingAddress, setBillingAddress] = useState('same');
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardName, setCardName] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
-    const [cardCvv, setCardCvv] = useState('');
-    const [billingFirstName, setBillingFirstName] = useState('');
-    const [billingLastName, setBillingLastName] = useState('');
-    const [billingAddress_val, setBillingAddress_val] = useState('');
-    const [billingApartment, setBillingApartment] = useState('');
-    const [billingCity, setBillingCity] = useState('');
-    const [billingPostalCode, setBillingPostalCode] = useState('');
+    const [orderNumber, setOrderNumber] = useState('');
     const [errors, setErrors] = useState({});
+
+    const countryOptions = useMemo(() => {
+        return getCountries()
+            .map((code) => ({
+                code,
+                name: countries.getName(code, 'en') || code,
+                flag: toFlagEmoji(code),
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }, []);
+
+    const selectedCountry = countryOptions.find((option) => option.code === country);
+    const countryDropdownRef = useRef(null);
+
+    const filteredCountryOptions = useMemo(() => {
+        const query = countrySearch.trim().toLowerCase();
+        if (!query) return countryOptions;
+
+        return countryOptions.filter((option) =>
+            option.name.toLowerCase().includes(query) || option.code.toLowerCase().includes(query)
+        );
+    }, [countryOptions, countrySearch]);
+
+    useEffect(() => {
+        if (country) return;
+
+        const locale = navigator.language || navigator.languages?.[0] || '';
+        const match = locale.match(/-([A-Za-z]{2})$/);
+        const detectedCode = match?.[1]?.toUpperCase();
+        const exists = countryOptions.some((option) => option.code === detectedCode);
+
+        setCountry(exists ? detectedCode : 'LK');
+    }, [country, countryOptions]);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+                setIsCountryOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, []);
+
+    const countryNameByCode = useMemo(() => {
+        return new Map(
+            getCountries().map((isoCode) => {
+                const fullName = countries.getName(isoCode, 'en') || isoCode;
+                return [isoCode, fullName];
+            })
+        );
+    }, []);
+
+    const phoneCodeOptions = useMemo(() => {
+        return getCountries()
+            .map((isoCode) => {
+                try {
+                    const callingCode = `+${getCountryCallingCode(isoCode)}`;
+                    const countryName = countryNameByCode.get(isoCode) || isoCode;
+
+                    return {
+                        isoCode,
+                        code: callingCode,
+                        label: `${toFlagEmoji(isoCode)} ${countryName} (${callingCode})`,
+                        sortName: countryName,
+                    };
+                } catch {
+                    return null;
+                }
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.sortName.localeCompare(b.sortName));
+    }, [countryNameByCode]);
+
+    const supportedPhoneCountries = useMemo(
+        () => new Set(phoneCodeOptions.map((option) => option.isoCode.toLowerCase())),
+        [phoneCodeOptions]
+    );
+
+    const phoneInputCountry = useMemo(() => {
+        const lowerCountry = (country || '').toLowerCase();
+        return supportedPhoneCountries.has(lowerCountry) ? lowerCountry : 'lk';
+    }, [country, supportedPhoneCountries]);
 
     const handlePayNow = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
+
+        if (cartItems.length === 0) {
+            newErrors.general = 'Your cart is empty. Please add items before confirming the order.';
+        }
 
         // Validation logic
         if (!contact.trim()) {
@@ -67,32 +162,7 @@ const CheckoutPage = () => {
         if (!apartment.trim()) newErrors.apartment = 'Apartment/Suite is required';
         if (!city.trim()) newErrors.city = 'City is required';
         if (!postalCode.trim()) newErrors.postalCode = 'Postal code is required';
-        if (!phone.trim()) newErrors.phone = 'Phone number is required';
-
-        if (paymentMethod === 'card') {
-            const cleanCard = cardNumber.replace(/\s/g, '');
-            if (!cleanCard.match(/^\d{16}$/)) {
-                newErrors.cardNumber = 'Enter a valid 16-digit card number';
-            }
-            if (!cardName.trim()) {
-                newErrors.cardName = 'Name on card is required';
-            }
-            if (!cardExpiry.match(/^(0[1-9]|1[0-2])\s?\/\s?([0-9]{2})$/)) {
-                newErrors.cardExpiry = 'Enter a valid expiry (MM/YY)';
-            }
-            if (!cardCvv.match(/^\d{3,4}$/)) {
-                newErrors.cardCvv = 'Enter a valid CVV';
-            }
-        }
-
-        if (billingAddress === 'different') {
-            if (!billingFirstName.trim()) newErrors.billingFirstName = 'First name is required';
-            if (!billingLastName.trim()) newErrors.billingLastName = 'Last name is required';
-            if (!billingAddress_val.trim()) newErrors.billingAddress_val = 'Address is required';
-            if (!billingApartment.trim()) newErrors.billingApartment = 'Apartment/Suite is required';
-            if (!billingCity.trim()) newErrors.billingCity = 'City is required';
-            if (!billingPostalCode.trim()) newErrors.billingPostalCode = 'Postal code is required';
-        }
+        if (!phoneWithCode.trim()) newErrors.phone = 'Phone number is required';
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -107,11 +177,59 @@ const CheckoutPage = () => {
         }
 
         setErrors({});
-        setIsPlacingOrder(true);
-        await new Promise((res) => setTimeout(res, 2000));
-        setIsPlacingOrder(false);
-        setOrderPlaced(true);
-        clearCart();
+
+        const payload = {
+            contact,
+            delivery_method: deliveryMethod,
+            country: selectedCountry?.name || country,
+            first_name: firstName,
+            last_name: lastName,
+            address,
+            apartment,
+            city,
+            postal_code: postalCode,
+            phone: phoneWithCode.startsWith('+') ? phoneWithCode : `+${phoneWithCode}`,
+            items: cartItems.map((item) => ({
+                id: item.id ?? null,
+                name: item.name,
+                size: item.size ?? null,
+                color: item.color ?? null,
+                image: item.image ?? null,
+                free_delivery: !!item.free_delivery,
+                quantity: item.quantity,
+                price: item.price,
+            })),
+        };
+
+        try {
+            setIsPlacingOrder(true);
+
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const message = data?.message || 'Unable to confirm your order right now. Please try again.';
+                setErrors({ general: message });
+                return;
+            }
+
+            setOrderNumber(data?.data?.order_number || '');
+            setOrderPlaced(true);
+            clearCart();
+        } catch (error) {
+            console.error('Order confirmation failed:', error);
+            setErrors({ general: 'Network error while confirming order. Please try again.' });
+        } finally {
+            setIsPlacingOrder(false);
+        }
     };
 
     if (orderPlaced) {
@@ -168,6 +286,11 @@ const CheckoutPage = () => {
                         <p className="fade-up" style={{ color: '#6b7280', marginBottom: '32px', lineHeight: 1.6, animationDelay: '0.2s', opacity: 0 }}>
                             Thank you for your purchase. Your order has been placed successfully and will be processed shortly.
                         </p>
+                        {orderNumber && (
+                            <p className="fade-up" style={{ color: '#7c3aed', marginBottom: '20px', fontWeight: 600, animationDelay: '0.25s', opacity: 0 }}>
+                                Order Number: {orderNumber}
+                            </p>
+                        )}
                         <button
                             onClick={() => navigate('/')}
                             style={{
@@ -242,11 +365,101 @@ const CheckoutPage = () => {
                     background-position: right 12px center;
                     cursor: pointer;
                     transition: border-color 0.2s, box-shadow 0.2s;
-                    font-family: 'Poppins', sans-serif;
+                    font-family: 'Poppins', 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
+                }
+                .co-select option {
+                    font-family: 'Poppins', 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
                 }
                 .co-select:focus {
                     border-color: #8b5cf6;
                     box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+                }
+                .co-select.error {
+                    border-color: #ef4444;
+                    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+                }
+
+                .country-dropdown {
+                    position: relative;
+                }
+                .country-trigger {
+                    width: 100%;
+                    min-height: 48px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 10px;
+                    border: 1.5px solid #e5e7eb;
+                    border-radius: 10px;
+                    background: #fff;
+                    padding: 12px 14px;
+                    font-size: 14px;
+                    color: #111827;
+                    cursor: pointer;
+                }
+                .country-trigger:focus {
+                    outline: none;
+                    border-color: #8b5cf6;
+                    box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+                }
+                .country-panel {
+                    position: absolute;
+                    top: calc(100% + 6px);
+                    left: 0;
+                    right: 0;
+                    z-index: 40;
+                    background: #fff;
+                    border: 1.5px solid #e5e7eb;
+                    border-radius: 12px;
+                    box-shadow: 0 14px 30px rgba(17,24,39,0.14);
+                    padding: 10px;
+                }
+                .country-list {
+                    max-height: 240px;
+                    overflow-y: auto;
+                }
+                .country-item {
+                    width: 100%;
+                    text-align: left;
+                    border: none;
+                    background: #fff;
+                    border-radius: 8px;
+                    padding: 10px;
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+                .country-item:hover { background: #f3f4f6; }
+                .country-item.active {
+                    background: rgba(139,92,246,0.1);
+                    color: #6d28d9;
+                    font-weight: 600;
+                }
+
+                .phone-input-wrap .react-tel-input .form-control {
+                    width: 100% !important;
+                    height: 48px !important;
+                    border: 1.5px solid #e5e7eb !important;
+                    border-radius: 10px !important;
+                    font-size: 14px !important;
+                    color: #111827 !important;
+                    background: white !important;
+                    padding-left: 52px !important;
+                    font-family: 'Poppins', sans-serif !important;
+                }
+                .phone-input-wrap .react-tel-input .form-control:focus {
+                    border-color: #8b5cf6 !important;
+                    box-shadow: 0 0 0 3px rgba(139,92,246,0.12) !important;
+                }
+                .phone-input-wrap .react-tel-input .flag-dropdown {
+                    border: 1.5px solid #e5e7eb !important;
+                    border-right: none !important;
+                    border-radius: 10px 0 0 10px !important;
+                    background: #fff !important;
+                }
+                .phone-input-wrap.error .react-tel-input .form-control,
+                .phone-input-wrap.error .react-tel-input .flag-dropdown {
+                    border-color: #ef4444 !important;
+                    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
                 }
 
                 .delivery-btn {
@@ -563,7 +776,7 @@ const CheckoutPage = () => {
                             {/* Delivery */}
                             <div className="section-card">
                                 <h3 className="section-title">Delivery</h3>
-                                {/* <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
                                     <button
                                         type="button"
                                         className={`delivery-btn ${deliveryMethod === 'ship' ? 'active' : ''}`}
@@ -573,7 +786,7 @@ const CheckoutPage = () => {
                                         <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                             <rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8h4l3 6v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2" /><circle cx="18.5" cy="18.5" r="2" />
                                         </svg>
-                                        Ship
+                                        Delivery
                                     </button>
                                     <button
                                         type="button"
@@ -586,16 +799,55 @@ const CheckoutPage = () => {
                                         </svg>
                                         Pickup
                                     </button>
-                                </div> */}
+                                </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <select id="country" className="co-select" value={country} onChange={e => setCountry(e.target.value)}>
-                                        <option>Sri Lanka</option>
-                                        <option>India</option>
-                                        <option>Maldives</option>
-                                        <option>Bangladesh</option>
-                                        <option>Pakistan</option>
-                                    </select>
+                                    <div className="country-dropdown" ref={countryDropdownRef}>
+                                        <button
+                                            type="button"
+                                            id="country"
+                                            className="country-trigger"
+                                            onClick={() => setIsCountryOpen((open) => !open)}
+                                            aria-haspopup="listbox"
+                                            aria-expanded={isCountryOpen}
+                                        >
+                                            <span>{selectedCountry ? `${selectedCountry.flag} ${selectedCountry.name}` : 'Select country'}</span>
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </button>
+
+                                        {isCountryOpen && (
+                                            <div className="country-panel" role="listbox" aria-label="Country">
+                                                <input
+                                                    className="co-input"
+                                                    placeholder="search"
+                                                    value={countrySearch}
+                                                    onChange={(e) => setCountrySearch(e.target.value)}
+                                                    autoFocus
+                                                />
+                                                <div className="country-list" style={{ marginTop: '8px' }}>
+                                                    {filteredCountryOptions.map((option) => (
+                                                        <button
+                                                            key={option.code}
+                                                            type="button"
+                                                            className={`country-item ${country === option.code ? 'active' : ''}`}
+                                                            onClick={() => {
+                                                                setCountry(option.code);
+                                                                setCountrySearch('');
+                                                                setIsCountryOpen(false);
+                                                            }}
+                                                        >
+                                                            {option.flag} {option.name}
+                                                        </button>
+                                                    ))}
+                                                    {filteredCountryOptions.length === 0 && (
+                                                        <div style={{ padding: '10px', color: '#6b7280', fontSize: '13px' }}>No matches found</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     <div style={{ display: 'flex', gap: '12px' }}>
                                         <div style={{ flex: 1 }} data-error={!!errors.firstName}>
@@ -635,14 +887,23 @@ const CheckoutPage = () => {
                                         </div>
                                     </div>
 
-                                    <div style={{ position: 'relative' }} data-error={!!errors.phone}>
-                                        <input id="phone" className={`co-input ${errors.phone ? 'error' : ''}`} type="tel" placeholder="Phone" value={phone}
-                                            onChange={e => { setPhone(e.target.value); if (errors.phone) setErrors({ ...errors, phone: null }); }} required style={{ paddingRight: '40px' }} />
-                                        <span style={{ position: 'absolute', right: '12px', top: '15px', color: '#9ca3af' }}>
-                                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                                <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
-                                            </svg>
-                                        </span>
+                                    <div className={`phone-input-wrap ${errors.phone ? 'error' : ''}`} data-error={!!errors.phone}>
+                                        <PhoneInput
+                                            country={phoneInputCountry}
+                                            value={phoneWithCode}
+                                            onChange={(value) => {
+                                                setPhoneWithCode(value);
+                                                if (errors.phone) setErrors({ ...errors, phone: null });
+                                            }}
+                                            enableSearch
+                                            countryCodeEditable={false}
+                                            placeholder="Phone number"
+                                            inputProps={{
+                                                id: 'phone',
+                                                name: 'phone',
+                                                required: true,
+                                            }}
+                                        />
                                         {errors.phone && <span className="error-text">{errors.phone}</span>}
                                     </div>
 
@@ -660,7 +921,7 @@ const CheckoutPage = () => {
 
                             {/* Shipping Method */}
                             <div className="section-card">
-                                <h3 className="section-title">Shipping method</h3>
+                                <h3 className="section-title">Order type</h3>
                                 <div style={{
                                     border: '1.5px solid #8b5cf6',
                                     borderRadius: '10px',
@@ -673,175 +934,17 @@ const CheckoutPage = () => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         <div className="radio-dot checked" />
                                         <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>
-                                            {shipping === 0 ? 'Free Shipping' : 'Standard Shipping (3–5 days)'}
+                                            {deliveryMethod === 'pickup' ? 'Store Pickup' : (shipping === 0 ? 'Free Delivery (3–5 days)' : 'Standard Delivery (3–5 days)')}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '14px', fontWeight: 700, color: shipping === 0 ? '#059669' : '#111827' }}>
-                                        {shipping === 0 ? 'FREE' : `Rs ${shipping}`}
+                                        {deliveryMethod === 'pickup' || shipping === 0 ? 'FREE' : `Rs ${shipping}`}
                                     </span>
                                 </div>
-                                {shipping > 0 && subtotal <= 5000 && (
+                                {deliveryMethod === 'ship' && shipping > 0 && subtotal <= 5000 && (
                                     <p style={{ fontSize: '13px', color: '#6b7280', marginTop: '10px' }}>
                                         🎉 Spend Rs {formatPrice(5000 - subtotal)} more for free shipping!
                                     </p>
-                                )}
-                            </div>
-
-                            {/* Payment */}
-                            <div className="section-card">
-                                <h3 className="section-title">Payment</h3>
-                                <p style={{ fontSize: '13px', color: '#6b7280', marginTop: '-12px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                                    All transactions are secure and encrypted.
-                                </p>
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {/* Card payment */}
-                                    <button type="button" className={`payment-option ${paymentMethod === 'card' ? 'active' : ''}`} onClick={() => setPaymentMethod('card')} id="pay-card">
-                                        <div className={`radio-dot ${paymentMethod === 'card' ? 'checked' : ''}`} />
-                                        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: '#374151' }}>Credit / Debit Card</span>
-                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                            {/* Visa */}
-                                            <div style={{ background: '#1a1f71', borderRadius: '4px', padding: '2px 6px', fontSize: '10px', fontWeight: 800, color: 'white', letterSpacing: '0.5px' }}>VISA</div>
-                                            {/* Mastercard */}
-                                            <div style={{ position: 'relative', width: '28px', height: '18px' }}>
-                                                <div style={{ position: 'absolute', left: 0, width: '18px', height: '18px', background: '#EB001B', borderRadius: '50%', opacity: 0.9 }} />
-                                                <div style={{ position: 'absolute', right: 0, width: '18px', height: '18px', background: '#F79E1B', borderRadius: '50%', opacity: 0.9 }} />
-                                            </div>
-                                        </div>
-                                    </button>
-
-                                    {paymentMethod === 'card' && (
-                                        <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <div data-error={!!errors.cardNumber}>
-                                                <input id="card-number" className={`co-input ${errors.cardNumber ? 'error' : ''}`} type="text" placeholder="Card number" maxLength={19}
-                                                    value={cardNumber}
-                                                    onChange={e => {
-                                                        const v = e.target.value.replace(/\D/g, '').slice(0, 16);
-                                                        setCardNumber(v.replace(/(.{4})/g, '$1 ').trim());
-                                                        if (errors.cardNumber) setErrors({ ...errors, cardNumber: null });
-                                                    }}
-                                                />
-                                                {errors.cardNumber && <span className="error-text">{errors.cardNumber}</span>}
-                                            </div>
-
-                                            <div data-error={!!errors.cardName}>
-                                                <input id="card-name" className={`co-input ${errors.cardName ? 'error' : ''}`} type="text" placeholder="Name on card"
-                                                    value={cardName}
-                                                    onChange={e => { setCardName(e.target.value); if (errors.cardName) setErrors({ ...errors, cardName: null }); }}
-                                                />
-                                                {errors.cardName && <span className="error-text">{errors.cardName}</span>}
-                                            </div>
-
-                                            <div style={{ display: 'flex', gap: '12px' }}>
-                                                <div style={{ flex: 1 }} data-error={!!errors.cardExpiry}>
-                                                    <input id="card-expiry" className={`co-input ${errors.cardExpiry ? 'error' : ''}`} type="text" placeholder="MM / YY"
-                                                        value={cardExpiry}
-                                                        onChange={e => {
-                                                            let v = e.target.value.replace(/\D/g, '');
-                                                            if (v.length > 2) v = v.slice(0, 2) + ' / ' + v.slice(2, 4);
-                                                            setCardExpiry(v);
-                                                            if (errors.cardExpiry) setErrors({ ...errors, cardExpiry: null });
-                                                        }}
-                                                    />
-                                                    {errors.cardExpiry && <span className="error-text">{errors.cardExpiry}</span>}
-                                                </div>
-                                                <div style={{ flex: 1 }} data-error={!!errors.cardCvv}>
-                                                    <input id="card-cvv" className={`co-input ${errors.cardCvv ? 'error' : ''}`} type="text" placeholder="CVV" maxLength={4}
-                                                        value={cardCvv}
-                                                        onChange={e => {
-                                                            const v = e.target.value.replace(/\D/g, '').slice(0, 4);
-                                                            setCardCvv(v);
-                                                            if (errors.cardCvv) setErrors({ ...errors, cardCvv: null });
-                                                        }}
-                                                    />
-                                                    {errors.cardCvv && <span className="error-text">{errors.cardCvv}</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* COD */}
-                                    <button type="button" className={`payment-option ${paymentMethod === 'cod' ? 'active' : ''}`} onClick={() => setPaymentMethod('cod')} id="pay-cod">
-                                        <div className={`radio-dot ${paymentMethod === 'cod' ? 'checked' : ''}`} />
-                                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>Cash on Delivery (COD)</span>
-                                    </button>
-
-                                    {paymentMethod === 'cod' && (
-                                        <div className="info-note">You pay in cash when your package arrives at your doorstep.</div>
-                                    )}
-
-                                    {/* Bank Transfer */}
-                                    <button type="button" className={`payment-option ${paymentMethod === 'bank' ? 'active' : ''}`} onClick={() => setPaymentMethod('bank')} id="pay-bank">
-                                        <div className={`radio-dot ${paymentMethod === 'bank' ? 'checked' : ''}`} />
-                                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>Bank Transfer</span>
-                                        <svg width="20" height="20" fill="none" stroke="#6b7280" strokeWidth="1.8" viewBox="0 0 24 24">
-                                            <path d="M2 7l10-5 10 5M6 10v7M10 10v7M14 10v7M18 10v7M2 17h20M2 21h20" strokeLinecap="round" />
-                                        </svg>
-                                    </button>
-
-                                    {paymentMethod === 'bank' && (
-                                        <div className="info-note">You will receive bank details by email after placing the order. Please make the transfer within 24 hours.</div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Billing Address */}
-                            <div className="section-card">
-                                <h3 className="section-title">Billing address</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <button type="button" className={`billing-option ${billingAddress === 'same' ? 'active' : ''}`} onClick={() => setBillingAddress('same')} id="billing-same">
-                                        <div className={`radio-dot ${billingAddress === 'same' ? 'checked' : ''}`} />
-                                        Same as shipping address
-                                    </button>
-                                    <button type="button" className={`billing-option ${billingAddress === 'different' ? 'active' : ''}`} onClick={() => setBillingAddress('different')} id="billing-diff">
-                                        <div className={`radio-dot ${billingAddress === 'different' ? 'checked' : ''}`} />
-                                        Use a different billing address
-                                    </button>
-                                </div>
-
-                                {billingAddress === 'different' && (
-                                    <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        <select className="co-select">
-                                            <option>Sri Lanka</option>
-                                            <option>India</option>
-                                            <option>Maldives</option>
-                                        </select>
-                                        <div style={{ display: 'flex', gap: '12px' }}>
-                                            <div style={{ flex: 1 }} data-error={!!errors.billingFirstName}>
-                                                <input className={`co-input ${errors.billingFirstName ? 'error' : ''}`} type="text" placeholder="First name"
-                                                    value={billingFirstName} onChange={e => { setBillingFirstName(e.target.value); if (errors.billingFirstName) setErrors({ ...errors, billingFirstName: null }); }} required />
-                                                {errors.billingFirstName && <span className="error-text">{errors.billingFirstName}</span>}
-                                            </div>
-                                            <div style={{ flex: 1 }} data-error={!!errors.billingLastName}>
-                                                <input className={`co-input ${errors.billingLastName ? 'error' : ''}`} type="text" placeholder="Last name"
-                                                    value={billingLastName} onChange={e => { setBillingLastName(e.target.value); if (errors.billingLastName) setErrors({ ...errors, billingLastName: null }); }} required />
-                                                {errors.billingLastName && <span className="error-text">{errors.billingLastName}</span>}
-                                            </div>
-                                        </div>
-                                        <div data-error={!!errors.billingAddress_val}>
-                                            <input className={`co-input ${errors.billingAddress_val ? 'error' : ''}`} type="text" placeholder="Address"
-                                                value={billingAddress_val} onChange={e => { setBillingAddress_val(e.target.value); if (errors.billingAddress_val) setErrors({ ...errors, billingAddress_val: null }); }} required />
-                                            {errors.billingAddress_val && <span className="error-text">{errors.billingAddress_val}</span>}
-                                        </div>
-                                        <div data-error={!!errors.billingApartment}>
-                                            <input className={`co-input ${errors.billingApartment ? 'error' : ''}`} type="text" placeholder="Apartment, suite, etc."
-                                                value={billingApartment} onChange={e => { setBillingApartment(e.target.value); if (errors.billingApartment) setErrors({ ...errors, billingApartment: null }); }} required />
-                                            {errors.billingApartment && <span className="error-text">{errors.billingApartment}</span>}
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '12px' }}>
-                                            <div style={{ flex: 1 }} data-error={!!errors.billingCity}>
-                                                <input className={`co-input ${errors.billingCity ? 'error' : ''}`} type="text" placeholder="City"
-                                                    value={billingCity} onChange={e => { setBillingCity(e.target.value); if (errors.billingCity) setErrors({ ...errors, billingCity: null }); }} required />
-                                                {errors.billingCity && <span className="error-text">{errors.billingCity}</span>}
-                                            </div>
-                                            <div style={{ flex: 1 }} data-error={!!errors.billingPostalCode}>
-                                                <input className={`co-input ${errors.billingPostalCode ? 'error' : ''}`} type="text" placeholder="Postal code"
-                                                    value={billingPostalCode} onChange={e => { setBillingPostalCode(e.target.value); if (errors.billingPostalCode) setErrors({ ...errors, billingPostalCode: null }); }} required />
-                                                {errors.billingPostalCode && <span className="error-text">{errors.billingPostalCode}</span>}
-                                            </div>
-                                        </div>
-                                    </div>
                                 )}
                             </div>
 
@@ -850,17 +953,22 @@ const CheckoutPage = () => {
                                 {isPlacingOrder ? (
                                     <>
                                         <div className="loader" />
-                                        Processing...
+                                        Confirming order...
                                     </>
                                 ) : (
                                     <>
                                         <svg width="20" height="20" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
-                                            <rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H2v7h7V5zm13 0h-7v7h7V5zM9 16H2v3h7v-3zm13 0h-7v3h7v-3z" />
                                         </svg>
-                                        Pay now
+                                        Confirm {deliveryMethod === 'pickup' ? 'pickup' : 'delivery'} order
                                     </>
                                 )}
                             </button>
+                            {errors.general && (
+                                <p style={{ marginTop: '10px', color: '#dc2626', fontSize: '13px', fontWeight: 500 }}>
+                                    {errors.general}
+                                </p>
+                            )}
 
                             {/* Footer links */}
                             <div style={{ display: 'flex', gap: '20px', marginTop: '24px', justifyContent: 'center' }}>
@@ -966,7 +1074,7 @@ const CheckoutPage = () => {
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '14px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                        Shipping
+                                        {deliveryMethod === 'pickup' ? 'Pickup' : 'Shipping'}
                                         <span title="Shipping calculated at checkout" style={{ color: '#9ca3af', cursor: 'help' }}>
                                             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" strokeLinecap="round" />

@@ -29,4 +29,7 @@ Route::middleware('api')->group(function () {
     Route::get('/items/{id}', [App\Http\Controllers\Api\ItemController::class, 'getItemById']);
     Route::get('/categories/{id}/types', [App\Http\Controllers\Api\ItemController::class, 'getTypesByCategory']);
     Route::get('/categories-with-types', [App\Http\Controllers\Api\ItemController::class, 'getCategoriesWithTypes']);
+
+    // Orders API
+    Route::post('/orders', [App\Http\Controllers\Api\OrderController::class, 'store']);
 });

@@ -43,6 +43,33 @@ const ItemDetailPage = () => {
         fetchItem();
     }, [id]);
 
+    const getInCartQuantityForSelection = () => {
+        if (!item) return 0;
+
+        const colorToUse = selectedColor || (item.colors?.[0]?.name ?? 'NULL');
+        const sizeToUse = item.size_label || item.size || 'NULL';
+
+        return cartItems
+            .filter(
+                (cartItem) =>
+                    cartItem.id === item.id &&
+                    cartItem.color === colorToUse &&
+                    cartItem.size === sizeToUse
+            )
+            .reduce((sum, cartItem) => sum + (cartItem.quantity || 0), 0);
+    };
+
+    const inCartSelectedQty = getInCartQuantityForSelection();
+    const availableStock = Math.max(0, (item?.stock_items ?? 0) - inCartSelectedQty);
+
+    useEffect(() => {
+        if (availableStock <= 0) {
+            setQuantity(1);
+            return;
+        }
+        setQuantity((q) => Math.min(q, availableStock));
+    }, [availableStock]);
+
     const addToCart = () => {
         if (!item) return;
 
@@ -54,25 +81,11 @@ const ItemDetailPage = () => {
 
         const colorToUse = selectedColor || 'NULL';
         const sizeToUse = item.size_label || item.size || 'NULL';
-        const alreadyInCart = cartItems.some(
-            (cartItem) =>
-                cartItem.id === item.id &&
-                cartItem.color === colorToUse &&
-                cartItem.size === sizeToUse
-        );
-
-        if (alreadyInCart) {
-            setStockError(false);
-            setAddedToCart(false);
-            window.dispatchEvent(new CustomEvent('cart:open'));
-            return;
-        }
-
         // Reset error states
         setStockError(false);
 
         // Check if adding this quantity would exceed stock
-        if (quantity > item.stock_items) {
+        if (quantity > availableStock || availableStock <= 0) {
             setStockError(true);
             setTimeout(() => setStockError(false), 3000);
             return;
@@ -281,7 +294,7 @@ const ItemDetailPage = () => {
 
                             <div className="space-y-1 py-1">
                                 <p className="text-[10px] text-gray-400">SKU: {item.SKU || 'KS3389'}</p>
-                                <p className="text-[10px] text-green-600 font-bold">Stock Items: {item.stock_items || 2}</p>
+                                <p className="text-[10px] text-green-600 font-bold">Stock Items: {availableStock}</p>
                             </div>
 
                             {/* Actions - Quantity + Add to Cart */}
@@ -297,9 +310,9 @@ const ItemDetailPage = () => {
                                         {quantity}
                                     </span>
                                     <button
-                                        onClick={() => setQuantity(q => Math.min(item.stock_items, q + 1))}
-                                        disabled={quantity >= item.stock_items}
-                                        className={`px-3 py-2 text-gray-500 transition-colors ${quantity >= item.stock_items ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
+                                        onClick={() => setQuantity(q => Math.min(availableStock, q + 1))}
+                                        disabled={quantity >= availableStock || availableStock <= 0}
+                                        className={`px-3 py-2 text-gray-500 transition-colors ${quantity >= availableStock || availableStock <= 0 ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
                                             }`}
                                     >
                                         +
@@ -307,14 +320,24 @@ const ItemDetailPage = () => {
                                 </div>
                                 <button
                                     onClick={addToCart}
+                                    disabled={availableStock <= 0}
                                     className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${stockError
                                         ? 'bg-red-500 text-white'
+                                        : availableStock <= 0
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                         : addedToCart
                                             ? 'bg-green-500 text-white'
                                             : 'bg-[#1a1a1a] text-white hover:bg-black'
                                         }`}
                                 >
-                                    {stockError ? (
+                                    {availableStock <= 0 ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            Out of Stock
+                                        </>
+                                    ) : stockError ? (
                                         <>
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -353,13 +376,13 @@ const ItemDetailPage = () => {
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Only {item.stock_items} items available in stock. Please reduce quantity.
+                                    Only {availableStock} items available in stock. Please reduce quantity.
                                 </p>
                             )}
 
-                            {!stockError && item.stock_items > 0 && quantity >= item.stock_items && (
+                            {!stockError && availableStock > 0 && quantity >= availableStock && (
                                 <p className="text-[12.5px] text-red-600 font-semibold">
-                                    Nearly gone. Only {item.stock_items} pieces left in our collection.
+                                    Nearly gone. Only {availableStock} pieces left in our collection.
                                 </p>
                             )}
 
