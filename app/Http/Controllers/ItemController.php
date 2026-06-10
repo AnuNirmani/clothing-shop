@@ -29,6 +29,28 @@ class ItemController extends Controller
     }
 
     /**
+     * Display a read-only listing of offered items.
+     */
+    public function offeredItems(Request $request)
+    {
+        $search = $request->input('search');
+
+        $items = Item::with(['type', 'category'])
+            ->where('is_on_offer', true)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('SKU', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('items.offered', compact('items'));
+    }
+
+    /**
      * Show the form for creating a new item
      */
     public function create()

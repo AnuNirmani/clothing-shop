@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\Type;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -67,6 +68,36 @@ class ItemController extends Controller
     {
         $items = Item::where('availability', true)
             ->with(['category', 'type', 'colors'])
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items->map(fn($item) => $this->formatItem($item))
+        ]);
+    }
+
+    /**
+     * Get active offered items for homepage offer section
+     */
+    public function getOfferedItems(): JsonResponse
+    {
+        $today = Carbon::today();
+
+        $items = Item::where('availability', true)
+            ->where('is_on_offer', true)
+            ->where(function ($query) use ($today) {
+                $query->whereNull('offer_start_date')
+                    ->orWhereDate('offer_start_date', '<=', $today);
+            })
+            ->where(function ($query) use ($today) {
+                $query->whereNull('offer_end_date')
+                    ->orWhereDate('offer_end_date', '>=', $today);
+            })
+            ->with(['category', 'type', 'colors'])
+            ->orderByRaw('CASE WHEN offer_end_date IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('offer_end_date', 'asc')
             ->latest()
             ->limit(4)
             ->get();

@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     
     // ✅ Dashboard now uses the controller
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/offered-items', [ItemController::class, 'offeredItems'])->name('offered-items.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

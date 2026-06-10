@@ -34,6 +34,12 @@
                             </svg>
                             Items
                         </a>
+                        <a href="{{ route('offered-items.index') }}" class="flex items-center px-6 py-3 text-gray-700 {{ request()->routeIs('offered-items.*') ? 'bg-gradient-to-r from-pink-50 via-blue-50 to-pink-50 border-l-4 border-pink-400 text-pink-700 font-semibold' : 'hover:bg-gradient-to-r hover:from-pink-50 hover:to-blue-50 transition-all duration-200' }}">
+                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('offered-items.*') ? 'text-pink-500' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l7-5 7 5-7 5-7-5zm0 8l7 5 7-5"></path>
+                            </svg>
+                            Offered Items
+                        </a>
                         
                         <!-- Components Dropdown -->
                         <div x-data="{ open: {{ request()->routeIs('types.*') || request()->routeIs('categories.*') || request()->routeIs('colors.*') || request()->routeIs('materials.*') || request()->routeIs('classifications.*') ? 'true' : 'false' }} }">

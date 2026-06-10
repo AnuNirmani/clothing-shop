@@ -8,6 +8,7 @@ const HomePage = () => {
     const [latestWomensItem, setLatestWomensItem] = useState(null);
     const [latestMensItem, setLatestMensItem] = useState(null);
     const [latestFourItems, setLatestFourItems] = useState([]);
+    const [offeredItems, setOfferedItems] = useState([]);
     const [typesWithItems, setTypesWithItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -17,11 +18,12 @@ const HomePage = () => {
 
     const fetchLatestItems = async () => {
         try {
-            const [latestRes, womensRes, mensRes, fourRes, typesRes] = await Promise.all([
+            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes] = await Promise.all([
                 fetch('/api/items/latest'),
                 fetch('/api/items/latest-womens'),
                 fetch('/api/items/latest-mens'),
                 fetch('/api/items/latest-four'),
+                fetch('/api/items/offered'),
                 fetch('/api/types/latest-items')
             ]);
 
@@ -29,18 +31,32 @@ const HomePage = () => {
             const womensData = await womensRes.json();
             const mensData = await mensRes.json();
             const fourData = await fourRes.json();
+            const offeredData = await offeredRes.json();
             const typesData = await typesRes.json();
 
             if (latestData.success) setLatestItem(latestData.data);
             if (womensData.success) setLatestWomensItem(womensData.data);
             if (mensData.success) setLatestMensItem(mensData.data);
             if (fourData.success) setLatestFourItems(fourData.data);
+            if (offeredData.success) setOfferedItems(offeredData.data);
             if (typesData.success) setTypesWithItems(typesData.data);
         } catch (error) {
             console.error('Error fetching latest items:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const getDiscountPercent = (item) => {
+        const offerPct = Number(item?.offer_percentage || 0);
+        if (offerPct > 0) return Math.round(offerPct);
+
+        const original = Number(item?.prize || 0);
+        const discounted = Number(item?.discounted_price || 0);
+        if (original > 0 && discounted > 0 && discounted < original) {
+            return Math.round(((original - discounted) / original) * 100);
+        }
+        return 0;
     };
 
     return (
@@ -183,35 +199,96 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Brand Story Section - Elegant & Spacious */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-                <div className="max-w-4xl mx-auto">
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
-                        {/* Image */}
-                        <div className="fade-in order-2 md:order-1">
-                            <img src="/images/Logo.png" alt="Aura Edit" className="w-full max-w-sm mx-auto" />
+            {/* Last Chance / Offered Items */}
+            <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="mx-auto w-full max-w-[1800px]">
+                    <div className="mb-5 flex items-center justify-between gap-4">
+                        <div>
+                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-700">SHOP UP TO 60%</p>
+                            <h2 className="mt-1 text-4xl font-black uppercase italic leading-none text-black">LAST CHANCE TO BUY</h2>
                         </div>
 
-                        {/* Text */}
-                        <div className="fade-in order-1 md:order-2" style={{ animationDelay: '0.2s' }}>
-                            <p className="text-sm font-semibold text-purple-600 uppercase tracking-widest mb-4">LOOM & LORE</p>
-                            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                                Your style story
-                                <br />
-                                <span className="gradient-text">starts here</span>
-                            </h2>
-                            <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                                We believe fashion is more than clothing—it's a form of self-expression. Our curated collection brings together bold textures, iconic silhouettes, and timeless pieces designed for every moment you want to stand out.
-                            </p>
-                            <Link to="/shop?title=Our Collection" className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift">
-                                Explore Collection →
+                        <div className="flex items-center gap-3">
+                            <Link
+                                to="/shop?title=Offered%20Items"
+                                className="text-sm font-bold uppercase tracking-[0.16em] text-black hover:text-purple-600 smooth-transition"
+                            >
+                                Shop All
                             </Link>
+                            <span className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-400">‹</span>
+                            <span className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-400 text-gray-600">›</span>
                         </div>
                     </div>
+
+                    {loading ? (
+                        <p className="text-sm text-gray-500">Loading offered items...</p>
+                    ) : offeredItems.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            {offeredItems.map((item) => {
+                                const discountPct = getDiscountPercent(item);
+                                const originalPrice = Number(item?.prize || 0);
+                                const discountedPrice = Number(item?.discounted_price || item?.prize || 0);
+                                const hasDiscount = discountedPrice < originalPrice;
+
+                                return (
+                                    <Link key={item.id} to={`/item/${item.id}`} className="group block">
+                                        <div className="relative overflow-hidden bg-[#f3f4f6]">
+                                            <img
+                                                src={item.image || '/images/placeholder-category.jpg'}
+                                                alt={item.name}
+                                                className="h-[460px] w-full object-cover transition duration-500 group-hover:scale-105"
+                                            />
+
+                                            {Number(item?.stock_items || 0) <= 0 && (
+                                                <span className="absolute right-2 top-2 bg-slate-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                                                    Sold Out
+                                                </span>
+                                            )}
+
+                                            {discountPct > 0 && (
+                                                <span className="absolute left-2 bottom-2 bg-red-600 px-3 py-1 text-[11px] font-bold uppercase text-white">
+                                                    {discountPct}% OFF
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="pt-2">
+                                            <div className="mb-2 flex items-center gap-1.5">
+                                                {(item.colors || []).slice(0, 5).map((color, index) => (
+                                                    <span
+                                                        key={`${item.id}-${index}`}
+                                                        className="h-4 w-4 rounded-[2px] border border-gray-300"
+                                                        style={{ backgroundColor: color.hex }}
+                                                        title={color.name}
+                                                    />
+                                                ))}
+                                            </div>
+
+                                            <h3 className="line-clamp-1 text-[30px] font-semibold leading-tight text-gray-900">{item.name}</h3>
+                                            <p className="line-clamp-1 text-sm text-gray-500">{item.type || item.category || 'Collection'}</p>
+
+                                            <div className="mt-1 flex items-center gap-3 text-sm">
+                                                <span className={`text-gray-500 ${hasDiscount ? 'line-through' : ''}`}>
+                                                    LKR {originalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </span>
+                                                {hasDiscount && (
+                                                    <span className="font-bold text-rose-600">
+                                                        LKR {discountedPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-500">No offered items available right now.</p>
+                    )}
                 </div>
             </section>
 
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
+            {/* <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
                 <div className="mx-auto max-w-7xl">
                     <div className="mb-14 text-center">
                         <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Featured Collections</h2>
@@ -260,37 +337,49 @@ const HomePage = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-purple-50 to-white">
-                <div className="mx-auto max-w-7xl">
-                    <div className="mb-14 text-center">
-                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Latest Arrivals</h2>
-                        <p className="mt-8 text-[var(--muted)]">Handpicked new pieces from the latest drop.</p>
-                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
+            <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="mx-auto w-full max-w-[1800px]">
+                    <div className="mb-8 text-center">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-700">Just In</p>
+                        <h2 className="mt-2 text-5xl font-black leading-none text-black">Latest Arrivals</h2>
+                        <p className="mt-4 text-[var(--muted)]">Handpicked new pieces from the latest drop.</p>
+                        <div className="mx-auto mt-5 h-1 w-16 bg-gradient-to-r from-purple-600 to-pink-600"></div>
                     </div>
 
                     {loading ? (
                         <p className="text-center text-[var(--muted)]">Loading latest products...</p>
                     ) : (
-                        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 lg:grid-cols-4">
                             {latestFourItems.map((product) => (
-                                <div key={product.id} className="float-in overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                                    <div className="group relative">
-                                        <img src={product.image} alt={product.name} className="h-[430px] w-full object-cover" />
+                                <div key={product.id} className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                                    <div className="relative overflow-hidden bg-[#f3f4f6]">
+                                        <img
+                                            src={product.image || '/images/collection-men.jpg'}
+                                            alt={product.name}
+                                            onError={(e) => {
+                                                if (e.currentTarget.src.includes('/images/collection-men.jpg')) return;
+                                                e.currentTarget.src = '/images/collection-men.jpg';
+                                            }}
+                                            className="h-[460px] w-full object-cover transition duration-500 group-hover:scale-105"
+                                        />
+
                                         <Link
                                             to={`/item/${product.id}`}
-                                            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white px-6 py-2 text-sm font-semibold text-[var(--ink)] opacity-0 translate-y-2 transition duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white"
+                                            className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/95 px-5 py-2 text-xs font-semibold text-[var(--ink)] opacity-0 translate-y-2 transition duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white"
                                         >
                                             Quick View
                                         </Link>
                                     </div>
-                                    <div className="space-y-3 p-5">
-                                        <h3 className="line-clamp-1 font-semibold text-[var(--ink)]">{product.name}</h3>
-                                        <p className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Rs {product.prize?.toLocaleString()}.00</p>
-                                        <div className="flex items-center gap-2">
+
+                                    <div className="space-y-2 p-4">
+                                        <h3 className="line-clamp-1 text-[34px] font-semibold leading-tight text-[var(--ink)]">{product.name}</h3>
+                                        <p className="text-lg font-bold text-purple-600">Rs {Number(product.prize || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+
+                                        <div className="flex items-center gap-2 pt-1">
                                             {product.colors?.length > 0 ? (
-                                                product.colors.map((color, index) => (
+                                                product.colors.slice(0, 5).map((color, index) => (
                                                     <span
                                                         key={`${product.id}-${index}`}
                                                         className="h-4 w-4 rounded-full border border-gray-200"
@@ -308,10 +397,10 @@ const HomePage = () => {
                         </div>
                     )}
 
-                    <div className="mt-12 text-center">
+                    <div className="mt-10 text-center">
                         <Link
                             to="/shop?title=Our Collection"
-                            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover-lift"
+                            className="inline-block rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-semibold text-white hover-lift"
                         >
                             View All Products
                         </Link>
@@ -319,30 +408,38 @@ const HomePage = () => {
                 </div>
             </section>
 
-            <section id="shop" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
-                <div className="mx-auto max-w-7xl">
-                    <div className="mb-14 text-center">
-                        <h2 className="section-line inline-block text-4xl font-bold sm:text-5xl">Shop by Category</h2>
-                        <p className="mt-8 text-[var(--muted)]">Find what fits your mood and moment.</p>
-                        <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mt-6"></div>
+            <section id="shop" className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
+                <div className="mx-auto w-full max-w-[1800px]">
+                    <div className="mb-8 text-center">
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-700">Explore by Type</p>
+                        <h2 className="mt-2 text-5xl font-black leading-none text-black">Shop by Category</h2>
+                        <p className="mt-4 text-[var(--muted)]">Find what fits your mood and moment.</p>
+                        <div className="mx-auto mt-5 h-1 w-16 bg-gradient-to-r from-purple-600 to-pink-600"></div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-2 md:gap-3 md:grid-cols-4">
                         {typesWithItems.map((type) => (
                             <Link
                                 key={type.type_id}
                                 to={`/shop?type_id=${type.type_id}&title=${type.type_name}`}
-                                className="group relative overflow-hidden rounded-2xl"
+                                className="group block"
                             >
-                                <img
-                                    src={type.item_image || '/images/placeholder-category.jpg'}
-                                    alt={type.type_name}
-                                    className="h-[320px] w-full object-cover transition duration-500 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-xl bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--ink)] transition duration-300 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 group-hover:text-white">
-                                    <span>{type.type_name}</span>
-                                    <span>→</span>
+                                <div className="relative overflow-hidden rounded-2xl bg-[#f3f4f6]">
+                                    <img
+                                        src={type.item_image || '/images/collection-men.jpg'}
+                                        alt={type.type_name}
+                                        onError={(e) => {
+                                            if (e.currentTarget.src.includes('/images/collection-men.jpg')) return;
+                                            e.currentTarget.src = '/images/collection-men.jpg';
+                                        }}
+                                        className="h-[380px] w-full object-cover transition duration-500 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+
+                                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-xl bg-white/95 px-4 py-2.5 text-sm font-semibold text-[var(--ink)] transition duration-300 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 group-hover:text-white">
+                                        <span className="line-clamp-1 pr-2">{type.type_name}</span>
+                                        <span>→</span>
+                                    </div>
                                 </div>
                             </Link>
                         ))}
