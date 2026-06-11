@@ -13,6 +13,7 @@ const HomePage = () => {
     const [heroImage, setHeroImage] = useState('/images/hero01.png');
     const [heroVideo, setHeroVideo] = useState(null);
     const [heroButtons, setHeroButtons] = useState([]);
+    const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,7 +22,7 @@ const HomePage = () => {
 
     const fetchLatestItems = async () => {
         try {
-            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes, heroRes, heroButtonsRes] = await Promise.all([
+            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes, heroRes, heroButtonsRes, storesRes] = await Promise.all([
                 fetch('/api/items/latest'),
                 fetch('/api/items/latest-womens'),
                 fetch('/api/items/latest-mens'),
@@ -29,7 +30,8 @@ const HomePage = () => {
                 fetch('/api/items/offered'),
                 fetch('/api/types/latest-items'),
                 fetch('/api/home/hero-image'),
-                fetch('/api/home/hero-buttons')
+                fetch('/api/home/hero-buttons'),
+                fetch('/api/home/stores')
             ]);
 
             const latestData = await latestRes.json();
@@ -40,6 +42,7 @@ const HomePage = () => {
             const typesData = await typesRes.json();
             const heroData = await heroRes.json();
             const heroButtonsData = await heroButtonsRes.json();
+            const storesData = await storesRes.json();
 
             if (latestData.success) setLatestItem(latestData.data);
             if (womensData.success) setLatestWomensItem(womensData.data);
@@ -50,6 +53,7 @@ const HomePage = () => {
             if (heroData.success && heroData.data?.image) setHeroImage(heroData.data.image);
             if (heroData.success && heroData.data?.video) setHeroVideo(heroData.data.video);
             if (heroButtonsData.success && Array.isArray(heroButtonsData.data)) setHeroButtons(heroButtonsData.data);
+            if (storesData.success && Array.isArray(storesData.data)) setStores(storesData.data);
         } catch (error) {
             console.error('Error fetching latest items:', error);
         } finally {
@@ -469,11 +473,7 @@ const HomePage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            { name: 'Aura Edit - NUGEGODA', address: '350, High Level Road, Kirulapone (00600)' },
-                            { name: 'Aura Edit - KADAWATHA', address: '43, Colombo-Kandy Road, Kadawatha (11850)' },
-                            { name: 'Aura Edit - NUGEGODA', address: '#300, High Level Road, Kirulapone (00600)' }
-                        ].map((store, idx) => (
+                        {stores.map((store, idx) => (
                             <div key={idx} className="p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                                 <div className="flex items-start mb-6">
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white mr-4 flex-shrink-0">
@@ -487,8 +487,8 @@ const HomePage = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3 text-sm">
-                                    <p className="text-gray-700"><span className="font-semibold">Email:</span> info@auraedit.lk</p>
-                                    <p className="text-gray-700"><span className="font-semibold">Phone:</span> +94 777 777 777</p>
+                                    {store.email && <p className="text-gray-700"><span className="font-semibold">Email:</span> {store.email}</p>}
+                                    {store.phone && <p className="text-gray-700"><span className="font-semibold">Phone:</span> {store.phone}</p>}
                                 </div>
                             </div>
                         ))}

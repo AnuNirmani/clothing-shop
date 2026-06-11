@@ -42,6 +42,48 @@ class SiteSetting extends Model
         static::setValue('home_hero_buttons', json_encode($buttons));
     }
 
+    public static function getStores(): array
+    {
+        $defaultStores = [
+            [
+                'name' => 'Aura Edit - NUGEGODA',
+                'address' => '350, High Level Road, Kirulapone (00600)',
+                'email' => 'info@auraedit.lk',
+                'phone' => '+94 777 777 777',
+            ],
+            [
+                'name' => 'Aura Edit - KADAWATHA',
+                'address' => '43, Colombo-Kandy Road, Kadawatha (11850)',
+                'email' => 'info@auraedit.lk',
+                'phone' => '+94 777 777 777',
+            ],
+            [
+                'name' => 'Aura Edit - NUGEGODA',
+                'address' => '#300, High Level Road, Kirulapone (00600)',
+                'email' => 'info@auraedit.lk',
+                'phone' => '+94 777 777 777',
+            ],
+        ];
+
+        $json = static::getValue('home_store_locations');
+        if (!$json) {
+            return $defaultStores;
+        }
+
+        $stores = json_decode($json, true);
+        if (!is_array($stores) || empty($stores)) {
+            return $defaultStores;
+        }
+
+        return array_slice($stores, 0, 6);
+    }
+
+    public static function saveStores(array $stores): void
+    {
+        $stores = array_slice(array_values($stores), 0, 6);
+        static::setValue('home_store_locations', json_encode($stores));
+    }
+
     public static function saveHeroMedia(?UploadedFile $heroImage, ?UploadedFile $heroVideo, ?int $userId = null): void
     {
         DB::transaction(function () use ($heroImage, $heroVideo, $userId) {

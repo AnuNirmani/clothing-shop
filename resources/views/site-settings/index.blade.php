@@ -165,6 +165,70 @@
                 </form>
             </div>
 
+            {{-- Store Locations --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <p class="text-[10px] font-bold text-purple-400 uppercase tracking-[0.3em] mb-1">Homepage</p>
+                <h3 class="font-display text-2xl font-semibold text-gray-800">Store Locations</h3>
+                <p class="mt-1 text-sm text-gray-500">Manage the store cards shown in the "Visit Our Stores" section.</p>
+
+                @if(session('stores_success'))
+                    <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                        {{ session('stores_success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('site-settings.stores.update') }}" method="POST" class="mt-6" id="stores-form">
+                    @csrf
+
+                    <div id="stores-container" class="space-y-4">
+                        @foreach($stores as $i => $store)
+                            <div class="store-row rounded-xl border border-gray-200 bg-gray-50 p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Store Name</label>
+                                        <input type="text" name="stores[{{ $i }}][name]" value="{{ $store['name'] ?? '' }}" maxlength="120" required
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Address</label>
+                                        <input type="text" name="stores[{{ $i }}][address]" value="{{ $store['address'] ?? '' }}" maxlength="255" required
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                                        <input type="email" name="stores[{{ $i }}][email]" value="{{ $store['email'] ?? '' }}" maxlength="120"
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Phone</label>
+                                        <input type="text" name="stores[{{ $i }}][phone]" value="{{ $store['phone'] ?? '' }}" maxlength="60"
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex justify-end">
+                                    <button type="button" onclick="this.closest('.store-row').remove(); reindexStores()"
+                                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4 flex items-center gap-3">
+                        <button type="button" id="add-store-btn"
+                                onclick="addStoreRow()"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-purple-300 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-100">
+                            + Add Store
+                        </button>
+                        <button type="submit"
+                                class="inline-flex items-center rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-95">
+                            Save Stores
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h4 class="text-lg font-semibold text-gray-800 mb-4">Past Hero Images</h4>
@@ -294,6 +358,67 @@
             updateAddBtn();
         }
 
+        function reindexStores() {
+            document.querySelectorAll('#stores-container .store-row').forEach((row, idx) => {
+                row.querySelectorAll('[name]').forEach(el => {
+                    el.name = el.name.replace(/stores\[\d+\]/, `stores[${idx}]`);
+                });
+            });
+            updateAddStoreBtn();
+        }
+
+        function updateAddStoreBtn() {
+            const count = document.querySelectorAll('#stores-container .store-row').length;
+            const btn = document.getElementById('add-store-btn');
+            if (!btn) return;
+            btn.disabled = count >= 6;
+            btn.classList.toggle('opacity-40', count >= 6);
+            btn.classList.toggle('cursor-not-allowed', count >= 6);
+        }
+
+        function addStoreRow() {
+            const container = document.getElementById('stores-container');
+            const idx = container.querySelectorAll('.store-row').length;
+            if (idx >= 6) return;
+
+            const row = document.createElement('div');
+            row.className = 'store-row rounded-xl border border-gray-200 bg-gray-50 p-4';
+            row.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Store Name</label>
+                        <input type="text" name="stores[${idx}][name]" maxlength="120" required
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Address</label>
+                        <input type="text" name="stores[${idx}][address]" maxlength="255" required
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                        <input type="email" name="stores[${idx}][email]" maxlength="120"
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Phone</label>
+                        <input type="text" name="stores[${idx}][phone]" maxlength="60"
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button type="button" onclick="this.closest('.store-row').remove(); reindexStores()"
+                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                        Remove
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            updateAddStoreBtn();
+        }
+
         updateAddBtn();
+        updateAddStoreBtn();
     </script>
 </x-app-layout>

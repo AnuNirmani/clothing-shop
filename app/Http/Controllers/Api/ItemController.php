@@ -135,6 +135,14 @@ class ItemController extends Controller
         ]);
     }
 
+    public function getHomeStores(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => SiteSetting::getStores(),
+        ]);
+    }
+
     /**
      * Get 8 types and the image of the last item added for each type
      */

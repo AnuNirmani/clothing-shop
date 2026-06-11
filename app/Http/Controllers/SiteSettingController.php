@@ -25,6 +25,7 @@ class SiteSettingController extends Controller
             ->get();
 
         $heroButtons = SiteSetting::getHeroButtons();
+        $stores = SiteSetting::getStores();
         $offerCategories = OfferCategory::query()
             ->orderBy('name')
             ->get(['id', 'name']);
@@ -35,6 +36,7 @@ class SiteSettingController extends Controller
             'heroImageHistory',
             'heroVideoHistory',
             'heroButtons',
+            'stores',
             'offerCategories'
         ));
     }
@@ -79,5 +81,22 @@ class SiteSettingController extends Controller
         return redirect()
             ->route('site-settings.index')
             ->with('buttons_success', 'Hero buttons updated successfully!');
+    }
+
+    public function updateStores(Request $request)
+    {
+        $validated = $request->validate([
+            'stores' => 'nullable|array|max:6',
+            'stores.*.name' => 'required|string|max:120',
+            'stores.*.address' => 'required|string|max:255',
+            'stores.*.email' => 'nullable|email|max:120',
+            'stores.*.phone' => 'nullable|string|max:60',
+        ]);
+
+        SiteSetting::saveStores($validated['stores'] ?? []);
+
+        return redirect()
+            ->route('site-settings.index')
+            ->with('stores_success', 'Store locations updated successfully!');
     }
 }

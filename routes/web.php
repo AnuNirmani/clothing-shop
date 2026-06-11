@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
     Route::post('/site-settings/hero-media', [SiteSettingController::class, 'updateHeroMedia'])->name('site-settings.hero-media.update');
     Route::post('/site-settings/hero-buttons', [SiteSettingController::class, 'updateHeroButtons'])->name('site-settings.hero-buttons.update');
+    Route::post('/site-settings/stores', [SiteSettingController::class, 'updateStores'])->name('site-settings.stores.update');
     Route::get('/offered-items', [ItemController::class, 'offeredItems'])->name('offered-items.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

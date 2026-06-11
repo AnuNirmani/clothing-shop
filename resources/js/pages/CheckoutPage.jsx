@@ -52,6 +52,27 @@ const CheckoutPage = () => {
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
     const [errors, setErrors] = useState({});
+    const [stores, setStores] = useState([]);
+    const [selectedStore, setSelectedStore] = useState('');
+    const [storesLoading, setStoresLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchStores = async () => {
+            try {
+                setStoresLoading(true);
+                const response = await fetch('/api/home/stores');
+                const data = await response.json();
+                if (data.success && Array.isArray(data.data)) {
+                    setStores(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching stores:', error);
+            } finally {
+                setStoresLoading(false);
+            }
+        };
+        fetchStores();
+    }, []);
 
     const countryOptions = useMemo(() => {
         return getCountries()
@@ -164,6 +185,10 @@ const CheckoutPage = () => {
         if (!postalCode.trim()) newErrors.postalCode = 'Postal code is required';
         if (!phoneWithCode.trim()) newErrors.phone = 'Phone number is required';
 
+        if (deliveryMethod === 'pickup' && !selectedStore.trim()) {
+            newErrors.selectedStore = 'Please select a pickup location';
+        }
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             // Scroll to the first error
@@ -181,6 +206,7 @@ const CheckoutPage = () => {
         const payload = {
             contact,
             delivery_method: deliveryMethod,
+            pickup_location: deliveryMethod === 'pickup' ? selectedStore : null,
             country: selectedCountry?.name || country,
             first_name: firstName,
             last_name: lastName,
@@ -801,6 +827,31 @@ const CheckoutPage = () => {
                                     </button>
                                 </div>
 
+                                {deliveryMethod === 'pickup' && (
+                                    <div data-error={!!errors.selectedStore} style={{ marginBottom: '12px' }}>
+                                        <select
+                                            className={`co-select ${errors.selectedStore ? 'error' : ''}`}
+                                            value={selectedStore}
+                                            onChange={(e) => {
+                                                setSelectedStore(e.target.value);
+                                                if (errors.selectedStore) setErrors({ ...errors, selectedStore: null });
+                                            }}
+                                            disabled={storesLoading}
+                                            required
+                                        >
+                                            <option value="">
+                                                {storesLoading ? 'Loading stores...' : 'Select a pickup location'}
+                                            </option>
+                                            {stores.map((store, idx) => (
+                                                <option key={idx} value={store.name}>
+                                                    {store.name} — {store.address}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.selectedStore && <span className="error-text">{errors.selectedStore}</span>}
+                                    </div>
+                                )}
+
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     <div className="country-dropdown" ref={countryDropdownRef}>
                                         <button
@@ -933,9 +984,16 @@ const CheckoutPage = () => {
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         <div className="radio-dot checked" />
-                                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>
-                                            {deliveryMethod === 'pickup' ? 'Store Pickup' : (shipping === 0 ? 'Free Delivery (3–5 days)' : 'Standard Delivery (3–5 days)')}
-                                        </span>
+                                        <div>
+                                            <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151', display: 'block' }}>
+                                                {deliveryMethod === 'pickup' ? 'Store Pickup' : (shipping === 0 ? 'Free Delivery (3–5 days)' : 'Standard Delivery (3–5 days)')}
+                                            </span>
+                                            {deliveryMethod === 'pickup' && selectedStore && (
+                                                <span style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px', display: 'block' }}>
+                                                    📍 {selectedStore}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <span style={{ fontSize: '14px', fontWeight: 700, color: shipping === 0 ? '#059669' : '#111827' }}>
                                         {deliveryMethod === 'pickup' || shipping === 0 ? 'FREE' : `Rs ${shipping}`}
