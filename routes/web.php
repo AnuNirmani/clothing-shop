@@ -9,6 +9,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\DashboardController; // ✅ ADD THIS
+use App\Http\Controllers\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,9 @@ Route::middleware('auth')->group(function () {
     
     // ✅ Dashboard now uses the controller
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/home-hero-image', [DashboardController::class, 'updateHomeHeroImage'])->name('dashboard.home-hero-image.update');
+    Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
+    Route::post('/site-settings/hero-media', [SiteSettingController::class, 'updateHeroMedia'])->name('site-settings.hero-media.update');
     Route::get('/offered-items', [ItemController::class, 'offeredItems'])->name('offered-items.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

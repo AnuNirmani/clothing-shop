@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\SiteSetting;
 use App\Models\Type;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -105,6 +106,23 @@ class ItemController extends Controller
         return response()->json([
             'success' => true,
             'data' => $items->map(fn($item) => $this->formatItem($item))
+        ]);
+    }
+
+    /**
+     * Get homepage hero media managed from admin panel
+     */
+    public function getHomeHeroImage(): JsonResponse
+    {
+        $heroImage = SiteSetting::getValue('home_hero_image');
+        $heroVideo = SiteSetting::getValue('home_hero_video');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'image' => $heroImage ? asset('storage/' . $heroImage) : null,
+                'video' => $heroVideo ? asset('storage/' . $heroVideo) : null,
+            ],
         ]);
     }
 

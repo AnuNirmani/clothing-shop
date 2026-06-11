@@ -10,6 +10,8 @@ const HomePage = () => {
     const [latestFourItems, setLatestFourItems] = useState([]);
     const [offeredItems, setOfferedItems] = useState([]);
     const [typesWithItems, setTypesWithItems] = useState([]);
+    const [heroImage, setHeroImage] = useState('/images/hero01.png');
+    const [heroVideo, setHeroVideo] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,13 +20,14 @@ const HomePage = () => {
 
     const fetchLatestItems = async () => {
         try {
-            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes] = await Promise.all([
+            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes, heroRes] = await Promise.all([
                 fetch('/api/items/latest'),
                 fetch('/api/items/latest-womens'),
                 fetch('/api/items/latest-mens'),
                 fetch('/api/items/latest-four'),
                 fetch('/api/items/offered'),
-                fetch('/api/types/latest-items')
+                fetch('/api/types/latest-items'),
+                fetch('/api/home/hero-image')
             ]);
 
             const latestData = await latestRes.json();
@@ -33,6 +36,7 @@ const HomePage = () => {
             const fourData = await fourRes.json();
             const offeredData = await offeredRes.json();
             const typesData = await typesRes.json();
+            const heroData = await heroRes.json();
 
             if (latestData.success) setLatestItem(latestData.data);
             if (womensData.success) setLatestWomensItem(womensData.data);
@@ -40,6 +44,8 @@ const HomePage = () => {
             if (fourData.success) setLatestFourItems(fourData.data);
             if (offeredData.success) setOfferedItems(offeredData.data);
             if (typesData.success) setTypesWithItems(typesData.data);
+            if (heroData.success && heroData.data?.image) setHeroImage(heroData.data.image);
+            if (heroData.success && heroData.data?.video) setHeroVideo(heroData.data.video);
         } catch (error) {
             console.error('Error fetching latest items:', error);
         } finally {
@@ -134,68 +140,30 @@ const HomePage = () => {
             <Header />
 
             {/* Hero Section - Luxurious & Bold */}
-            <section className="relative h-screen w-full  flex items-center justify-center">
-                {/* Background Image with Sophisticated Overlay */}
+            <section className="relative h-[58vh] w-full sm:h-[65vh] lg:h-[72vh] max-h-[760px] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0">
-                    <img
-                        src="/images/hero01.png"
-                        alt="Fashion Hero"
-                        className="w-full h-full "
-                    />
-                        </div>
-
-                {/* Content */}
-                <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-6xl mx-auto text-center">
-                        {/* Main Heading */}
-                        <h1 className="fade-in text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                            Discover Your
-                            <br />
-                            <span className="gradient-text">Signature Style</span>
-                        </h1>
-
-                        {/* Subheading */}
-                        <p className="fade-in text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto opacity-90" style={{ animationDelay: '0.2s' }}>
-                            Curated fashion pieces that tell your unique story
-                        </p>
-
-                        {/* Search Bar - Refined */}
-                        <div className="fade-in w-full max-w-2xl mx-auto mb-12" style={{ animationDelay: '0.4s' }}>
-                            <div className="relative flex items-center bg-white/10 backdrop-blur-xl rounded-full px-6 py-4 border border-white/20 hover:border-white/40 smooth-transition shadow-2xl">
-                                <svg className="w-5 h-5 text-gray-300 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                                <input
-                                    type="text"
-                                    placeholder="Search elegant fashion..."
-                                    className="flex-1 bg-transparent border-0 outline-none text-white placeholder-gray-400 text-lg focus:ring-0"
-                                />
-                                <button className="ml-4 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center hover:from-purple-600 hover:to-pink-600 smooth-transition">
-                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Featured Images Carousel */}
-                        <div className="fade-in" style={{ animationDelay: '0.6s' }}>
-                            <div className="flex gap-4 justify-center overflow-x-auto pb-4 scrollbar-hide">
-                                {['/images/1.png', '/images/3.png', '/images/4.png', '/images/2.png', '/images/5.png'].map((img, idx) => (
-                                    <div key={idx} className="flex-shrink-0 h-64 w-48 rounded-2xl overflow-hidden cursor-pointer hover-lift group">
-                                        <img src={img} alt={`Featured ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 smooth-transition" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                    <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
+                    {heroVideo ? (
+                        <video
+                            src={heroVideo}
+                            className="h-full w-full object-cover"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            onError={() => setHeroVideo(null)}
+                        />
+                    ) : (
+                        <img
+                            src={heroImage}
+                            alt="Fashion Hero"
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                                if (e.currentTarget.src.includes('/images/hero01.png')) return;
+                                e.currentTarget.src = '/images/hero01.png';
+                            }}
+                        />
+                    )}
+                    <div className="absolute inset-0 bg-black/20" />
                 </div>
             </section>
 
@@ -339,72 +307,96 @@ const HomePage = () => {
                 </div>
             </section> */}
 
-            <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
+            <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
                 <div className="mx-auto w-full max-w-[1800px]">
-                    <div className="mb-8 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-700">Just In</p>
-                        <h2 className="mt-2 text-5xl font-black leading-none text-black">Latest Arrivals</h2>
-                        <p className="mt-4 text-[var(--muted)]">Handpicked new pieces from the latest drop.</p>
-                        <div className="mx-auto mt-5 h-1 w-16 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+                    <div className="mb-6 flex items-center justify-between gap-4">
+                        <div>
+                            <h2 className="mt-1 text-4xl font-black uppercase italic leading-none text-black">LATESR ARRIVED</h2>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <Link
+                                to="/shop?title=Our Collection"
+                                className="text-sm font-bold uppercase tracking-[0.16em] text-black hover:text-purple-600 smooth-transition"
+                            >
+                                Shop All
+                            </Link>
+                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-300">‹</span>
+                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-300">›</span>
+                        </div>
                     </div>
 
                     {loading ? (
                         <p className="text-center text-[var(--muted)]">Loading latest products...</p>
                     ) : (
-                        <div className="grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                            {latestFourItems.map((product) => (
-                                <div key={product.id} className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                                    <div className="relative overflow-hidden bg-[#f3f4f6]">
-                                        <img
-                                            src={product.image || '/images/collection-men.jpg'}
-                                            alt={product.name}
-                                            onError={(e) => {
-                                                if (e.currentTarget.src.includes('/images/collection-men.jpg')) return;
-                                                e.currentTarget.src = '/images/collection-men.jpg';
-                                            }}
-                                            className="h-[460px] w-full object-cover transition duration-500 group-hover:scale-105"
-                                        />
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            {latestFourItems.map((product) => {
+                                const colors = (product.colors || []).slice(0, 5);
+                                const price = Number(product.prize || 0);
+                                const discounted = Number(product.discounted_price || 0);
+                                const hasDiscount = discounted > 0 && discounted < price;
 
-                                        <Link
-                                            to={`/item/${product.id}`}
-                                            className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/95 px-5 py-2 text-xs font-semibold text-[var(--ink)] opacity-0 translate-y-2 transition duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white"
-                                        >
-                                            Quick View
-                                        </Link>
-                                    </div>
+                                return (
+                                    <Link key={product.id} to={`/item/${product.id}`} className="group block">
+                                        <div className="relative overflow-hidden bg-[#f3f4f6]">
+                                            <img
+                                                src={product.image || '/images/collection-men.jpg'}
+                                                alt={product.name}
+                                                onError={(e) => {
+                                                    if (e.currentTarget.src.includes('/images/collection-men.jpg')) return;
+                                                    e.currentTarget.src = '/images/collection-men.jpg';
+                                                }}
+                                                className="h-[560px] w-full object-cover transition duration-500 group-hover:scale-105"
+                                            />
 
-                                    <div className="space-y-2 p-4">
-                                        <h3 className="line-clamp-1 text-[34px] font-semibold leading-tight text-[var(--ink)]">{product.name}</h3>
-                                        <p className="text-lg font-bold text-purple-600">Rs {Number(product.prize || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                            {Number(product?.stock_items || 0) <= 0 && (
+                                                <span className="absolute right-2 top-2 bg-slate-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                                                    Sold Out
+                                                </span>
+                                            )}
 
-                                        <div className="flex items-center gap-2 pt-1">
-                                            {product.colors?.length > 0 ? (
-                                                product.colors.slice(0, 5).map((color, index) => (
-                                                    <span
-                                                        key={`${product.id}-${index}`}
-                                                        className="h-4 w-4 rounded-full border border-gray-200"
-                                                        style={{ backgroundColor: color.hex }}
-                                                        title={color.name}
-                                                    />
-                                                ))
-                                            ) : (
-                                                <span className="text-xs italic text-gray-400">No colors</span>
+                                            {hasDiscount && (
+                                                <span className="absolute left-2 bottom-2 bg-red-600 px-3 py-1 text-[11px] font-bold uppercase text-white">
+                                                    {Math.round(((price - discounted) / price) * 100)}% OFF
+                                                </span>
                                             )}
                                         </div>
-                                    </div>
-                                </div>
-                            ))}
+
+                                        <div className="space-y-1 pt-2">
+                                            <div className="flex items-center gap-1.5">
+                                                {colors.length > 0 ? (
+                                                    colors.map((color, index) => (
+                                                        <span
+                                                            key={`${product.id}-${index}`}
+                                                            className="h-4 w-4 rounded-[2px] border border-gray-300"
+                                                            style={{ backgroundColor: color.hex }}
+                                                            title={color.name}
+                                                        />
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs italic text-gray-400">No colors</span>
+                                                )}
+                                            </div>
+
+                                            <h3 className="line-clamp-1 text-[28px] font-semibold leading-tight text-[var(--ink)]">{product.name}</h3>
+                                            <p className="line-clamp-1 text-sm text-gray-500">{product.type || product.category || 'Collection'}</p>
+
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <span className={`text-gray-500 ${hasDiscount ? 'line-through' : ''}`}>
+                                                    LKR {price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </span>
+                                                {hasDiscount && (
+                                                    <span className="font-bold text-red-500">
+                                                        LKR {discounted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     )}
-
-                    <div className="mt-10 text-center">
-                        <Link
-                            to="/shop?title=Our Collection"
-                            className="inline-block rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-semibold text-white hover-lift"
-                        >
-                            View All Products
-                        </Link>
-                    </div>
                 </div>
             </section>
 
