@@ -202,7 +202,7 @@ const HomePage = () => {
 
                         <div className="flex items-center gap-3">
                             <Link
-                                to="/shop?title=Offered%20Items"
+                                to="/shop?title=Offered%20Items&offered=1"
                                 className="text-sm font-bold uppercase tracking-[0.16em] text-black hover:text-purple-600 smooth-transition"
                             >
                                 Shop All

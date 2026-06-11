@@ -229,8 +229,21 @@ class ItemController extends Controller
      */
     public function getItems(Request $request): JsonResponse
     {
+        $today = Carbon::today();
         $query = Item::where('availability', true)
             ->with(['category', 'offerCategory', 'type', 'colors']);
+
+        if ($request->boolean('offered') || $request->has('offer_category_id')) {
+            $query->where('is_on_offer', true)
+                ->where(function ($offerQuery) use ($today) {
+                    $offerQuery->whereNull('offer_start_date')
+                        ->orWhereDate('offer_start_date', '<=', $today);
+                })
+                ->where(function ($offerQuery) use ($today) {
+                    $offerQuery->whereNull('offer_end_date')
+                        ->orWhereDate('offer_end_date', '>=', $today);
+                });
+        }
 
         if ($request->has('category_id')) {
             $query->where('category_id', $request->category_id);
