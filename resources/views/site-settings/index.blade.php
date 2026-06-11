@@ -61,6 +61,110 @@
                 </div>
             </div>
 
+            {{-- Hero Buttons --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <p class="text-[10px] font-bold text-purple-400 uppercase tracking-[0.3em] mb-1">Homepage</p>
+                <h3 class="font-display text-2xl font-semibold text-gray-800">Hero Buttons</h3>
+                <p class="mt-1 text-sm text-gray-500">Add up to 4 buttons displayed in the bottom-left corner of the hero section.</p>
+
+                @if(session('buttons_success'))
+                    <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                        {{ session('buttons_success') }}
+                    </div>
+                @endif
+
+                @php
+                    $baseLinkOptions = [
+                        '/shop?title=Our Collection',
+                        "/shop?category_id=1&title=Men's Wear",
+                        "/shop?category_id=2&title=Women's Wear",
+                        '/shop?category_id=3&title=Kids Wear',
+                        '/shop?category_id=4&title=Accessories',
+                        '/shop?category_id=5&title=Footwear',
+                    ];
+
+                    $offerLinkOptions = $offerCategories->map(function ($offerCategory) {
+                        return [
+                            'value' => '/shop?offer_category_id=' . $offerCategory->id . '&title=' . urlencode($offerCategory->name),
+                            'label' => 'Offer: ' . $offerCategory->name,
+                        ];
+                    })->values();
+
+                    $baseLinkOptionPairs = [
+                        ['value' => '/shop?title=Our Collection', 'label' => 'Shop All'],
+                        ['value' => "/shop?category_id=1&title=Men's Wear", 'label' => "Men's Wear"],
+                        ['value' => "/shop?category_id=2&title=Women's Wear", 'label' => "Women's Wear"],
+                        ['value' => '/shop?category_id=3&title=Kids Wear', 'label' => 'Kids Wear'],
+                        ['value' => '/shop?category_id=4&title=Accessories', 'label' => 'Accessories'],
+                        ['value' => '/shop?category_id=5&title=Footwear', 'label' => 'Shoes'],
+                    ];
+
+                    $allLinkOptions = array_merge($baseLinkOptionPairs, $offerLinkOptions->toArray());
+                    $presetLinks = array_map(fn($opt) => $opt['value'], $allLinkOptions);
+                @endphp
+
+                <form action="{{ route('site-settings.hero-buttons.update') }}" method="POST" class="mt-6" id="hero-buttons-form">
+                    @csrf
+
+                    <div id="buttons-container" class="space-y-4">
+                        @foreach($heroButtons as $i => $btn)
+                            @php $isCustom = !in_array($btn['link'], $presetLinks); @endphp
+                            <div class="button-row flex flex-wrap items-end gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50">
+                                <input type="hidden" name="buttons[{{ $i }}][link]" class="link-hidden" value="{{ $btn['link'] }}">
+                                <div class="flex-1 min-w-[140px]">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Label</label>
+                                    <input type="text" name="buttons[{{ $i }}][label]" value="{{ $btn['label'] }}"
+                                           placeholder="e.g. Shop Now" maxlength="50" required
+                                           class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                </div>
+                                <div class="flex-1 min-w-[180px]">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Link</label>
+                                    <select class="link-select w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300"
+                                            onchange="handleLinkChange(this)">
+                                        @foreach($allLinkOptions as $opt)
+                                            <option value="{{ $opt['value'] }}" {{ !$isCustom && $btn['link'] === $opt['value'] ? 'selected' : '' }}>{{ $opt['label'] }}</option>
+                                        @endforeach
+                                        <option value="custom" {{ $isCustom ? 'selected' : '' }}>Custom URL</option>
+                                    </select>
+                                    <input type="text" placeholder="/custom-path"
+                                           value="{{ $isCustom ? $btn['link'] : '' }}"
+                                           oninput="this.previousElementSibling.previousElementSibling.value = this.value"
+                                           class="custom-url-input mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300 {{ $isCustom ? '' : 'hidden' }}">
+                                </div>
+                                <div class="flex items-end gap-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Button Color</label>
+                                        <input type="color" name="buttons[{{ $i }}][bg_color]" value="{{ $btn['bg_color'] ?? '#7c3aed' }}"
+                                               class="h-9 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Text Color</label>
+                                        <input type="color" name="buttons[{{ $i }}][text_color]" value="{{ $btn['text_color'] ?? '#ffffff' }}"
+                                               class="h-9 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
+                                    </div>
+                                    <button type="button" onclick="this.closest('.button-row').remove(); reindexButtons()"
+                                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4 flex items-center gap-3">
+                        <button type="button" id="add-button-btn"
+                                onclick="addButtonRow()"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-purple-300 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-100">
+                            + Add Button
+                        </button>
+                        <button type="submit"
+                                class="inline-flex items-center rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-95">
+                            Save Buttons
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h4 class="text-lg font-semibold text-gray-800 mb-4">Past Hero Images</h4>
@@ -102,4 +206,94 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const HERO_LINK_OPTIONS = @json($allLinkOptions);
+
+        function buildHeroLinkOptionsHtml() {
+            return HERO_LINK_OPTIONS
+                .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+                .join('');
+        }
+
+        function handleLinkChange(select) {
+            const row = select.closest('.button-row');
+            const hiddenInput = row.querySelector('.link-hidden');
+            const customInput = row.querySelector('.custom-url-input');
+
+            if (select.value === 'custom') {
+                customInput.classList.remove('hidden');
+                hiddenInput.value = customInput.value || '';
+            } else {
+                customInput.classList.add('hidden');
+                hiddenInput.value = select.value;
+            }
+        }
+
+        function reindexButtons() {
+            document.querySelectorAll('#buttons-container .button-row').forEach((row, idx) => {
+                row.querySelectorAll('[name]').forEach(el => {
+                    el.name = el.name.replace(/buttons\[\d+\]/, `buttons[${idx}]`);
+                });
+            });
+            updateAddBtn();
+        }
+
+        function updateAddBtn() {
+            const count = document.querySelectorAll('#buttons-container .button-row').length;
+            const btn = document.getElementById('add-button-btn');
+            btn.disabled = count >= 4;
+            btn.classList.toggle('opacity-40', count >= 4);
+            btn.classList.toggle('cursor-not-allowed', count >= 4);
+        }
+
+        function addButtonRow() {
+            const container = document.getElementById('buttons-container');
+            const idx = container.querySelectorAll('.button-row').length;
+            if (idx >= 4) return;
+
+            const defaultLink = '/shop?title=Our Collection';
+            const row = document.createElement('div');
+            row.className = 'button-row flex flex-wrap items-end gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50';
+            row.innerHTML = `
+                <input type="hidden" name="buttons[${idx}][link]" class="link-hidden" value="${defaultLink}">
+                <div class="flex-1 min-w-[140px]">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Label</label>
+                    <input type="text" name="buttons[${idx}][label]" placeholder="e.g. Shop Now" maxlength="50" required
+                           class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                </div>
+                <div class="flex-1 min-w-[180px]">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Link</label>
+                    <select class="link-select w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300"
+                            onchange="handleLinkChange(this)">
+                        ${buildHeroLinkOptionsHtml()}
+                        <option value="custom">Custom URL</option>
+                    </select>
+                    <input type="text" placeholder="/custom-path"
+                           oninput="this.closest('.button-row').querySelector('.link-hidden').value = this.value"
+                           class="custom-url-input hidden mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                </div>
+                <div class="flex items-end gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Button Color</label>
+                        <input type="color" name="buttons[${idx}][bg_color]" value="#7c3aed"
+                               class="h-9 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Text Color</label>
+                        <input type="color" name="buttons[${idx}][text_color]" value="#ffffff"
+                               class="h-9 w-14 cursor-pointer rounded-lg border border-gray-200 p-1">
+                    </div>
+                    <button type="button" onclick="this.closest('.button-row').remove(); reindexButtons()"
+                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                        Remove
+                    </button>
+                </div>
+            `;
+            container.appendChild(row);
+            updateAddBtn();
+        }
+
+        updateAddBtn();
+    </script>
 </x-app-layout>

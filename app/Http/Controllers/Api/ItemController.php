@@ -127,6 +127,14 @@ class ItemController extends Controller
         ]);
     }
 
+    public function getHomeHeroButtons(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => SiteSetting::getHeroButtons(),
+        ]);
+    }
+
     /**
      * Get 8 types and the image of the last item added for each type
      */
@@ -222,6 +230,10 @@ class ItemController extends Controller
 
         if ($request->has('type_id')) {
             $query->where('type_id', $request->type_id);
+        }
+
+        if ($request->has('offer_category_id')) {
+            $query->where('offer_category_id', $request->offer_category_id);
         }
 
         if ($request->has('latest')) {

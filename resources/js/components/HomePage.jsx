@@ -12,6 +12,7 @@ const HomePage = () => {
     const [typesWithItems, setTypesWithItems] = useState([]);
     const [heroImage, setHeroImage] = useState('/images/hero01.png');
     const [heroVideo, setHeroVideo] = useState(null);
+    const [heroButtons, setHeroButtons] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,14 +21,15 @@ const HomePage = () => {
 
     const fetchLatestItems = async () => {
         try {
-            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes, heroRes] = await Promise.all([
+            const [latestRes, womensRes, mensRes, fourRes, offeredRes, typesRes, heroRes, heroButtonsRes] = await Promise.all([
                 fetch('/api/items/latest'),
                 fetch('/api/items/latest-womens'),
                 fetch('/api/items/latest-mens'),
                 fetch('/api/items/latest-four'),
                 fetch('/api/items/offered'),
                 fetch('/api/types/latest-items'),
-                fetch('/api/home/hero-image')
+                fetch('/api/home/hero-image'),
+                fetch('/api/home/hero-buttons')
             ]);
 
             const latestData = await latestRes.json();
@@ -37,6 +39,7 @@ const HomePage = () => {
             const offeredData = await offeredRes.json();
             const typesData = await typesRes.json();
             const heroData = await heroRes.json();
+            const heroButtonsData = await heroButtonsRes.json();
 
             if (latestData.success) setLatestItem(latestData.data);
             if (womensData.success) setLatestWomensItem(womensData.data);
@@ -46,6 +49,7 @@ const HomePage = () => {
             if (typesData.success) setTypesWithItems(typesData.data);
             if (heroData.success && heroData.data?.image) setHeroImage(heroData.data.image);
             if (heroData.success && heroData.data?.video) setHeroVideo(heroData.data.video);
+            if (heroButtonsData.success && Array.isArray(heroButtonsData.data)) setHeroButtons(heroButtonsData.data);
         } catch (error) {
             console.error('Error fetching latest items:', error);
         } finally {
@@ -165,6 +169,22 @@ const HomePage = () => {
                     )}
                     <div className="absolute inset-0 bg-black/20" />
                 </div>
+
+                {/* Hero Buttons - bottom left */}
+                {heroButtons.length > 0 && (
+                    <div className="absolute bottom-6 left-6 flex flex-wrap gap-3">
+                        {heroButtons.map((btn, idx) => (
+                            <Link
+                                key={idx}
+                                to={btn.link}
+                                style={{ backgroundColor: btn.bg_color, color: btn.text_color }}
+                                className="inline-flex items-center rounded-full px-5 py-2.5 text-sm font-semibold shadow-lg transition-transform hover:scale-105 hover:shadow-xl"
+                            >
+                                {btn.label}
+                            </Link>
+                        ))}
+                    </div>
+                )}
             </section>
 
             {/* Last Chance / Offered Items */}

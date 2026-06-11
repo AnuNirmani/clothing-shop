@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiteMedia;
+use App\Models\OfferCategory;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 
@@ -23,11 +24,18 @@ class SiteSettingController extends Controller
             ->take(12)
             ->get();
 
+        $heroButtons = SiteSetting::getHeroButtons();
+        $offerCategories = OfferCategory::query()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return view('site-settings.index', compact(
             'homeHeroImage',
             'homeHeroVideo',
             'heroImageHistory',
-            'heroVideoHistory'
+            'heroVideoHistory',
+            'heroButtons',
+            'offerCategories'
         ));
     }
 
@@ -54,5 +62,22 @@ class SiteSettingController extends Controller
         return redirect()
             ->route('site-settings.index')
             ->with('success', 'Site settings updated successfully!');
+    }
+
+    public function updateHeroButtons(Request $request)
+    {
+        $validated = $request->validate([
+            'buttons'                 => 'nullable|array|max:4',
+            'buttons.*.label'         => 'required|string|max:50',
+            'buttons.*.link'          => 'required|string|max:255',
+            'buttons.*.bg_color'      => ['required', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
+            'buttons.*.text_color'    => ['required', 'regex:/^#[0-9a-fA-F]{3,8}$/'],
+        ]);
+
+        SiteSetting::saveHeroButtons($validated['buttons'] ?? []);
+
+        return redirect()
+            ->route('site-settings.index')
+            ->with('buttons_success', 'Hero buttons updated successfully!');
     }
 }

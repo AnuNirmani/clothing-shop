@@ -29,6 +29,19 @@ class SiteSetting extends Model
         );
     }
 
+    public static function getHeroButtons(): array
+    {
+        $json = static::getValue('home_hero_buttons', '[]');
+        $buttons = json_decode($json, true);
+        return is_array($buttons) ? array_slice($buttons, 0, 4) : [];
+    }
+
+    public static function saveHeroButtons(array $buttons): void
+    {
+        $buttons = array_slice(array_values($buttons), 0, 4);
+        static::setValue('home_hero_buttons', json_encode($buttons));
+    }
+
     public static function saveHeroMedia(?UploadedFile $heroImage, ?UploadedFile $heroVideo, ?int $userId = null): void
     {
         DB::transaction(function () use ($heroImage, $heroVideo, $userId) {
