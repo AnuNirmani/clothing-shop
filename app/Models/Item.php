@@ -19,10 +19,12 @@ class Item extends Model
         'prize',
         'type_id',
         'category_id',
+        'offer_category_id',
         'material_id',
         'size_id',
         'size_label',
         'stock_items',
+        'stock',
         'availability',
         'SKU',
         'image',
@@ -57,6 +59,14 @@ class Item extends Model
         $this->attributes['availability'] = (bool) $value;
     }
 
+    public function setStockItemsAttribute($value): void
+    {
+        $stock = (int) $value;
+
+        $this->attributes['stock_items'] = $stock;
+        $this->attributes['stock'] = $stock;
+    }
+
     // ─────────────────────────────────────────
     // Helper Methods
     // ─────────────────────────────────────────
@@ -84,6 +94,11 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function offerCategory()
+    {
+        return $this->belongsTo(OfferCategory::class);
     }
 
     public function classifications()
@@ -134,7 +149,7 @@ class Item extends Model
         $query = $includeTrashed ? self::withTrashed() : self::query();
 
         return $query
-            ->with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])
+            ->with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'material', 'size', 'photos'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -144,7 +159,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'classifications', 'colors', 'photos'])
+        return self::with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'photos'])
             ->findOrFail($id);
     }
 

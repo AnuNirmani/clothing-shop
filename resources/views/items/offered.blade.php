@@ -41,6 +41,9 @@
                     </div>
                     <div class="flex-shrink-0 w-full md:w-72">
                         <form method="GET" action="{{ route('offered-items.index') }}">
+                            @if(request('offer_category_id'))
+                                <input type="hidden" name="offer_category_id" value="{{ request('offer_category_id') }}">
+                            @endif
                             <div class="relative">
                                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -54,6 +57,41 @@
                 </div>
             </div>
 
+            <div class="fade-up delay-2">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    @php
+                        $allOffersUrlParams = [];
+                        if (request('search')) {
+                            $allOffersUrlParams['search'] = request('search');
+                        }
+                    @endphp
+
+                    <a href="{{ route('offered-items.index', $allOffersUrlParams) }}"
+                       class="rounded-2xl border px-4 py-3 transition-all duration-200 {{ empty($selectedOfferCategoryId) ? 'bg-gradient-to-r from-pink-100 to-blue-100 border-pink-300 shadow-sm' : 'bg-white border-gray-200 hover:border-pink-200 hover:bg-pink-50' }}">
+                        <p class="text-[10px] uppercase tracking-[0.18em] font-bold {{ empty($selectedOfferCategoryId) ? 'text-pink-600' : 'text-gray-400' }}">Category</p>
+                        <p class="text-sm font-bold {{ empty($selectedOfferCategoryId) ? 'text-pink-700' : 'text-gray-700' }} mt-1">All Offers</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $items->total() }} items shown</p>
+                    </a>
+
+                    @foreach($offerCategories as $offerCategory)
+                        @php
+                            $isSelectedCategory = (string) $selectedOfferCategoryId === (string) $offerCategory->id;
+                            $categoryUrlParams = array_filter([
+                                'offer_category_id' => $offerCategory->id,
+                                'search' => request('search'),
+                            ]);
+                        @endphp
+
+                        <a href="{{ route('offered-items.index', $categoryUrlParams) }}"
+                           class="rounded-2xl border px-4 py-3 transition-all duration-200 {{ $isSelectedCategory ? 'bg-gradient-to-r from-pink-100 to-blue-100 border-pink-300 shadow-sm' : 'bg-white border-gray-200 hover:border-pink-200 hover:bg-pink-50' }}">
+                            <p class="text-[10px] uppercase tracking-[0.18em] font-bold {{ $isSelectedCategory ? 'text-pink-600' : 'text-gray-400' }}">Offer Category</p>
+                            <p class="text-sm font-bold {{ $isSelectedCategory ? 'text-pink-700' : 'text-gray-700' }} mt-1 truncate">{{ $offerCategory->name }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $offerCategory->offered_items_count }} {{ Str::plural('item', $offerCategory->offered_items_count) }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="fade-up delay-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
@@ -62,6 +100,7 @@
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Item</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Type</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Category</th>
+                                <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Offer Category</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Offer %</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-pink-500 uppercase tracking-[0.15em]">Price</th>
                                 <th class="px-6 py-4 text-left text-[11px] font-bold text-blue-500 uppercase tracking-[0.15em]">Offer Period</th>
@@ -90,6 +129,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ $item->type?->name ?? '—' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ $item->category?->name ?? '—' }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $item->offerCategory?->name ?? '—' }}</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
                                             {{ rtrim(rtrim(number_format($item->offer_percentage ?? 0, 2, '.', ''), '0'), '.') }}%
@@ -130,7 +170,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-20 text-center">
+                                    <td colspan="8" class="px-6 py-20 text-center">
                                         <div class="flex flex-col items-center gap-3">
                                             <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-100 to-blue-100 flex items-center justify-center">
                                                 <svg class="w-8 h-8 text-pink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

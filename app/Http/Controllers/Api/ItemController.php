@@ -18,7 +18,7 @@ class ItemController extends Controller
     public function getLatestItem(): JsonResponse
     {
         $item = Item::where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -35,7 +35,7 @@ class ItemController extends Controller
     {
         $item = Item::where('category_id', 2)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -52,7 +52,7 @@ class ItemController extends Controller
     {
         $item = Item::where('category_id', 1)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -68,7 +68,7 @@ class ItemController extends Controller
     public function getLatestFourItems(): JsonResponse
     {
         $items = Item::where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->limit(4)
             ->get();
@@ -97,6 +97,7 @@ class ItemController extends Controller
                     ->orWhereDate('offer_end_date', '>=', $today);
             })
             ->with(['category', 'type', 'colors'])
+            ->with('offerCategory')
             ->orderByRaw('CASE WHEN offer_end_date IS NULL THEN 1 ELSE 0 END')
             ->orderBy('offer_end_date', 'asc')
             ->latest()
@@ -213,7 +214,7 @@ class ItemController extends Controller
     public function getItems(Request $request): JsonResponse
     {
         $query = Item::where('availability', true)
-            ->with(['category', 'type', 'colors']);
+            ->with(['category', 'offerCategory', 'type', 'colors']);
 
         if ($request->has('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -244,7 +245,7 @@ class ItemController extends Controller
     {
         $item = Item::where('id', $id)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
+            ->with(['category', 'offerCategory', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
             ->first();
 
         if (!$item) {
@@ -275,6 +276,7 @@ class ItemController extends Controller
             'prize' => $item->prize,
             'image' => $item->image ? asset('storage/' . $item->image) : null,
             'category' => $item->category?->name,
+            'offer_category' => $item->offerCategory?->name,
             'type' => $item->type?->name,
             'stock_items' => $item->stock_items,
             'availability' => $item->availability,

@@ -8,6 +8,7 @@ use App\Http\Controllers\ClassificationController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\OfferCategoryController;
 use App\Http\Controllers\DashboardController; // ✅ ADD THIS
 use App\Http\Controllers\SiteSettingController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('colors', ColorController::class);
     Route::resource('materials', MaterialController::class);
     Route::resource('sizes', SizeController::class);
+    Route::resource('offer-categories', OfferCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('users', \App\Http\Controllers\UserController::class);
 });
 

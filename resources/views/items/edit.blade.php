@@ -775,16 +775,24 @@
                             </label>
 
                             <div id="offer_fields_section" style="{{ old('is_on_offer', $item->is_on_offer) ? '' : 'display:none;' }}">
-                                <div style="padding:14px;background:#f0fdf4;border-radius:12px;border:1.5px solid #bbf7d0;margin-bottom:12px;">
-                                    <label class="field-label">Discount % <span class="req">*</span></label>
-                                    <div class="suffix-wrap">
-                                        <input type="number" name="offer_percentage" id="offer_percentage"
-                                            value="{{ old('offer_percentage', $item->offer_percentage) }}"
-                                            min="0" max="100" step="0.01" placeholder="0"
-                                            class="field-input" style="padding-right:36px;"
-                                            oninput="calculateDiscountedPrice()">
-                                        <span class="input-suffix">%</span>
-                                    </div>
+                                <div style="margin-bottom:12px;">
+                                    <label class="field-label">Offer Category <span class="req">*</span></label>
+                                    <select name="offer_category_id" id="offer_category_id" class="field-input" onchange="onOfferCategoryChange()">
+                                        <option value="" data-discount="0">Select offer category…</option>
+                                        @foreach($offerCategories as $offerCategory)
+                                            <option value="{{ $offerCategory->id }}"
+                                                data-discount="{{ $offerCategory->discount_percentage }}"
+                                                {{ old('offer_category_id', $item->offer_category_id) == $offerCategory->id ? 'selected' : '' }}>
+                                                {{ $offerCategory->name }} ({{ rtrim(rtrim(number_format($offerCategory->discount_percentage,2,'.',""),"0"),".") }}% off)
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Read-only discount badge populated from chosen category --}}
+                                <div style="padding:10px 14px;background:#f0fdf4;border-radius:12px;border:1.5px solid #bbf7d0;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                                    <span style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;">Discount</span>
+                                    <span id="offer_discount_badge" style="font-size:20px;font-weight:800;color:#059669;font-family:'DM Sans',sans-serif;">{{ old('offer_category_id', $item->offer_category_id) && $item->offerCategory ? $item->offerCategory->discount_percentage . '%' : '0%' }}</span>
                                 </div>
 
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
@@ -850,11 +858,27 @@
             item.classList.toggle('marked-delete', cb.checked);
         }
 
+        /* ── Get current offer discount from the category select ── */
+        function getOfferPct() {
+            const sel = document.getElementById('offer_category_id');
+            if (!sel) return 0;
+            const opt = sel.options[sel.selectedIndex];
+            return parseFloat(opt?.dataset?.discount || 0);
+        }
+
+        /* ── Offer category changed: refresh badge + price ── */
+        function onOfferCategoryChange() {
+            const pct = getOfferPct();
+            const badge = document.getElementById('offer_discount_badge');
+            if (badge) badge.textContent = pct + '%';
+            calculateDiscountedPrice();
+        }
+
         /* ── Installments ── */
         function calculateInstallments() {
             const price    = parseFloat(document.getElementById('prize').value) || 0;
             const isOffer  = document.getElementById('is_on_offer').checked;
-            const offerPct = parseFloat(document.getElementById('offer_percentage')?.value) || 0;
+            const offerPct = isOffer ? getOfferPct() : 0;
             let target = price;
             if (isOffer && offerPct > 0) target = price - price * offerPct / 100;
             document.getElementById('installment_3').value = (target / 3).toFixed(2);
@@ -1021,18 +1045,18 @@
             const sec  = document.getElementById('offer_fields_section');
             const show = document.getElementById('is_on_offer').checked;
             sec.style.display = show ? '' : 'none';
-            const pct = document.getElementById('offer_percentage');
             const sd  = document.getElementById('offer_start_date');
             const ed  = document.getElementById('offer_end_date');
-            pct.required = sd.required = ed.required = show;
-            if (!show) { pct.value = ''; sd.value = ''; ed.value = ''; }
+            const cat = document.getElementById('offer_category_id');
+            sd.required = ed.required = cat.required = show;
+            if (!show) { sd.value = ''; ed.value = ''; cat.value = ''; }
             calculateDiscountedPrice();
         }
 
         /* ── Discounted price ── */
         function calculateDiscountedPrice() {
             const price = parseFloat(document.getElementById('prize').value) || 0;
-            const pct   = parseFloat(document.getElementById('offer_percentage')?.value) || 0;
+            const pct   = document.getElementById('is_on_offer')?.checked ? getOfferPct() : 0;
             const disc  = price - price * pct / 100;
             document.getElementById('discounted_price').textContent       = 'Rs ' + disc.toFixed(2);
             document.getElementById('original_price_display').textContent = 'Rs ' + price.toFixed(2);
