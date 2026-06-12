@@ -183,6 +183,7 @@
                     <div id="stores-container" class="space-y-4">
                         @foreach($stores as $i => $store)
                             <div class="store-row rounded-xl border border-gray-200 bg-gray-50 p-4">
+                                <input type="hidden" name="stores[{{ $i }}][id]" value="{{ $store['id'] ?? '' }}">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-gray-600 mb-1">Store Name</label>
@@ -224,6 +225,70 @@
                         <button type="submit"
                                 class="inline-flex items-center rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-95">
                             Save Stores
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Checkout Bank Accounts --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <p class="text-[10px] font-bold text-purple-400 uppercase tracking-[0.3em] mb-1">Checkout</p>
+                <h3 class="font-display text-2xl font-semibold text-gray-800">Bank Accounts</h3>
+                <p class="mt-1 text-sm text-gray-500">Manage the two bank accounts shown on the checkout page.</p>
+
+                @if(session('bank_accounts_success'))
+                    <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+                        {{ session('bank_accounts_success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('site-settings.bank-accounts.update') }}" method="POST" class="mt-6" id="bank-accounts-form">
+                    @csrf
+
+                    <div id="bank-accounts-container" class="space-y-4">
+                        @foreach($bankAccounts as $i => $account)
+                            <div class="bank-account-row rounded-xl border border-gray-200 bg-gray-50 p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Bank Name</label>
+                                        <input type="text" name="bank_accounts[{{ $i }}][bank_name]" value="{{ $account['bank_name'] ?? '' }}" maxlength="120" required
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Account Holder Name</label>
+                                        <input type="text" name="bank_accounts[{{ $i }}][account_holder_name]" value="{{ $account['account_holder_name'] ?? '' }}" maxlength="120" required
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Account Number</label>
+                                        <input type="text" name="bank_accounts[{{ $i }}][account_number]" value="{{ $account['account_number'] ?? '' }}" maxlength="60" required
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Branch (optional)</label>
+                                        <input type="text" name="bank_accounts[{{ $i }}][branch]" value="{{ $account['branch'] ?? '' }}" maxlength="120"
+                                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex justify-end">
+                                    <button type="button" onclick="this.closest('.bank-account-row').remove(); reindexBankAccounts()"
+                                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4 flex items-center gap-3">
+                        <button type="button" id="add-bank-account-btn"
+                                onclick="addBankAccountRow()"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-purple-300 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-100">
+                            + Add Bank Account
+                        </button>
+                        <button type="submit"
+                                class="inline-flex items-center rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-95">
+                            Save Bank Accounts
                         </button>
                     </div>
                 </form>
@@ -384,6 +449,7 @@
             const row = document.createElement('div');
             row.className = 'store-row rounded-xl border border-gray-200 bg-gray-50 p-4';
             row.innerHTML = `
+                <input type="hidden" name="stores[${idx}][id]" value="">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Store Name</label>
@@ -418,7 +484,68 @@
             updateAddStoreBtn();
         }
 
+        function reindexBankAccounts() {
+            document.querySelectorAll('#bank-accounts-container .bank-account-row').forEach((row, idx) => {
+                row.querySelectorAll('[name]').forEach(el => {
+                    el.name = el.name.replace(/bank_accounts\[\d+\]/, `bank_accounts[${idx}]`);
+                });
+            });
+            updateAddBankAccountBtn();
+        }
+
+        function updateAddBankAccountBtn() {
+            const count = document.querySelectorAll('#bank-accounts-container .bank-account-row').length;
+            const btn = document.getElementById('add-bank-account-btn');
+            if (!btn) return;
+            btn.disabled = count >= 2;
+            btn.classList.toggle('opacity-40', count >= 2);
+            btn.classList.toggle('cursor-not-allowed', count >= 2);
+        }
+
+        function addBankAccountRow() {
+            const container = document.getElementById('bank-accounts-container');
+            const idx = container.querySelectorAll('.bank-account-row').length;
+            if (idx >= 2) return;
+
+            const row = document.createElement('div');
+            row.className = 'bank-account-row rounded-xl border border-gray-200 bg-gray-50 p-4';
+            row.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Bank Name</label>
+                        <input type="text" name="bank_accounts[${idx}][bank_name]" maxlength="120" required
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Account Holder Name</label>
+                        <input type="text" name="bank_accounts[${idx}][account_holder_name]" maxlength="120" required
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Account Number</label>
+                        <input type="text" name="bank_accounts[${idx}][account_number]" maxlength="60" required
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Branch (optional)</label>
+                        <input type="text" name="bank_accounts[${idx}][branch]" maxlength="120"
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button type="button" onclick="this.closest('.bank-account-row').remove(); reindexBankAccounts()"
+                            class="h-9 px-3 rounded-lg border border-red-200 bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-100">
+                        Remove
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            updateAddBankAccountBtn();
+        }
+
         updateAddBtn();
         updateAddStoreBtn();
+        updateAddBankAccountBtn();
     </script>
 </x-app-layout>

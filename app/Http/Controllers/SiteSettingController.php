@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SiteMedia;
 use App\Models\OfferCategory;
 use App\Models\SiteSetting;
+use App\Models\StoreLocation;
 use Illuminate\Http\Request;
 
 class SiteSettingController extends Controller
@@ -26,6 +27,7 @@ class SiteSettingController extends Controller
 
         $heroButtons = SiteSetting::getHeroButtons();
         $stores = SiteSetting::getStores();
+        $bankAccounts = SiteSetting::getBankAccounts();
         $offerCategories = OfferCategory::query()
             ->orderBy('name')
             ->get(['id', 'name']);
@@ -37,6 +39,7 @@ class SiteSettingController extends Controller
             'heroVideoHistory',
             'heroButtons',
             'stores',
+            'bankAccounts',
             'offerCategories'
         ));
     }
@@ -87,16 +90,59 @@ class SiteSettingController extends Controller
     {
         $validated = $request->validate([
             'stores' => 'nullable|array|max:6',
+            'stores.*.id' => 'nullable|integer|exists:store_locations,id',
             'stores.*.name' => 'required|string|max:120',
             'stores.*.address' => 'required|string|max:255',
             'stores.*.email' => 'nullable|email|max:120',
             'stores.*.phone' => 'nullable|string|max:60',
         ]);
 
-        SiteSetting::saveStores($validated['stores'] ?? []);
+        $storeData = $validated['stores'] ?? [];
+
+        // Delete stores that aren't in the update
+        $storeIds = collect($storeData)->pluck('id')->filter()->toArray();
+        StoreLocation::whereNotIn('id', $storeIds)->delete();
+
+        // Create or update stores
+        foreach ($storeData as $index => $store) {
+            if (isset($store['id']) && $store['id']) {
+                StoreLocation::where('id', $store['id'])->update([
+                    'name' => $store['name'],
+                    'address' => $store['address'],
+                    'email' => $store['email'],
+                    'phone' => $store['phone'],
+                    'display_order' => $index,
+                ]);
+            } else {
+                StoreLocation::create([
+                    'name' => $store['name'],
+                    'address' => $store['address'],
+                    'email' => $store['email'],
+                    'phone' => $store['phone'],
+                    'display_order' => $index,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('site-settings.index')
             ->with('stores_success', 'Store locations updated successfully!');
+    }
+
+    public function updateBankAccounts(Request $request)
+    {
+        $validated = $request->validate([
+            'bank_accounts' => 'nullable|array|max:2',
+            'bank_accounts.*.bank_name' => 'required|string|max:120',
+            'bank_accounts.*.account_holder_name' => 'required|string|max:120',
+            'bank_accounts.*.account_number' => 'required|string|max:60',
+            'bank_accounts.*.branch' => 'nullable|string|max:120',
+        ]);
+
+        SiteSetting::saveBankAccounts($validated['bank_accounts'] ?? []);
+
+        return redirect()
+            ->route('site-settings.index')
+            ->with('bank_accounts_success', 'Bank accounts updated successfully!');
     }
 }

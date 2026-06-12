@@ -55,6 +55,8 @@ const CheckoutPage = () => {
     const [stores, setStores] = useState([]);
     const [selectedStore, setSelectedStore] = useState('');
     const [storesLoading, setStoresLoading] = useState(false);
+    const [bankAccounts, setBankAccounts] = useState([]);
+    const [bankAccountsLoading, setBankAccountsLoading] = useState(false);
 
     useEffect(() => {
         const fetchStores = async () => {
@@ -72,6 +74,24 @@ const CheckoutPage = () => {
             }
         };
         fetchStores();
+    }, []);
+
+    useEffect(() => {
+        const fetchBankAccounts = async () => {
+            try {
+                setBankAccountsLoading(true);
+                const response = await fetch('/api/bank-accounts');
+                const data = await response.json();
+                if (data.success && Array.isArray(data.data)) {
+                    setBankAccounts(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching bank accounts:', error);
+            } finally {
+                setBankAccountsLoading(false);
+            }
+        };
+        fetchBankAccounts();
     }, []);
 
     const countryOptions = useMemo(() => {
@@ -700,6 +720,73 @@ const CheckoutPage = () => {
                 .billing-option.active { border-color: #8b5cf6; background: rgba(139,92,246,0.04); }
                 .billing-option:hover:not(.active) { border-color: #c4b5fd; }
 
+                .bank-accounts-container {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    gap: 16px;
+                    margin-top: 16px;
+                }
+
+                .bank-account-card {
+                    border: 1.5px solid #e5e7eb;
+                    border-radius: 12px;
+                    padding: 16px;
+                    background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                }
+
+                .bank-account-card:hover {
+                    border-color: #8b5cf6;
+                    box-shadow: 0 8px 24px rgba(139,92,246,0.12);
+                    transform: translateY(-2px);
+                }
+
+                .bank-account-card.loading {
+                    opacity: 0.6;
+                    pointer-events: none;
+                }
+
+                .bank-name {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #111827;
+                    margin-bottom: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .account-detail {
+                    font-size: 13px;
+                    color: #6b7280;
+                    margin-bottom: 6px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                }
+
+                .account-detail .label {
+                    font-weight: 600;
+                    color: #374151;
+                }
+
+                .account-detail .value {
+                    font-family: 'Courier New', monospace;
+                    color: #111827;
+                    font-weight: 600;
+                    word-break: break-all;
+                }
+
+                .bank-icon {
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #7c3aed;
+                }
+
                 @media (max-width: 900px) {
                     .checkout-grid { flex-direction: column !important; }
                     .checkout-left { max-width: 100% !important; }
@@ -1005,6 +1092,53 @@ const CheckoutPage = () => {
                                     </p>
                                 )}
                             </div>
+
+                            {/* Bank Accounts */}
+                            {bankAccounts.length > 0 && (
+                                <div className="section-card">
+                                    <h3 className="section-title">Bank Transfer Details</h3>
+                                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>
+                                        For bank transfer payments, please use one of the following account details:
+                                    </p>
+                                    <div className="bank-accounts-container">
+                                        {bankAccounts.map((account, idx) => (
+                                            <div key={idx} className="bank-account-card">
+                                                <div className="bank-name">
+                                                    <div className="bank-icon">🏦</div>
+                                                    {account.bank_name}
+                                                </div>
+                                                <div className="account-detail">
+                                                    <span className="label">Account Holder</span>
+                                                    <span className="value">{account.account_holder_name}</span>
+                                                </div>
+                                                <div className="account-detail">
+                                                    <span className="label">Account Number</span>
+                                                    <span className="value">{account.account_number}</span>
+                                                </div>
+                                                {account.branch && (
+                                                    <div className="account-detail">
+                                                        <span className="label">Branch</span>
+                                                        <span className="value">{account.branch}</span>
+                                                    </div>
+                                                )}
+                                                {account.swift_code && (
+                                                    <div className="account-detail">
+                                                        <span className="label">SWIFT Code</span>
+                                                        <span className="value">{account.swift_code}</span>
+                                                    </div>
+                                                )}
+                                                {account.instructions && (
+                                                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e5e7eb' }}>
+                                                        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+                                                            <strong>Note:</strong> {account.instructions}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Pay Now Button */}
                             <button type="submit" id="pay-now-btn" className="pay-btn" disabled={isPlacingOrder}>

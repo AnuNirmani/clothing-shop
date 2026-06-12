@@ -44,35 +44,26 @@ class SiteSetting extends Model
 
     public static function getStores(): array
     {
-        $defaultStores = [
-            [
-                'name' => 'Aura Edit - NUGEGODA',
-                'address' => '350, High Level Road, Kirulapone (00600)',
-                'email' => 'info@auraedit.lk',
-                'phone' => '+94 777 777 777',
-            ],
-            [
-                'name' => 'Aura Edit - KADAWATHA',
-                'address' => '43, Colombo-Kandy Road, Kadawatha (11850)',
-                'email' => 'info@auraedit.lk',
-                'phone' => '+94 777 777 777',
-            ],
-            [
-                'name' => 'Aura Edit - NUGEGODA',
-                'address' => '#300, High Level Road, Kirulapone (00600)',
-                'email' => 'info@auraedit.lk',
-                'phone' => '+94 777 777 777',
-            ],
-        ];
+        $stores = StoreLocation::where('active', true)
+            ->orderBy('display_order')
+            ->get(['id', 'name', 'address', 'email', 'phone'])
+            ->toArray();
 
-        $json = static::getValue('home_store_locations');
-        if (!$json) {
-            return $defaultStores;
-        }
-
-        $stores = json_decode($json, true);
-        if (!is_array($stores) || empty($stores)) {
-            return $defaultStores;
+        if (empty($stores)) {
+            return [
+                [
+                    'name' => 'Aura Edit - NUGEGODA',
+                    'address' => '350, High Level Road, Kirulapone (00600)',
+                    'email' => 'info@auraedit.lk',
+                    'phone' => '+94 777 777 777',
+                ],
+                [
+                    'name' => 'Aura Edit - KADAWATHA',
+                    'address' => '43, Colombo-Kandy Road, Kadawatha (11850)',
+                    'email' => 'info@auraedit.lk',
+                    'phone' => '+94 777 777 777',
+                ],
+            ];
         }
 
         return array_slice($stores, 0, 6);
@@ -80,8 +71,47 @@ class SiteSetting extends Model
 
     public static function saveStores(array $stores): void
     {
-        $stores = array_slice(array_values($stores), 0, 6);
-        static::setValue('home_store_locations', json_encode($stores));
+        // This method is deprecated. Use StoreLocation model directly.
+        StoreLocation::truncate();
+        foreach ($stores as $index => $store) {
+            StoreLocation::create(array_merge($store, ['display_order' => $index]));
+        }
+    }
+
+    public static function getBankAccounts(): array
+    {
+        $defaultBankAccounts = [
+            [
+                'bank_name' => 'Bank of Ceylon',
+                'account_holder_name' => 'AURA EDIT Ltd.',
+                'account_number' => '123456789',
+                'branch' => 'Colombo Main Branch',
+            ],
+            [
+                'bank_name' => 'Sampath Bank',
+                'account_holder_name' => 'AURA EDIT Retail',
+                'account_number' => '987654321',
+                'branch' => 'Colombo Fort Branch',
+            ],
+        ];
+
+        $json = static::getValue('checkout_bank_accounts');
+        if (!$json) {
+            return $defaultBankAccounts;
+        }
+
+        $accounts = json_decode($json, true);
+        if (!is_array($accounts) || empty($accounts)) {
+            return $defaultBankAccounts;
+        }
+
+        return array_slice($accounts, 0, 2);
+    }
+
+    public static function saveBankAccounts(array $accounts): void
+    {
+        $accounts = array_slice(array_values($accounts), 0, 2);
+        static::setValue('checkout_bank_accounts', json_encode($accounts));
     }
 
     public static function saveHeroMedia(?UploadedFile $heroImage, ?UploadedFile $heroVideo, ?int $userId = null): void

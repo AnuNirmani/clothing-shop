@@ -34,6 +34,9 @@ Route::middleware('api')->group(function () {
     Route::get('/categories/{id}/types', [App\Http\Controllers\Api\ItemController::class, 'getTypesByCategory']);
     Route::get('/categories-with-types', [App\Http\Controllers\Api\ItemController::class, 'getCategoriesWithTypes']);
 
+    // Bank Accounts API
+    Route::get('/bank-accounts', [App\Http\Controllers\Api\BankAccountController::class, 'getActive']);
+
     // Orders API
     Route::post('/orders', [App\Http\Controllers\Api\OrderController::class, 'store']);
 });
