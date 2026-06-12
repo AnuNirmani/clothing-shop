@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\ItemPhoto;
+use App\Models\OfferCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,6 +30,43 @@ class ItemController extends Controller
     }
 
     /**
+     * Display a read-only listing of offered items.
+     */
+    public function offeredItems(Request $request)
+    {
+        $search = $request->input('search');
+        $selectedOfferCategoryId = $request->input('offer_category_id');
+
+        $items = Item::with(['type', 'category', 'offerCategory'])
+            ->where('is_on_offer', true)
+            ->when($selectedOfferCategoryId, function ($query, $offerCategoryId) {
+                $query->where('offer_category_id', $offerCategoryId);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('SKU', 'like', "%{$search}%")
+                      ->orWhereHas('offerCategory', function ($offerQuery) use ($search) {
+                          $offerQuery->where('name', 'like', "%{$search}%");
+                      });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $offerCategories = OfferCategory::withCount([
+            'items as offered_items_count' => function ($query) {
+                $query->where('is_on_offer', true);
+            },
+        ])
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('items.offered', compact('items', 'offerCategories', 'selectedOfferCategoryId'));
+    }
+
+    /**
      * Show the form for creating a new item
      */
     public function create()
@@ -39,7 +77,8 @@ class ItemController extends Controller
         $colors = \App\Models\Color::getAllColors();
         $materials = \App\Models\Material::getAllMaterials();
         $sizes = \App\Models\Size::getAllSizes();
-        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
+        $offerCategories = OfferCategory::getAllOfferCategories();
+        return view('items.create', compact('types', 'categories', 'classifications', 'colors', 'materials', 'sizes', 'offerCategories'));
     }
 
     /**
@@ -70,9 +109,9 @@ class ItemController extends Controller
                 'is_gift_card' => 'nullable|boolean',
                 'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
                 'is_on_offer' => 'nullable|boolean',
-                'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
                 'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
                 'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+                'offer_category_id' => 'nullable|required_if:is_on_offer,1|exists:offer_categories,id',
                 'colors' => 'required|array|min:1',
                 'colors.*' => 'exists:colors,id',
             ],
@@ -88,6 +127,7 @@ class ItemController extends Controller
                 'material_id' => 'material',
                 'size_label' => 'size',
                 'size_id_dropdown' => 'size',
+                'offer_category_id' => 'offer category',
                 'colors' => 'color',
             ]
         );
@@ -118,7 +158,15 @@ class ItemController extends Controller
             $validated['offer_percentage'] = null;
             $validated['offer_start_date'] = null;
             $validated['offer_end_date'] = null;
+            $validated['offer_category_id'] = null;
+        } else {
+            // Derive discount from the selected offer category
+            $offerCat = \App\Models\OfferCategory::find($validated['offer_category_id']);
+            $validated['offer_percentage'] = $offerCat ? $offerCat->discount_percentage : 0;
         }
+
+        // Handle free delivery
+        $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
 
         $item = Item::createItem($validated);
 
@@ -161,7 +209,8 @@ class ItemController extends Controller
         $colors = \App\Models\Color::getAllColors();
         $materials = \App\Models\Material::getAllMaterials();
         $sizes = \App\Models\Size::getAllSizes();
-        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials', 'sizes'));
+        $offerCategories = OfferCategory::getAllOfferCategories();
+        return view('items.edit', compact('item', 'types', 'categories', 'classifications', 'colors', 'materials', 'sizes', 'offerCategories'));
     }
 
     /**
@@ -196,9 +245,9 @@ class ItemController extends Controller
                 'is_gift_card' => 'nullable|boolean',
                 'gift_card_validity_months' => 'nullable|required_if:is_gift_card,1|integer|min:1',
                 'is_on_offer' => 'nullable|boolean',
-                'offer_percentage' => 'nullable|required_if:is_on_offer,1|numeric|min:0|max:100',
                 'offer_start_date' => 'nullable|required_if:is_on_offer,1|date',
                 'offer_end_date' => 'nullable|required_if:is_on_offer,1|date|after_or_equal:offer_start_date',
+                'offer_category_id' => 'nullable|required_if:is_on_offer,1|exists:offer_categories,id',
             ],
             [
                 // No custom messages needed
@@ -212,6 +261,7 @@ class ItemController extends Controller
                 'material_id' => 'material',
                 'size_label' => 'size',
                 'size_id_dropdown' => 'size',
+                'offer_category_id' => 'offer category',
                 'colors' => 'color',
             ]
         );
@@ -242,7 +292,15 @@ class ItemController extends Controller
             $validated['offer_percentage'] = null;
             $validated['offer_start_date'] = null;
             $validated['offer_end_date'] = null;
+            $validated['offer_category_id'] = null;
+        } else {
+            // Derive discount from the selected offer category
+            $offerCat = \App\Models\OfferCategory::find($validated['offer_category_id']);
+            $validated['offer_percentage'] = $offerCat ? $offerCat->discount_percentage : 0;
         }
+
+        // Handle free delivery
+        $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
 
         $item = Item::updateItem($id, $validated);
 

@@ -7,6 +7,8 @@ const ShopPage = () => {
     const [searchParams] = useSearchParams();
     const categoryId = searchParams.get('category_id');
     const typeId = searchParams.get('type_id');
+    const offerCategoryId = searchParams.get('offer_category_id');
+    const offeredOnly = searchParams.get('offered') === '1';
     const title = searchParams.get('title') || 'Shop Collection';
 
     const [items, setItems] = useState([]);
@@ -15,10 +17,12 @@ const ShopPage = () => {
     const [loading, setLoading] = useState(true);
 
     const subtitle = useMemo(() => {
+        if (offerCategoryId) return 'Discover all items from this offer category';
+        if (offeredOnly) return 'Discover active offer pieces curated just for you';
         if (typeId) return 'Refined picks for your selected style';
         if (categoryId) return 'Explore every piece in this curated category';
         return 'Discover signature pieces crafted for confident everyday wear';
-    }, [categoryId, typeId]);
+    }, [categoryId, typeId, offerCategoryId, offeredOnly]);
 
     useEffect(() => {
         fetchItems();
@@ -30,7 +34,7 @@ const ShopPage = () => {
             fetchCategoriesWithTypes();
         }
         window.scrollTo(0, 0);
-    }, [categoryId, typeId]);
+    }, [categoryId, typeId, offerCategoryId, offeredOnly]);
 
     const fetchTypes = async () => {
         try {
@@ -51,6 +55,8 @@ const ShopPage = () => {
             const params = new URLSearchParams();
             if (categoryId) params.append('category_id', categoryId);
             if (typeId) params.append('type_id', typeId);
+            if (offerCategoryId) params.append('offer_category_id', offerCategoryId);
+            if (offeredOnly) params.append('offered', '1');
 
             if (params.toString()) {
                 url += `?${params.toString()}`;
@@ -84,6 +90,7 @@ const ShopPage = () => {
         const params = new URLSearchParams();
         if (nextCategoryId) params.set('category_id', nextCategoryId);
         if (nextTypeId) params.set('type_id', nextTypeId);
+        if (offeredOnly) params.set('offered', '1');
         if (title) params.set('title', title);
         return `/shop?${params.toString()}`;
     };

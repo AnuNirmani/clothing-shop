@@ -43,6 +43,33 @@ const ItemDetailPage = () => {
         fetchItem();
     }, [id]);
 
+    const getInCartQuantityForSelection = () => {
+        if (!item) return 0;
+
+        const colorToUse = selectedColor || (item.colors?.[0]?.name ?? 'NULL');
+        const sizeToUse = item.size_label || item.size || 'NULL';
+
+        return cartItems
+            .filter(
+                (cartItem) =>
+                    cartItem.id === item.id &&
+                    cartItem.color === colorToUse &&
+                    cartItem.size === sizeToUse
+            )
+            .reduce((sum, cartItem) => sum + (cartItem.quantity || 0), 0);
+    };
+
+    const inCartSelectedQty = getInCartQuantityForSelection();
+    const availableStock = Math.max(0, (item?.stock_items ?? 0) - inCartSelectedQty);
+
+    useEffect(() => {
+        if (availableStock <= 0) {
+            setQuantity(1);
+            return;
+        }
+        setQuantity((q) => Math.min(q, availableStock));
+    }, [availableStock]);
+
     const addToCart = () => {
         if (!item) return;
 
@@ -54,25 +81,11 @@ const ItemDetailPage = () => {
 
         const colorToUse = selectedColor || 'NULL';
         const sizeToUse = item.size_label || item.size || 'NULL';
-        const alreadyInCart = cartItems.some(
-            (cartItem) =>
-                cartItem.id === item.id &&
-                cartItem.color === colorToUse &&
-                cartItem.size === sizeToUse
-        );
-
-        if (alreadyInCart) {
-            setStockError(false);
-            setAddedToCart(false);
-            window.dispatchEvent(new CustomEvent('cart:open'));
-            return;
-        }
-
         // Reset error states
         setStockError(false);
 
         // Check if adding this quantity would exceed stock
-        if (quantity > item.stock_items) {
+        if (quantity > availableStock || availableStock <= 0) {
             setStockError(true);
             setTimeout(() => setStockError(false), 3000);
             return;
@@ -88,6 +101,7 @@ const ItemDetailPage = () => {
             size: sizeToUse,
             quantity: quantity,
             stock: item.stock_items,
+            free_delivery: item.free_delivery ?? false,
         };
 
         addToCartContext(cartItem, { openCart: true });
@@ -206,178 +220,196 @@ const ItemDetailPage = () => {
                                             Regular: Rs {formatPrice(item.prize)}
                                         </p>
                                     )}
-                                </div>
-
-                                {/* Promo items like reference */}
-                                <div className="flex items-center gap-4 py-2 border-b border-gray-100">
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-[11px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
-                                        <span className="text-xs font-black text-purple-600">KOKO</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-[11px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
-                                        <span className="text-xs font-black text-blue-500 italic">PayZy</span>
-                                    </div>
-                                </div>
-
-                                <p className="text-sm text-gray-600 leading-relaxed font-light">
-                                    {item.description || "Designed with precision and crafted for the modern individual, this piece embodies a perfect balance of heritage and contemporary style."}
-                                </p>
-
-                                {item.note && (
-                                    <p className="text-[11px] text-gray-400 italic">
-                                        Note: {item.note}
-                                    </p>
-                                )}
-
-                                {/* Color Selection - Simplified like reference */}
-                                {item.colors?.length > 0 && (
-                                    <div className="space-y-2 py-2">
-                                        <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
-                                            COLOUR: <span className="text-gray-500 font-medium ml-1">{selectedColor}</span>
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {item.colors.map((color, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setSelectedColor(color.name)}
-                                                    className={`w-8 h-8 rounded border-2 transition-all ${selectedColor === color.name
-                                                        ? 'border-gray-900 ring-1 ring-gray-900'
-                                                        : 'border-transparent'
-                                                        }`}
-                                                    style={{ backgroundColor: color.hex || '#ccc' }}
-                                                    title={color.name}
-                                                />
-                                            ))}
+                                    {item.free_delivery && (
+                                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 shadow-sm animate-fade-in">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 011 1v2a1 1 0 01-1 1h-1m-4-4h4m-4 4h4m6-10l-3 3m3-3l-3-3m3 3H9" />
+                                            </svg>
+                                            <span className="text-[11px] font-bold tracking-tight uppercase">Free Delivery Available</span>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
+                            </div>
 
-                                {/* Size Selection - Boxes like reference */}
+                            {/* Promo items like reference */}
+                            <div className="flex items-center gap-4 py-2 border-b border-gray-100">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[11px] text-gray-500">or 3 installments of Rs {formatPrice(item.installment_3)} with</span>
+                                    <span className="text-xs font-black text-purple-600">KOKO</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[11px] text-gray-500">or 4 installments of Rs {formatPrice(item.installment_4)} with</span>
+                                    <span className="text-xs font-black text-blue-500 italic">PayZy</span>
+                                </div>
+                            </div>
+
+                            <p className="text-sm text-gray-600 leading-relaxed font-light">
+                                {item.description || "Designed with precision and crafted for the modern individual, this piece embodies a perfect balance of heritage and contemporary style."}
+                            </p>
+
+                            {item.note && (
+                                <p className="text-[11px] text-gray-400 italic">
+                                    Note: {item.note}
+                                </p>
+                            )}
+
+                            {/* Color Selection - Simplified like reference */}
+                            {item.colors?.length > 0 && (
                                 <div className="space-y-2 py-2">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
-                                            SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'NULL'}</span>
-                                        </p>
-                                        <button
-                                            onClick={() => setShowSizeChart(true)}
-                                            className="text-[10px] font-bold text-blue-600 flex items-center gap-1 group"
-                                        >
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /></svg>
-                                            <span className="border-b border-transparent group-hover:border-blue-600 transition-all">Size Chart</span>
-                                        </button>
+                                    <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
+                                        COLOUR: <span className="text-gray-500 font-medium ml-1">{selectedColor}</span>
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {item.colors.map((color, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedColor(color.name)}
+                                                className={`w-8 h-8 rounded border-2 transition-all ${selectedColor === color.name
+                                                    ? 'border-gray-900 ring-1 ring-gray-900'
+                                                    : 'border-transparent'
+                                                    }`}
+                                                style={{ backgroundColor: color.hex || '#ccc' }}
+                                                title={color.name}
+                                            />
+                                        ))}
                                     </div>
                                 </div>
+                            )}
 
-                                <div className="space-y-1 py-1">
-                                    <p className="text-[10px] text-gray-400">SKU: {item.SKU || 'KS3389'}</p>
-                                    <p className="text-[10px] text-green-600 font-bold">Stock Items: {item.stock_items || 2}</p>
-                                </div>
-
-                                {/* Actions - Quantity + Add to Cart */}
-                                <div className="flex items-center gap-3 py-4 border-t border-gray-100">
-                                    <div className="flex items-center border border-gray-200 rounded overflow-hidden">
-                                        <button
-                                            onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                            className="px-3 py-2 hover:bg-gray-50 text-gray-500 transition-colors"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="w-10 text-center text-sm font-bold border-x border-gray-200 py-2">
-                                            {quantity}
-                                        </span>
-                                        <button
-                                            onClick={() => setQuantity(q => Math.min(item.stock_items, q + 1))}
-                                            disabled={quantity >= item.stock_items}
-                                            className={`px-3 py-2 text-gray-500 transition-colors ${quantity >= item.stock_items ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
+                            {/* Size Selection - Boxes like reference */}
+                            <div className="space-y-2 py-2">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
+                                        SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'NULL'}</span>
+                                    </p>
                                     <button
-                                        onClick={addToCart}
-                                        className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${stockError
-                                            ? 'bg-red-500 text-white'
-                                            : addedToCart
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-[#1a1a1a] text-white hover:bg-black'
-                                            }`}
+                                        onClick={() => setShowSizeChart(true)}
+                                        className="text-[10px] font-bold text-blue-600 flex items-center gap-1 group"
                                     >
-                                        {stockError ? (
-                                            <>
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                Stock Limit Exceeded!
-                                            </>
-                                        ) : addedToCart ? (
-                                            <>
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Added to Cart!
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                </svg>
-                                                Add To Cart
-                                            </>
-                                        )}
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /></svg>
+                                        <span className="border-b border-transparent group-hover:border-blue-600 transition-all">Size Chart</span>
                                     </button>
                                 </div>
+                            </div>
 
-                                {addedToCart && (
-                                    <div className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[13.5px] text-green-700 font-semibold">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Item added to cart.
-                                    </div>
-                                )}
+                            <div className="space-y-1 py-1">
+                                <p className="text-[10px] text-gray-400">SKU: {item.SKU || 'KS3389'}</p>
+                                <p className="text-[10px] text-green-600 font-bold">Stock Items: {availableStock}</p>
+                            </div>
 
-                                {stockError && (
-                                    <p className="text-[12.5px] text-red-600 font-semibold flex items-center gap-1.5">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Only {item.stock_items} items available in stock. Please reduce quantity.
-                                    </p>
-                                )}
+                            {/* Actions - Quantity + Add to Cart */}
+                            <div className="flex items-center gap-3 py-4 border-t border-gray-100">
+                                <div className="flex items-center border border-gray-200 rounded overflow-hidden">
+                                    <button
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        className="px-3 py-2 hover:bg-gray-50 text-gray-500 transition-colors"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="w-10 text-center text-sm font-bold border-x border-gray-200 py-2">
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        onClick={() => setQuantity(q => Math.min(availableStock, q + 1))}
+                                        disabled={quantity >= availableStock || availableStock <= 0}
+                                        className={`px-3 py-2 text-gray-500 transition-colors ${quantity >= availableStock || availableStock <= 0 ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={addToCart}
+                                    disabled={availableStock <= 0}
+                                    className={`flex-1 py-2.5 rounded text-sm font-bold transition-all flex items-center justify-center gap-2 ${stockError
+                                        ? 'bg-red-500 text-white'
+                                        : availableStock <= 0
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        : addedToCart
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-[#1a1a1a] text-white hover:bg-black'
+                                        }`}
+                                >
+                                    {availableStock <= 0 ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            Out of Stock
+                                        </>
+                                    ) : stockError ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Stock Limit Exceeded!
+                                        </>
+                                    ) : addedToCart ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Added to Cart!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            Add To Cart
+                                        </>
+                                    )}
+                                </button>
+                            </div>
 
-                                {!stockError && item.stock_items > 0 && quantity >= item.stock_items && (
-                                    <p className="text-[12.5px] text-red-600 font-semibold">
-                                        Nearly gone. Only {item.stock_items} pieces left in our collection.
-                                    </p>
-                                )}
+                            {addedToCart && (
+                                <div className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[13.5px] text-green-700 font-semibold">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Item added to cart.
+                                </div>
+                            )}
 
-                                {/* Simplified Specs */}
-                                <ul className="space-y-1.5 py-4 border-t border-gray-100">
-                                    <li className="flex items-center gap-2 text-xs font-medium text-gray-700">
-                                        <span className="w-1 h-1 bg-gray-900 rounded-full" />
-                                        Material: {item.material || 'Rib'}
-                                    </li>
-                                    <li className="flex items-center gap-2 text-[10px] text-gray-400">
-                                        Availability: <span className="text-green-600 font-bold">In Stock</span>
-                                    </li>
-                                    <li className="flex items-center gap-2 text-[10px] text-gray-400">
-                                        Categories: {item.category}, {item.type}, {item.co_name}
-                                    </li>
-                                </ul>
+                            {stockError && (
+                                <p className="text-[12.5px] text-red-600 font-semibold flex items-center gap-1.5">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Only {availableStock} items available in stock. Please reduce quantity.
+                                </p>
+                            )}
 
-                                {/* Social Share */}
-                                <div className="pt-4 border-t border-gray-100">
-                                    <p className="text-[11px] font-bold text-gray-900 mb-3">Share on</p>
-                                    <div className="flex gap-4">
-                                        <button className="text-gray-400 hover:text-blue-600 transition-colors">
-                                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                                        </button>
-                                        <button className="text-gray-400 hover:text-green-500 transition-colors">
-                                            <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.2-3.2-5.6-.3-8.6 2.5-11.3 2.5-2.5 5.6-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" /></svg>
-                                        </button>
-                                    </div>
+                            {!stockError && availableStock > 0 && quantity >= availableStock && (
+                                <p className="text-[12.5px] text-red-600 font-semibold">
+                                    Nearly gone. Only {availableStock} pieces left in our collection.
+                                </p>
+                            )}
+
+                            {/* Simplified Specs */}
+                            <ul className="space-y-1.5 py-4 border-t border-gray-100">
+                                <li className="flex items-center gap-2 text-xs font-medium text-gray-700">
+                                    <span className="w-1 h-1 bg-gray-900 rounded-full" />
+                                    Material: {item.material || 'Rib'}
+                                </li>
+                                <li className="flex items-center gap-2 text-[10px] text-gray-400">
+                                    Availability: <span className="text-green-600 font-bold">In Stock</span>
+                                </li>
+                                <li className="flex items-center gap-2 text-[10px] text-gray-400">
+                                    Categories: {item.category}, {item.type}, {item.co_name}
+                                </li>
+                            </ul>
+
+                            {/* Social Share */}
+                            <div className="pt-4 border-t border-gray-100">
+                                <p className="text-[11px] font-bold text-gray-900 mb-3">Share on</p>
+                                <div className="flex gap-4">
+                                    <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                                    </button>
+                                    <button className="text-gray-400 hover:text-green-500 transition-colors">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.2-3.2-5.6-.3-8.6 2.5-11.3 2.5-2.5 5.6-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" /></svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -414,7 +446,7 @@ const ItemDetailPage = () => {
                                 </button>
                             </div>
                             <div className="flex flex-col items-center justify-center min-h-[300px]">
-                                {item.size_chart ? (
+                                {item?.size_chart ? (
                                     <img
                                         src={item.size_chart}
                                         alt={`${item.size || 'Size'} Chart`}
