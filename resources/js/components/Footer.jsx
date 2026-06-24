@@ -239,7 +239,7 @@ const Footer = () => {
                   </div>
                   <div>
                     <p className="text-gray-600 text-sm">Phone</p>
-                    <a href="tel:+94707788688" className="footer-link text-gray-900 font-semibold">+94 70 778 8688</a>
+                    <a href="tel:+94784467096" className="footer-link text-gray-900 font-semibold">+94 78 446 7096</a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -380,7 +380,7 @@ const Footer = () => {
                 © 2024 <span className="font-bold text-gray-900">auraedit.lk</span>
               </p>
               <p className="text-sm text-gray-500">
-                Crafted with 💜 by <span className="font-semibold text-gray-700">Aurora 365 Pvt Ltd</span>
+                Crafted with 💜 by <span className="font-semibold text-gray-700">LankOpenSoft Pvt Ltd</span>
               </p>
               <p className="text-xs text-gray-400 mt-2">All Rights Reserved</p>
             </div>
