@@ -787,22 +787,104 @@ const CheckoutPage = () => {
                     color: #7c3aed;
                 }
 
+                .checkout-header {
+                    background: white;
+                    border-bottom: 1px solid #f3f4f6;
+                    padding: 18px 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .checkout-main {
+                    min-height: calc(100vh - 73px);
+                    background: linear-gradient(135deg, #fafaf9 0%, #fdf4ff 100%);
+                    padding: 32px 20px 60px;
+                }
+
+                .two-col-row,
+                .delivery-toggle-row,
+                .order-type-row,
+                .footer-links {
+                    display: flex;
+                }
+
+                .footer-links {
+                    gap: 20px;
+                    margin-top: 24px;
+                    justify-content: center;
+                }
+
+                @media (max-width: 1100px) {
+                    .checkout-grid {
+                        gap: 20px !important;
+                    }
+                }
+
                 @media (max-width: 900px) {
                     .checkout-grid { flex-direction: column !important; }
                     .checkout-left { max-width: 100% !important; }
-                    .checkout-right { max-width: 100% !important; width: 100% !important; }
+                    .checkout-right {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        position: static !important;
+                        top: auto !important;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .checkout-header {
+                        padding: 12px 16px;
+                    }
+                    .checkout-main {
+                        padding: 16px 10px 28px;
+                    }
+                    .section-card {
+                        padding: 16px;
+                        border-radius: 12px;
+                        margin-bottom: 14px;
+                    }
+                    .section-title {
+                        font-size: 18px;
+                        margin-bottom: 14px;
+                    }
+                    .back-link {
+                        margin-bottom: 14px;
+                        font-size: 13px;
+                    }
+                    .co-input,
+                    .co-select,
+                    .country-trigger,
+                    .delivery-btn,
+                    .payment-option,
+                    .billing-option,
+                    .discount-apply-btn {
+                        font-size: 16px;
+                    }
+                    .delivery-toggle-row,
+                    .two-col-row,
+                    .discount-row,
+                    .order-type-row {
+                        flex-direction: column;
+                    }
+                    .order-type-row {
+                        align-items: flex-start !important;
+                        gap: 10px;
+                    }
+                    .footer-links {
+                        flex-wrap: wrap;
+                        gap: 10px 14px;
+                        margin-top: 18px;
+                    }
+                    .bank-accounts-container {
+                        grid-template-columns: 1fr;
+                        gap: 12px;
+                    }
                 }
             `}</style>
 
             {/* Top Header */}
-            <div style={{
-                background: 'white',
-                borderBottom: '1px solid #f3f4f6',
-                padding: '18px 40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}>
+            <div className="checkout-header">
                 <span className="checkout-logo" onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <div style={{ position: 'relative' }}>
                         <img
@@ -832,11 +914,7 @@ const CheckoutPage = () => {
                 </span>
             </div>
 
-            <div style={{
-                minHeight: 'calc(100vh - 73px)',
-                background: 'linear-gradient(135deg, #fafaf9 0%, #fdf4ff 100%)',
-                padding: '32px 20px 60px',
-            }}>
+            <div className="checkout-main">
                 <div className="checkout-grid" style={{
                     display: 'flex',
                     gap: '32px',
@@ -889,7 +967,7 @@ const CheckoutPage = () => {
                             {/* Delivery */}
                             <div className="section-card">
                                 <h3 className="section-title">Delivery</h3>
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                                <div className="delivery-toggle-row" style={{ gap: '10px', marginBottom: '16px' }}>
                                     <button
                                         type="button"
                                         className={`delivery-btn ${deliveryMethod === 'ship' ? 'active' : ''}`}
@@ -987,7 +1065,7 @@ const CheckoutPage = () => {
                                         )}
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                    <div className="two-col-row" style={{ gap: '12px' }}>
                                         <div style={{ flex: 1 }} data-error={!!errors.firstName}>
                                             <input id="first-name" className={`co-input ${errors.firstName ? 'error' : ''}`} type="text" placeholder="First name" value={firstName}
                                                 onChange={e => { setFirstName(e.target.value); if (errors.firstName) setErrors({ ...errors, firstName: null }); }} required />
@@ -1012,7 +1090,7 @@ const CheckoutPage = () => {
                                         {errors.apartment && <span className="error-text">{errors.apartment}</span>}
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                    <div className="two-col-row" style={{ gap: '12px' }}>
                                         <div style={{ flex: 1 }} data-error={!!errors.city}>
                                             <input id="city" className={`co-input ${errors.city ? 'error' : ''}`} type="text" placeholder="City" value={city}
                                                 onChange={e => { setCity(e.target.value); if (errors.city) setErrors({ ...errors, city: null }); }} required />
@@ -1060,12 +1138,11 @@ const CheckoutPage = () => {
                             {/* Shipping Method */}
                             <div className="section-card">
                                 <h3 className="section-title">Order type</h3>
-                                <div style={{
+                                <div className="order-type-row" style={{
                                     border: '1.5px solid #8b5cf6',
                                     borderRadius: '10px',
                                     padding: '14px 16px',
                                     background: 'rgba(139,92,246,0.04)',
-                                    display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                 }}>
@@ -1163,7 +1240,7 @@ const CheckoutPage = () => {
                             )}
 
                             {/* Footer links */}
-                            <div style={{ display: 'flex', gap: '20px', marginTop: '24px', justifyContent: 'center' }}>
+                            <div className="footer-links">
                                 {['Shipping', 'Privacy policy', 'Terms of service'].map((link) => (
                                     <a key={link} href="#" style={{ color: '#8b5cf6', fontSize: '13px', textDecoration: 'none', fontWeight: 500 }}
                                         onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
