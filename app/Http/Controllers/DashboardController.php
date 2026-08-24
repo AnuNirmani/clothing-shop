@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\SiteSetting;
 
 class DashboardController extends Controller
 {
@@ -35,13 +35,43 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $homeHeroImage = SiteSetting::getValue('home_hero_image');
+        $homeHeroVideo = SiteSetting::getValue('home_hero_video');
+
         return view('dashboard', compact(
             'totalItems',
             'lowStockItems',
             'categoriesCount',
             'outOfStock',
             'recentItems',
-            'topCategories'
+            'topCategories',
+            'homeHeroImage',
+            'homeHeroVideo'
         ));
+    }
+
+    public function updateHomeHeroImage(Request $request)
+    {
+        $validated = $request->validate([
+            'hero_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'hero_video' => 'nullable|mimetypes:video/mp4,video/webm,video/quicktime|max:51200',
+        ]);
+
+        if (!$request->hasFile('hero_image') && !$request->hasFile('hero_video')) {
+            return redirect()
+                ->route('dashboard')
+                ->withErrors(['hero_image' => 'Please upload at least an image or a video.'])
+                ->withInput();
+        }
+
+        SiteSetting::saveHeroMedia(
+            $validated['hero_image'] ?? null,
+            $validated['hero_video'] ?? null,
+            auth()->id()
+        );
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Homepage hero media updated successfully!');
     }
 }

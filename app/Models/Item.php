@@ -19,10 +19,12 @@ class Item extends Model
         'prize',
         'type_id',
         'category_id',
+        'offer_category_id',
         'material_id',
         'size_id',
         'size_label',
         'stock_items',
+        'stock',
         'availability',
         'SKU',
         'image',
@@ -33,15 +35,17 @@ class Item extends Model
         'offer_start_date',
         'offer_end_date',
         'discounted_price',
+        'free_delivery',
     ];
 
     protected $dates = ['deleted_at', 'offer_start_date', 'offer_end_date'];
 
     // ✅ Cast availability, is_gift_card, is_on_offer to boolean
     protected $casts = [
-        'availability' => 'boolean',
-        'is_gift_card' => 'boolean',
-        'is_on_offer'  => 'boolean',
+        'availability'   => 'boolean',
+        'is_gift_card'   => 'boolean',
+        'is_on_offer'    => 'boolean',
+        'free_delivery'  => 'boolean',
     ];
 
     public function setAvailabilityAttribute($value): void
@@ -53,6 +57,14 @@ class Item extends Model
         }
 
         $this->attributes['availability'] = (bool) $value;
+    }
+
+    public function setStockItemsAttribute($value): void
+    {
+        $stock = (int) $value;
+
+        $this->attributes['stock_items'] = $stock;
+        $this->attributes['stock'] = $stock;
     }
 
     // ─────────────────────────────────────────
@@ -84,6 +96,11 @@ class Item extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function offerCategory()
+    {
+        return $this->belongsTo(OfferCategory::class);
+    }
+
     public function classifications()
     {
         return $this->belongsToMany(Classification::class, 'classification_item');
@@ -106,7 +123,7 @@ class Item extends Model
 
     public function photos()
     {
-        return $this->hasMany(ItemPhoto::class)->orderBy('order');
+        return $this->hasMany(ItemPhoto::class)->orderBy('id', 'asc');
     }
 
     // Singular aliases kept for backward compatibility
@@ -132,7 +149,7 @@ class Item extends Model
         $query = $includeTrashed ? self::withTrashed() : self::query();
 
         return $query
-            ->with(['type', 'category', 'classifications', 'colors', 'material', 'size', 'photos'])
+            ->with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'material', 'size', 'photos'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -142,7 +159,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'classifications', 'colors', 'photos'])
+        return self::with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'photos'])
             ->findOrFail($id);
     }
 
@@ -161,7 +178,8 @@ class Item extends Model
 
         // Handle main image upload
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $data['image'] = $data['image']->store('items', 'public');
+            $originalName = basename($data['image']->getClientOriginalName());
+            $data['image'] = $data['image']->storeAs('items', $originalName, 'public');
         }
 
         $item = self::create($data);
@@ -197,7 +215,8 @@ class Item extends Model
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
-            $data['image'] = $data['image']->store('items', 'public');
+            $originalName = basename($data['image']->getClientOriginalName());
+            $data['image'] = $data['image']->storeAs('items', $originalName, 'public');
         }
 
         $item->update($data);

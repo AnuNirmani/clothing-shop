@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\SiteSetting;
 use App\Models\Type;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -16,7 +18,7 @@ class ItemController extends Controller
     public function getLatestItem(): JsonResponse
     {
         $item = Item::where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -33,7 +35,7 @@ class ItemController extends Controller
     {
         $item = Item::where('category_id', 2)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -50,7 +52,7 @@ class ItemController extends Controller
     {
         $item = Item::where('category_id', 1)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->first();
 
@@ -66,7 +68,7 @@ class ItemController extends Controller
     public function getLatestFourItems(): JsonResponse
     {
         $items = Item::where('availability', true)
-            ->with(['category', 'type', 'colors'])
+            ->with(['category', 'offerCategory', 'type', 'colors'])
             ->latest()
             ->limit(4)
             ->get();
@@ -74,6 +76,70 @@ class ItemController extends Controller
         return response()->json([
             'success' => true,
             'data' => $items->map(fn($item) => $this->formatItem($item))
+        ]);
+    }
+
+    /**
+     * Get active offered items for homepage offer section
+     */
+    public function getOfferedItems(): JsonResponse
+    {
+        $today = Carbon::today();
+
+        $items = Item::where('availability', true)
+            ->where('is_on_offer', true)
+            ->where(function ($query) use ($today) {
+                $query->whereNull('offer_start_date')
+                    ->orWhereDate('offer_start_date', '<=', $today);
+            })
+            ->where(function ($query) use ($today) {
+                $query->whereNull('offer_end_date')
+                    ->orWhereDate('offer_end_date', '>=', $today);
+            })
+            ->with(['category', 'type', 'colors'])
+            ->with('offerCategory')
+            ->orderByRaw('CASE WHEN offer_end_date IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('offer_end_date', 'asc')
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items->map(fn($item) => $this->formatItem($item))
+        ]);
+    }
+
+    /**
+     * Get homepage hero media managed from admin panel
+     */
+    public function getHomeHeroImage(): JsonResponse
+    {
+        $heroImage = SiteSetting::getValue('home_hero_image');
+        $heroVideo = SiteSetting::getValue('home_hero_video');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'image' => $heroImage ? asset('storage/' . $heroImage) : null,
+                'video' => $heroVideo ? asset('storage/' . $heroVideo) : null,
+            ],
+        ]);
+    }
+
+    public function getHomeHeroButtons(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => SiteSetting::getHeroButtons(),
+        ]);
+    }
+
+    public function getHomeStores(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => SiteSetting::getStores(),
         ]);
     }
 
@@ -163,8 +229,21 @@ class ItemController extends Controller
      */
     public function getItems(Request $request): JsonResponse
     {
+        $today = Carbon::today();
         $query = Item::where('availability', true)
-            ->with(['category', 'type', 'colors']);
+            ->with(['category', 'offerCategory', 'type', 'colors']);
+
+        if ($request->boolean('offered') || $request->has('offer_category_id')) {
+            $query->where('is_on_offer', true)
+                ->where(function ($offerQuery) use ($today) {
+                    $offerQuery->whereNull('offer_start_date')
+                        ->orWhereDate('offer_start_date', '<=', $today);
+                })
+                ->where(function ($offerQuery) use ($today) {
+                    $offerQuery->whereNull('offer_end_date')
+                        ->orWhereDate('offer_end_date', '>=', $today);
+                });
+        }
 
         if ($request->has('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -172,6 +251,10 @@ class ItemController extends Controller
 
         if ($request->has('type_id')) {
             $query->where('type_id', $request->type_id);
+        }
+
+        if ($request->has('offer_category_id')) {
+            $query->where('offer_category_id', $request->offer_category_id);
         }
 
         if ($request->has('latest')) {
@@ -195,7 +278,7 @@ class ItemController extends Controller
     {
         $item = Item::where('id', $id)
             ->where('availability', true)
-            ->with(['category', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
+            ->with(['category', 'offerCategory', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
             ->first();
 
         if (!$item) {
@@ -226,6 +309,7 @@ class ItemController extends Controller
             'prize' => $item->prize,
             'image' => $item->image ? asset('storage/' . $item->image) : null,
             'category' => $item->category?->name,
+            'offer_category' => $item->offerCategory?->name,
             'type' => $item->type?->name,
             'stock_items' => $item->stock_items,
             'availability' => $item->availability,
@@ -249,6 +333,7 @@ class ItemController extends Controller
             'installment_3' => number_format(($item->discounted_price ?? $item->prize) / 3, 2, '.', ''),
             'installment_4' => number_format(($item->discounted_price ?? $item->prize) / 4, 2, '.', ''),
             'discounted_price' => $item->discounted_price,
+            'free_delivery' => (bool) $item->free_delivery,
             'size_chart' => $item->size?->photo ? asset('storage/' . $item->size->photo) : null,
         ];
     }

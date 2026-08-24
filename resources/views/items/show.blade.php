@@ -518,7 +518,7 @@
 
                         {{-- Offer --}}
                         @if($item->is_on_offer)
-                        <div class="info-box" style="background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid #bbf7d0;">
+                        <div class="info-box" style="background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid #bbf7d0;margin-bottom:12px;">
                             <p class="info-box-title" style="color:#059669;">🏷️ Active Offer</p>
                             <p class="info-box-row">Discount: <span>{{ number_format($item->offer_percentage, 2) }}%</span></p>
                             <p class="info-box-row" style="font-size:12px;color:#6b7280;margin-top:2px;">
@@ -529,7 +529,15 @@
                         </div>
                         @endif
 
-                        @if(!$item->is_gift_card && !$item->is_on_offer)
+                        {{-- Free Delivery --}}
+                        @if($item->free_delivery)
+                        <div class="info-box" style="background:linear-gradient(135deg,#d1fae5,#dbeafe);border:1.5px solid #6ee7b7;margin-bottom:12px;">
+                            <p class="info-box-title" style="color:#059669;">🚚 Free Delivery</p>
+                            <p class="info-box-row" style="color:#065f46;">This item qualifies for <span>Free Delivery</span></p>
+                        </div>
+                        @endif
+
+                        @if(!$item->is_gift_card && !$item->is_on_offer && !$item->free_delivery)
                         <p style="font-size:12.5px;color:#d1d5db;text-align:center;padding:8px 0;">No special options active</p>
                         @endif
                     </div>
