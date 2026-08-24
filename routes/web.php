@@ -17,9 +17,13 @@ Route::get('/', function () {
     return view('frontend');
 });
 
+Route::get('/customer-login', function () {
+    return view('frontend');
+});
+
 Route::get('/{any}', function () {
     return view('frontend');
-})->where('any', 'shop|womens|mens|checkout|item/.*');
+})->where('any', 'shop|womens|mens|checkout|item/.*|customer-login|customer-profile');
 
 // ❌ REMOVE the old closure dashboard route that was here
 

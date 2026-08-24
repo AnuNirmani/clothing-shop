@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CustomerAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('api')->group(function () {
+    Route::post('/customers/login', [CustomerAuthController::class, 'login']);
+    Route::post('/customers/register', [CustomerAuthController::class, 'register']);
+    Route::get('/customers/by-email', [CustomerAuthController::class, 'showByEmail']);
+    Route::get('/customers/{customer}', [CustomerAuthController::class, 'show']);
+
     // Latest Items API
     Route::get('/items/latest', [App\Http\Controllers\Api\ItemController::class, 'getLatestItem']);
     Route::get('/items/latest-womens', [App\Http\Controllers\Api\ItemController::class, 'getLatestWomensItem']);
@@ -39,4 +45,5 @@ Route::middleware('api')->group(function () {
 
     // Orders API
     Route::post('/orders', [App\Http\Controllers\Api\OrderController::class, 'store']);
+    Route::get('/orders/by-email', [App\Http\Controllers\Api\OrderController::class, 'getByEmail']);
 });

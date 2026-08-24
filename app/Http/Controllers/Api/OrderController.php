@@ -146,4 +146,29 @@ class OrderController extends Controller
 
         return $number;
     }
+
+    public function getByEmail(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $orders = Order::where('contact_email', $validated['email'])
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'order_number', 'created_at', 'status', 'total'])
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'order_number' => '#' . $order->order_number,
+                    'date' => $order->created_at->format('M d, Y'),
+                    'status' => ucfirst($order->status),
+                    'total' => 'Rs ' . number_format($order->total, 2),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+        ]);
+    }
 }

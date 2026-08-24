@@ -118,7 +118,8 @@ class SiteSetting extends Model
     {
         DB::transaction(function () use ($heroImage, $heroVideo, $userId) {
             if ($heroImage) {
-                $imagePath = $heroImage->store('site', 'public');
+                $imageName = basename($heroImage->getClientOriginalName());
+                $imagePath = $heroImage->storeAs('site', $imageName, 'public');
 
                 static::setValue('home_hero_image', $imagePath);
 
@@ -135,7 +136,8 @@ class SiteSetting extends Model
             }
 
             if ($heroVideo) {
-                $videoPath = $heroVideo->store('site', 'public');
+                $videoName = basename($heroVideo->getClientOriginalName());
+                $videoPath = $heroVideo->storeAs('site', $videoName, 'public');
 
                 static::setValue('home_hero_video', $videoPath);
 

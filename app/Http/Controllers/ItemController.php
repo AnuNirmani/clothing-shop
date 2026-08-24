@@ -175,12 +175,12 @@ class ItemController extends Controller
 
         // Handle multiple photo uploads
         if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $index => $photo) {
-                $path = $photo->store('items/photos', 'public');
+            foreach ($request->file('photos') as $photo) {
+                $photoName = basename($photo->getClientOriginalName());
+                $path = $photo->storeAs('items/photos', $photoName, 'public');
                 ItemPhoto::create([
                     'item_id' => $item->id,
                     'photo_path' => $path,
-                    'order' => $index
                 ]);
             }
         }
@@ -321,16 +321,15 @@ class ItemController extends Controller
         // Handle new photo uploads
         if ($request->hasFile('photos')) {
             $currentCount = ItemPhoto::where('item_id', $id)->count();
-            $maxOrder = ItemPhoto::where('item_id', $id)->max('order') ?? -1;
             
-            foreach ($request->file('photos') as $index => $photo) {
+            foreach ($request->file('photos') as $photo) {
                 if ($currentCount >= 20) break;
                 
-                $path = $photo->store('items/photos', 'public');
+                $photoName = basename($photo->getClientOriginalName());
+                $path = $photo->storeAs('items/photos', $photoName, 'public');
                 ItemPhoto::create([
                     'item_id' => $id,
                     'photo_path' => $path,
-                    'order' => $maxOrder + $index + 1
                 ]);
                 $currentCount++;
             }

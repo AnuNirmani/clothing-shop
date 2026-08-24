@@ -123,7 +123,7 @@ class Item extends Model
 
     public function photos()
     {
-        return $this->hasMany(ItemPhoto::class)->orderBy('order');
+        return $this->hasMany(ItemPhoto::class)->orderBy('id', 'asc');
     }
 
     // Singular aliases kept for backward compatibility
@@ -178,7 +178,8 @@ class Item extends Model
 
         // Handle main image upload
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $data['image'] = $data['image']->store('items', 'public');
+            $originalName = basename($data['image']->getClientOriginalName());
+            $data['image'] = $data['image']->storeAs('items', $originalName, 'public');
         }
 
         $item = self::create($data);
@@ -214,7 +215,8 @@ class Item extends Model
             if ($item->image) {
                 Storage::disk('public')->delete($item->image);
             }
-            $data['image'] = $data['image']->store('items', 'public');
+            $originalName = basename($data['image']->getClientOriginalName());
+            $data['image'] = $data['image']->storeAs('items', $originalName, 'public');
         }
 
         $item->update($data);

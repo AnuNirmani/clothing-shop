@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const LoginPage = () => {
     const bottomRef = useRef(null);
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [formError, setFormError] = useState('');
 
     useEffect(() => {
         const t = setTimeout(() => {
@@ -20,12 +22,85 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormError('');
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+
+        try {
+            const payload = {
+                name: email.split('@')[0],
+                email,
+                password,
+            };
+
+            const registerResponse = await fetch('/api/customers/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const registerData = await registerResponse.json();
+
+            // New user created
+            if (registerResponse.ok) {
+                if (registerData?.data?.id) {
+                    localStorage.setItem('currentCustomerId', String(registerData.data.id));
+                    localStorage.setItem('currentCustomerEmail', registerData.data.email || '');
+                    localStorage.setItem('currentCustomerName', registerData.data.name || '');
+                }
+
+                alert(registerData?.message || 'Account created successfully.');
+                navigate('/customer-profile');
+                return;
+            }
+
+            // Existing user path: email already used, so try login instead
+            const emailTaken =
+                registerResponse.status === 422 &&
+                (registerData?.errors?.email?.[0]?.toLowerCase().includes('taken') ||
+                    registerData?.errors?.email?.[0]?.toLowerCase().includes('already'));
+
+            if (emailTaken) {
+                const loginResponse = await fetch('/api/customers/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (!loginResponse.ok) {
+                    setFormError(loginData?.message || 'Invalid email or password.');
+                    return;
+                }
+
+                if (loginData?.data?.id) {
+                    localStorage.setItem('currentCustomerId', String(loginData.data.id));
+                    localStorage.setItem('currentCustomerEmail', loginData.data.email || '');
+                    localStorage.setItem('currentCustomerName', loginData.data.name || '');
+                }
+
+                alert(loginData?.message || 'Login successful.');
+                navigate('/customer-profile');
+                return;
+            }
+
+            if (registerData?.errors) {
+                const firstError = Object.values(registerData.errors)[0];
+                setFormError(Array.isArray(firstError) ? firstError[0] : 'Unable to continue.');
+            } else {
+                setFormError(registerData?.message || 'Unable to continue.');
+            }
+        } catch (error) {
+            setFormError('Network error while processing your request. Please try again.');
+        } finally {
             setIsLoading(false);
-            alert('Login functionality would be implemented here');
-        }, 1500);
+        }
     };
 
     return (
@@ -435,8 +510,12 @@ const LoginPage = () => {
                             className={`premium-btn w-full flex items-center justify-center font-bold text-lg mt-8 ${isLoading ? 'loading' : ''}`}
                         >
                             {isLoading && <div className="loader"></div>}
-                            {isLoading ? 'Signing in...' : 'Create Account'}
+                            {isLoading ? 'Processing...' : 'Create Account / Login'}
                         </button>
+
+                        {formError && (
+                            <p className="mt-4 text-sm font-medium text-red-600">{formError}</p>
+                        )}
                     </form>
 
                     {/* Divider */}

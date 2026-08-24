@@ -37,7 +37,8 @@ class SizeController extends Controller
 
         // Handle photo upload if present
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('sizes', 'public');
+            $photoName = basename($request->file('photo')->getClientOriginalName());
+            $validated['photo'] = $request->file('photo')->storeAs('sizes', $photoName, 'public');
         }
 
         Size::createSize($validated);
@@ -82,7 +83,8 @@ class SizeController extends Controller
                 if ($size->photo) {
                     Storage::disk('public')->delete($size->photo);
                 }
-                $data['photo'] = $request->file('photo')->store('sizes', 'public');
+                $photoName = basename($request->file('photo')->getClientOriginalName());
+                $data['photo'] = $request->file('photo')->storeAs('sizes', $photoName, 'public');
             }
 
             $size->update($data);

@@ -23,7 +23,8 @@ if (document.getElementById('app')) {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/shop" element={<ShopPage />} />
                         <Route path="/item/:id" element={<ItemDetailPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/customer-profile" element={<ProfilePage />} />
+                        <Route path="/customer-login" element={<LoginPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
                         {/* Add more routes here as needed */}

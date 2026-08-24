@@ -11,7 +11,7 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
     const handleProfileClick = (e) => {
-        if (window.location.pathname === '/login') {
+        if (window.location.pathname === '/customer-login' || window.location.pathname === '/login') {
             window.scrollTo({
                 top: document.documentElement.scrollHeight,
                 behavior: 'smooth'
@@ -228,7 +228,7 @@ const Header = () => {
 
                             {/* Profile Icon */}
                             <Link
-                                to="/login"
+                                to="/customer-login"
                                 onClick={handleProfileClick}
                                 className="icon-hover text-gray-700 hover:text-pink-500 p-2"
                                 aria-label="Profile"
