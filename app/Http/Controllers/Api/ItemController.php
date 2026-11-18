@@ -278,7 +278,7 @@ class ItemController extends Controller
     {
         $item = Item::where('id', $id)
             ->where('availability', true)
-            ->with(['category', 'offerCategory', 'type', 'colors', 'photos', 'material', 'size', 'classifications'])
+            ->with(['category', 'offerCategory', 'type', 'colors', 'photos', 'material', 'size', 'sizeLabels', 'classifications'])
             ->first();
 
         if (!$item) {
@@ -315,7 +315,8 @@ class ItemController extends Controller
             'availability' => $item->availability,
             'material' => $item->material?->name,
             'size' => $item->size?->name,
-            'size_label' => $item->size_label,
+            'size_options' => $item->sizeLabels->pluck('size_label')->all(),
+            'size_label' => $item->sizeLabels->first()?->size_label,
             'is_gift_card' => $item->is_gift_card,
             'gift_card_validity_months' => $item->gift_card_validity_months,
             'is_on_offer' => $item->is_on_offer,

@@ -318,13 +318,13 @@
                             <div>
                                 <span class="field-label">Size</span>
                                 <div class="field-value" style="gap:8px;flex-wrap:wrap;">
-                                    @if(!empty($item->size_label))
-                                        <span class="pill-pink">{{ strtoupper($item->size_label) }}</span>
-                                    @endif
+                                    @foreach($item->sizeLabels as $sizeLabel)
+                                        <span class="pill-pink">{{ strtoupper($sizeLabel->size_label) }}</span>
+                                    @endforeach
                                     @if($item->size)
                                         <span class="pill-blue">{{ $item->size->name }}</span>
                                     @endif
-                                    @if(empty($item->size_label) && !$item->size)
+                                    @if($item->sizeLabels->isEmpty() && !$item->size)
                                         <span style="color:#9ca3af;">—</span>
                                     @endif
                                 </div>

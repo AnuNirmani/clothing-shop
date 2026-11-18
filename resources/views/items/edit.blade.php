@@ -113,7 +113,7 @@
         .field-label .req { color: #f472b6; margin-left: 2px; }
 
         /* ── Size radio pills ── */
-        .size-pill input[type="radio"] { display: none; }
+        .size-pill input[type="checkbox"] { display: none; }
         .size-pill .pill-body {
             padding: 8px 20px; border-radius: 10px; border: 1.5px solid #e5e7eb;
             font-size: 13px; font-weight: 600; color: #6b7280;
@@ -500,12 +500,12 @@
                                     <label class="field-label">Size</label>
                                     @php
                                         $fixedSizes = ['S','M','L','XL','XXL'];
-                                        $selLabel = old('size_label', $item->size_label ?? '');
+                                        $selectedLabels = old('size_labels', $item->sizeLabels->pluck('size_label')->all());
                                     @endphp
                                     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                                         @foreach($fixedSizes as $sz)
                                         <label class="size-pill">
-                                            <input type="radio" name="size_label" value="{{ $sz }}" {{ $selLabel===$sz?'checked':'' }}>
+                                            <input type="checkbox" name="size_labels[]" value="{{ $sz }}" {{ in_array($sz, $selectedLabels, true)?'checked':'' }}>
                                             <div class="pill-body">{{ $sz }}</div>
                                         </label>
                                         @endforeach

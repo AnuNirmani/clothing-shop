@@ -96,7 +96,8 @@ class ItemController extends Controller
                 'type_id' => 'required|exists:types,id',
                 'category_id' => 'required|exists:categories,id',
                 'material_id' => 'required|exists:materials,id',
-                'size_label' => 'nullable|in:S,M,L,XL,XXL',
+                'size_labels' => 'nullable|array',
+                'size_labels.*' => 'in:S,M,L,XL,XXL',
                 'size_id_dropdown' => 'nullable|exists:sizes,id',
                 'stock_items' => 'required|integer|min:0',
                 'availability' => 'required|in:in stock,out of stock',
@@ -125,7 +126,7 @@ class ItemController extends Controller
                 'type_id' => 'type',
                 'category_id' => 'category',
                 'material_id' => 'material',
-                'size_label' => 'size',
+                'size_labels' => 'sizes',
                 'size_id_dropdown' => 'size',
                 'offer_category_id' => 'offer category',
                 'colors' => 'color',
@@ -138,8 +139,8 @@ class ItemController extends Controller
         } else {
             $validated['size_id'] = null;
         }
-        $validated['size_label'] = $validated['size_label'] ?? null;
-        unset($validated['size_id_dropdown']);
+        $sizeLabels = array_values(array_unique($validated['size_labels'] ?? []));
+        unset($validated['size_labels'], $validated['size_id_dropdown']);
         $validated['availability'] = $validated['availability'] === 'in stock';
 
         // Convert checkbox to boolean
@@ -169,6 +170,7 @@ class ItemController extends Controller
         $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
 
         $item = Item::createItem($validated);
+        $item->sizeLabels()->createMany(array_map(fn ($label) => ['size_label' => $label], $sizeLabels));
 
         // Sync classifications (pivot)
         $item->classifications()->sync($validated['classifications'] ?? []);
@@ -232,7 +234,8 @@ class ItemController extends Controller
                 'colors' => 'required|array|min:1',
                 'colors.*' => 'exists:colors,id',
                 'material_id' => 'required|exists:materials,id',
-                'size_label' => 'nullable|in:S,M,L,XL,XXL',
+                'size_labels' => 'nullable|array',
+                'size_labels.*' => 'in:S,M,L,XL,XXL',
                 'size_id_dropdown' => 'nullable|exists:sizes,id',
                 'stock_items' => 'required|integer|min:0',
                 'availability' => 'required|in:in stock,out of stock',
@@ -259,7 +262,7 @@ class ItemController extends Controller
                 'type_id' => 'type',
                 'category_id' => 'category',
                 'material_id' => 'material',
-                'size_label' => 'size',
+                'size_labels' => 'sizes',
                 'size_id_dropdown' => 'size',
                 'offer_category_id' => 'offer category',
                 'colors' => 'color',
@@ -272,8 +275,8 @@ class ItemController extends Controller
         } else {
             $validated['size_id'] = null;
         }
-        $validated['size_label'] = $validated['size_label'] ?? null;
-        unset($validated['size_id_dropdown']);
+        $sizeLabels = array_values(array_unique($validated['size_labels'] ?? []));
+        unset($validated['size_labels'], $validated['size_id_dropdown']);
         $validated['availability'] = $validated['availability'] === 'in stock';
 
         // Convert checkbox to boolean
@@ -303,6 +306,8 @@ class ItemController extends Controller
         $validated['free_delivery'] = $request->has('free_delivery') ? true : false;
 
         $item = Item::updateItem($id, $validated);
+        $item->sizeLabels()->delete();
+        $item->sizeLabels()->createMany(array_map(fn ($label) => ['size_label' => $label], $sizeLabels));
 
         // Sync classifications (pivot)
         $item->classifications()->sync($validated['classifications'] ?? []);

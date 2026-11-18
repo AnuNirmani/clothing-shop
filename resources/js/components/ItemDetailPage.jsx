@@ -12,6 +12,7 @@ const ItemDetailPage = () => {
     const [activePhoto, setActivePhoto] = useState(null);
     const [isHovering, setIsHovering] = useState(false);
     const [selectedColor, setSelectedColor] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [showSizeChart, setShowSizeChart] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
@@ -26,6 +27,7 @@ const ItemDetailPage = () => {
                 if (data.success) {
                     setItem(data.data);
                     setActivePhoto(data.data.image);
+                    setSelectedSize(data.data.size_options?.[0] || null);
                     // Set default color if available
                     if (data.data.colors?.length > 0) {
                         setSelectedColor(data.data.colors[0].name);
@@ -47,7 +49,7 @@ const ItemDetailPage = () => {
         if (!item) return 0;
 
         const colorToUse = selectedColor || (item.colors?.[0]?.name ?? 'NULL');
-        const sizeToUse = item.size_label || item.size || 'NULL';
+        const sizeToUse = selectedSize || 'NULL';
 
         return cartItems
             .filter(
@@ -80,7 +82,7 @@ const ItemDetailPage = () => {
         }
 
         const colorToUse = selectedColor || 'NULL';
-        const sizeToUse = item.size_label || item.size || 'NULL';
+        const sizeToUse = selectedSize || 'NULL';
         // Reset error states
         setStockError(false);
 
@@ -280,7 +282,7 @@ const ItemDetailPage = () => {
                             <div className="space-y-2 py-2">
                                 <div className="flex items-center justify-between">
                                     <p className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
-                                        SIZE: <span className="text-gray-500 font-medium ml-1">{item.size_label || item.size || 'NULL'}</span>
+                                        SIZE: <span className="text-gray-500 font-medium ml-1">{selectedSize || 'Select a size'}</span>
                                     </p>
                                     <button
                                         onClick={() => setShowSizeChart(true)}
@@ -289,6 +291,32 @@ const ItemDetailPage = () => {
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /></svg>
                                         <span className="border-b border-transparent group-hover:border-blue-600 transition-all">Size Chart</span>
                                     </button>
+                                </div>
+                                <div className="flex flex-wrap gap-2" role="group" aria-label="Choose a size">
+                                    {(item.size_options || []).map((value) => {
+                                        const sizeNames = { S: 'Small', M: 'Medium', L: 'Large', XL: 'XL', XXL: 'XXL' };
+                                        const size = { value, label: sizeNames[value] || value };
+                                        return (
+                                        <button
+                                            key={size.value}
+                                            type="button"
+                                            onClick={() => {
+                                                setSelectedSize(size.value);
+                                                setQuantity(1);
+                                                setStockError(false);
+                                                setAddedToCart(false);
+                                            }}
+                                            aria-pressed={selectedSize === size.value}
+                                            className={`min-w-10 rounded border px-3 py-2 text-xs font-semibold transition-colors ${selectedSize === size.value
+                                                ? 'border-gray-900 bg-gray-900 text-white'
+                                                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-500'
+                                                }`}
+                                            title={size.label}
+                                        >
+                                            {size.value}
+                                        </button>
+                                    );
+                                    })}
                                 </div>
                             </div>
 

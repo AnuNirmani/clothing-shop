@@ -22,7 +22,6 @@ class Item extends Model
         'offer_category_id',
         'material_id',
         'size_id',
-        'size_label',
         'stock_items',
         'stock',
         'availability',
@@ -121,6 +120,11 @@ class Item extends Model
         return $this->belongsTo(Size::class);
     }
 
+    public function sizeLabels()
+    {
+        return $this->hasMany(ItemSizeLabel::class)->orderBy('id');
+    }
+
     public function photos()
     {
         return $this->hasMany(ItemPhoto::class)->orderBy('id', 'asc');
@@ -149,7 +153,7 @@ class Item extends Model
         $query = $includeTrashed ? self::withTrashed() : self::query();
 
         return $query
-            ->with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'material', 'size', 'photos'])
+            ->with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'material', 'size', 'sizeLabels', 'photos'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -159,7 +163,7 @@ class Item extends Model
      */
     public static function getItemById($id)
     {
-        return self::with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'photos'])
+        return self::with(['type', 'category', 'offerCategory', 'classifications', 'colors', 'sizeLabels', 'photos'])
             ->findOrFail($id);
     }
 
